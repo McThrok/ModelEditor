@@ -64,6 +64,11 @@ namespace ModelEditor
         {
             return Matrix4x4.Transpose(matrix);
         }
+        public static Matrix4x4 Inverse(this Matrix4x4 matrix)
+        {
+            Matrix4x4.Invert(matrix, out Matrix4x4 result);
+            return result;
+        }
 
         public static Vector4 GetRow1(this Matrix4x4 matrix) => new Vector4(matrix.M11, matrix.M21, matrix.M31, matrix.M41);
         public static Vector4 GetRow2(this Matrix4x4 matrix) => new Vector4(matrix.M12, matrix.M22, matrix.M32, matrix.M42);

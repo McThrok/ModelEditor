@@ -53,9 +53,9 @@ namespace ModelEditor
             var height = _wb.PixelHeight;
 
             var x1 = Convert.ToInt32((A.X + 1) / 2 * width);
-            var y1 = Convert.ToInt32((A.Y + 1) / 2 * height);
+            var y1 = Convert.ToInt32((1-(A.Y + 1) / 2) * height);
             var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
-            var y2 = Convert.ToInt32((B.Y + 1) / 2 * height);
+            var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2)  * height);
 
             _wb.DrawLine(x1, y1, x2, y2, _drawColor);
         }
