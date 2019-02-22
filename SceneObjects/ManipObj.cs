@@ -13,19 +13,29 @@ namespace ModelEditor
     {
         public Matrix4x4 Matrix { get; protected set; } = MyMatrix4x4.Identity;
 
-        public void Move(Vector3 movement)
+        public void Move(Vector3 translate)
         {
-            Matrix = MyMatrix4x4.Translate(movement) * Matrix;
+            Matrix = MyMatrix4x4.Translate(translate).Multiply(Matrix);
+        }
+
+        public void Move(double x, double y, double z)
+        {
+            Move(new Vector3((float)x, (float)y, (float)z));
         }
 
         public void Rotate(Vector3 rotation)
         {
-            Matrix = MyMatrix4x4.RotationX(rotation.X) * MyMatrix4x4.RotationY(rotation.Y) * MyMatrix4x4.RotationZ(rotation.Z) * Matrix;
+            Matrix = MyMatrix4x4.Compose( MyMatrix4x4.RotationX(rotation.X) , MyMatrix4x4.RotationY(rotation.Y) , MyMatrix4x4.RotationZ(rotation.Z) , Matrix);
         }
 
-        public void Scale(float scale)
+        public void Rotate(double x, double y, double z)
         {
-            Matrix = MyMatrix4x4.Scale(scale) * Matrix;
+            Rotate(new Vector3((float)x, (float)y, (float)z));
+        }
+
+        public void Scale(double scale)
+        {
+            Matrix = MyMatrix4x4.Scale((float)scale).Multiply(Matrix);
         }
 
     }

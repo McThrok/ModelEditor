@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,17 +33,14 @@ namespace ModelEditor
             wb.Clear(Colors.Black);
             BitmapImage.Source = wb;
 
-            //for (int i = 0; i < 400; i++)
-            //{
+            var obj = new TestObj();
+            //obj.Rotate(Math.PI / 16, Math.PI / 16, 0);
 
-            //    await Task.Delay(10);
+            var scene = new Scene();
+            scene.Objects.Add(obj);
 
-            //    wb.SetPixel(10, 13, Colors.Black);
-
-            //    wb.DrawLine(i, i, i, i+100, Colors.Green);
-
-            //}   
-
+            var renderer = new Renderer(wb, scene);
+            renderer.Render();
         }
     }
 }

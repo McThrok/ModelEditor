@@ -11,12 +11,12 @@ namespace ModelEditor
 {
     public class Scene : ManipObj
     {
-        public Matrix4x4 Camera { get; private set; }
+        public ManipObj Camera { get; private set; }
         public List<RenderableObj> Objects { get; private set; }
 
         public Scene()
         {
-            Camera = MyMatrix4x4.Translate(new Vector3(0, 0, 10));
+            Camera = new ManipObj();
             Objects = new List<RenderableObj>();
         }
     }

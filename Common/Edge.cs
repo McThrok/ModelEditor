@@ -11,8 +11,13 @@ namespace ModelEditor
 {
     public struct Edge
     {
-        public int idxA { get; set; }
-        public int idxB { get; set; }
+        public Edge(int idxA, int idxB)
+        {
+            IdxA = idxA;
+            IdxB = idxB;
+        }
+        public int IdxA { get; set; }
+        public int IdxB { get; set; }
     }
 }
 
