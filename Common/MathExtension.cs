@@ -64,7 +64,7 @@ namespace ModelEditor
         {
             return Matrix4x4.Transpose(matrix);
         }
-        public static Matrix4x4 Inverse(this Matrix4x4 matrix)
+        public static Matrix4x4 Inversed(this Matrix4x4 matrix)
         {
             Matrix4x4.Invert(matrix, out Matrix4x4 result);
             return result;

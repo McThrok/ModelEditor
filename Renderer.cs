@@ -27,7 +27,7 @@ namespace ModelEditor
             _wb.Clear(Colors.Black);
 
             var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 1f, 8.0f);
-            var view = _scene.Camera.Matrix;
+            var view = _scene.Camera.Matrix.Inversed();
 
             foreach (var obj in _scene.Objects)
             {

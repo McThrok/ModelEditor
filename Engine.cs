@@ -16,7 +16,9 @@ namespace ModelEditor
         private readonly WriteableBitmap _writableBitmap;
         private readonly float _maxFPS = 60;
 
-        private Scene _scene;
+        public InputManager Input { get; private set; }
+
+        private readonly Scene _scene = new Scene();
         private Renderer _renderer;
         private Stopwatch _frameStopWatch = new Stopwatch();
         private double _deltaTime;
@@ -24,18 +26,15 @@ namespace ModelEditor
         public Engine(WriteableBitmap writableBitmap)
         {
             _writableBitmap = writableBitmap;
+            _renderer = new Renderer(_writableBitmap, _scene);
+            Input = new InputManager(_writableBitmap, _scene);
 
             InitScene();
-            InitRenderer();
+
         }
 
-        private void InitRenderer()
-        {
-            _renderer = new Renderer(_writableBitmap, _scene);
-        }
         private void InitScene()
         {
-            _scene = new Scene();
             var obj = new TestObj();
             _scene.Objects.Add(obj);
         }
@@ -57,6 +56,9 @@ namespace ModelEditor
         private void Update()
         {
             Console.WriteLine(_deltaTime);
+            Console.WriteLine(_scene.Camera.Matrix.GetCol4());
+
+            Input.Update(_deltaTime);
             _renderer.RenderFrame();
         }
     }
