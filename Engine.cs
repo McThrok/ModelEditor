@@ -49,7 +49,7 @@ namespace ModelEditor
         {
             _scene = new Scene();
             //_scene.Camera.Rotate(0, Math.PI / 4, 0);
-            var obj = new TestObj();
+            var obj = new Torus();
             _scene.Objects.Add(obj);
         }
 

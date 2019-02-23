@@ -70,6 +70,7 @@
     <Compile Include="Common\MathExtension.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="Engine.cs" />
+    <Compile Include="SceneObjects\Objects\Torus.cs" />
     <Compile Include="SceneObjects\Objects\TestObj.cs" />
     <Compile Include="SceneObjects\RenderableObj.cs" />
     <Compile Include="Common\Edge.cs" />

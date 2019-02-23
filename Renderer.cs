@@ -61,8 +61,8 @@ namespace ModelEditor
             //if (result == null)
             //    return;
 
-            var  A = (vertA / vertA.W).ToVector3();
-             var B = (vertB / vertB.W).ToVector3();
+            var A = (vertA / vertA.W).ToVector3();
+            var B = (vertB / vertB.W).ToVector3();
 
             var width = _wb.PixelWidth;
             var height = _wb.PixelHeight;
