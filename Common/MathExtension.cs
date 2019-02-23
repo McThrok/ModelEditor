@@ -79,5 +79,26 @@ namespace ModelEditor
         public static Vector4 GetCol2(this Matrix4x4 matrix) => new Vector4(matrix.M21, matrix.M22, matrix.M23, matrix.M24);
         public static Vector4 GetCol3(this Matrix4x4 matrix) => new Vector4(matrix.M31, matrix.M32, matrix.M33, matrix.M34);
         public static Vector4 GetCol4(this Matrix4x4 matrix) => new Vector4(matrix.M41, matrix.M42, matrix.M43, matrix.M44);
+
+        public static Vector3 Multiply(this Quaternion quat, Vector3 vec)
+        {
+            float num = quat.X * 2f;
+            float num2 = quat.Y * 2f;
+            float num3 = quat.Z * 2f;
+            float num4 = quat.X * num;
+            float num5 = quat.Y * num2;
+            float num6 = quat.Z * num3;
+            float num7 = quat.X * num2;
+            float num8 = quat.X * num3;
+            float num9 = quat.Y * num3;
+            float num10 = quat.W * num;
+            float num11 = quat.W * num2;
+            float num12 = quat.W * num3;
+            Vector3 result = Vector3.Zero;
+            result.X = (1f - (num5 + num6)) * vec.X + (num7 - num12) * vec.Y + (num8 + num11) * vec.Z;
+            result.Y = (num7 + num12) * vec.X + (1f - (num4 + num6)) * vec.Y + (num9 - num10) * vec.Z;
+            result.Z = (num8 - num11) * vec.X + (num9 + num10) * vec.Y + (1f - (num4 + num5)) * vec.Z;
+            return result;
+        }
     }
 }

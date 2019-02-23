@@ -75,8 +75,13 @@ namespace ModelEditor
             if (_moveActions[Move.Up]) moveDir.Y++;
             if (_moveActions[Move.Down]) moveDir.Y--;
 
+            if(!Matrix4x4.Decompose(_scene.Camera.Matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation))
+            {
+                throw new InvalidOperationException("Cannot decompose matrix");
+            }
+
             var cameraSpeed = 0.1f;
-            _scene.Camera.Move(cameraSpeed * moveDir);
+            _scene.Camera.Move(cameraSpeed * rotation.Multiply(moveDir));
 
         }
         private void UpdateRotations()
@@ -85,13 +90,17 @@ namespace ModelEditor
                 return;
 
             var position = Mouse.GetPosition(_bitmapConatiner);
-            var rotationSpeed = 0.001f;
             var diff = position - _lastMousePosition.Value;
-            _scene.Camera.Rotate(rotationSpeed * diff.Y, 0, 0);
-            _scene.Camera.Rotate(0, rotationSpeed * diff.X, 0);
-            
+            _lastMousePosition = position;
 
-           _lastMousePosition = position;
+            if (!Matrix4x4.Decompose(_scene.Camera.Matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation))
+            {
+                throw new InvalidOperationException("Cannot decompose matrix");
+            }
+
+            var rotationSpeed = 0.001f;
+            _scene.Camera.Rotate(rotationSpeed * diff.Y, rotationSpeed * diff.X, 0);
+
         }
 
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
