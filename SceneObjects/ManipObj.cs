@@ -11,7 +11,7 @@ namespace ModelEditor
 {
     public class ManipObj
     {
-        public Matrix4x4 Matrix { get; protected set; } = MyMatrix4x4.Identity;
+        public Matrix4x4 Matrix { get; set; } = MyMatrix4x4.Identity;
 
         public void Move(Vector3 translate)
         {
@@ -25,7 +25,7 @@ namespace ModelEditor
 
         public void Rotate(Vector3 rotation)
         {
-            Matrix = MyMatrix4x4.Compose( MyMatrix4x4.RotationX(rotation.X) , MyMatrix4x4.RotationY(rotation.Y) , MyMatrix4x4.RotationZ(rotation.Z) , Matrix);
+            Matrix = MyMatrix4x4.Compose(MyMatrix4x4.RotationX(rotation.X), MyMatrix4x4.RotationY(rotation.Y), MyMatrix4x4.RotationZ(rotation.Z), Matrix);
         }
 
         public void Rotate(double x, double y, double z)

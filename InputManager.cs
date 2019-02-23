@@ -75,14 +75,9 @@ namespace ModelEditor
             if (_moveActions[Move.Up]) moveDir.Y++;
             if (_moveActions[Move.Down]) moveDir.Y--;
 
-            if(!Matrix4x4.Decompose(_scene.Camera.Matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation))
-            {
-                throw new InvalidOperationException("Cannot decompose matrix");
-            }
-
             var cameraSpeed = 0.1f;
-            _scene.Camera.Move(cameraSpeed * rotation.Multiply(moveDir));
-
+            var translateMatrix = MyMatrix4x4.Translate(cameraSpeed * moveDir);
+            _scene.Camera.Matrix = _scene.Camera.Matrix.Multiply(translateMatrix);
         }
         private void UpdateRotations()
         {
@@ -98,9 +93,13 @@ namespace ModelEditor
                 throw new InvalidOperationException("Cannot decompose matrix");
             }
 
-            var rotationSpeed = 0.001f;
-            _scene.Camera.Rotate(rotationSpeed * diff.Y, rotationSpeed * diff.X, 0);
+            var rotationSpeed = 0.003f;
+            var rotationX = MyMatrix4x4.RotationX((float)(rotationSpeed * diff.Y));
+            var rotationY = MyMatrix4x4.RotationY((float)(rotationSpeed * diff.X));
+            var currRotation = Matrix4x4.CreateFromQuaternion(rotation);
+            var trainslation = MyMatrix4x4.Translate(translation);
 
+            _scene.Camera.Matrix = MyMatrix4x4.Compose(trainslation, rotationX, currRotation, rotationY);
         }
 
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -116,7 +115,7 @@ namespace ModelEditor
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             var scaleSpeed = 0.01;
-            _scene.Scale(scaleSpeed * e.Delta);
+            _scene.Scale(Math.Exp( scaleSpeed * e.Delta));
         }
 
         public void OnKeyDown(Key key)
