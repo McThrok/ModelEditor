@@ -22,9 +22,9 @@ namespace ModelEditor
             _scene = scene;
         }
 
-        public void Render()
+        public void RenderFrame()
         {
-            _wb.Clear();
+            _wb.Clear(Colors.Black);
 
             var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 1f, 8.0f);
             var view = _scene.Camera.Matrix;
