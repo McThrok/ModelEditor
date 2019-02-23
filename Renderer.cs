@@ -24,6 +24,8 @@ namespace ModelEditor
 
         public void Render()
         {
+            _wb.Clear();
+
             var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 1f, 8.0f);
             var view = _scene.Camera.Matrix;
 

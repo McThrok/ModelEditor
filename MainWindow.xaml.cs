@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -21,26 +22,49 @@ namespace ModelEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private WriteableBitmap _writableBitmap;
+        private Scene _scene = new Scene();
+        private Renderer _renderer;
+        private Stopwatch _frameStopWatch = new Stopwatch();
+        private double _deltaTime;
+        private float maxFPS = 60;
+
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += Init;
+            Loaded += Run;
         }
 
-        private async void Init(object sender, RoutedEventArgs e)
+        private async void Run(object sender, RoutedEventArgs e)
         {
-            WriteableBitmap wb = new WriteableBitmap((int)BitmapContainer.ActualWidth, (int)BitmapContainer.ActualHeight, 96, 96, PixelFormats.Bgra32, null);
-            wb.Clear(Colors.Black);
-            BitmapImage.Source = wb;
+            Init();
+
+            while (true)
+            {
+                _deltaTime = _frameStopWatch.Elapsed.TotalMilliseconds;
+                _frameStopWatch.Restart();
+
+                var wait = Task.Delay(Convert.ToInt32(1000 / maxFPS));
+                RenderFrame();
+
+                await wait;
+            }
+        }
+
+        private void Init()
+        {
+            _writableBitmap = new WriteableBitmap((int)BitmapContainer.ActualWidth, (int)BitmapContainer.ActualHeight, 96, 96, PixelFormats.Bgra32, null);
+            BitmapImage.Source = _writableBitmap;
+            _renderer = new Renderer(_writableBitmap, _scene);
 
             var obj = new TestObj();
-            //obj.Rotate(Math.PI / 16, Math.PI / 16, 0);
+            _scene.Objects.Add(obj);
+        }
 
-            var scene = new Scene();
-            scene.Objects.Add(obj);
 
-            var renderer = new Renderer(wb, scene);
-            renderer.Render();
+        private void RenderFrame()
+        {
+            Console.WriteLine(_deltaTime);
         }
     }
 }
