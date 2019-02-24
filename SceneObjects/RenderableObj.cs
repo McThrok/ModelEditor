@@ -11,7 +11,12 @@ namespace ModelEditor
 {
     public abstract class RenderableObj : ManipObj
     {
-        public abstract List<Edge> GetEdges();
-        public abstract List<Vector3> GetVertices();
+        public abstract RenderData GetRenderData();
+    }
+
+    public class RenderData
+    {
+        public List<Vector3> Vertices { get; set; }
+        public List<Edge> Edges { get; set; }
     }
 }

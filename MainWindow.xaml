@@ -43,11 +43,16 @@
                                     <RowDefinition/>
                                     <RowDefinition/>
                                     <RowDefinition/>
+                                    <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Small Density:" />
-                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SmallDensity}" />
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Large Density:" />
-                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LargeDensity}" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Large Density:" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LargeDensity}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Small Density:" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SmallDensity}" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Large radius:" />
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding LargeRadius}" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Small radius:" />
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SmallRadius}" />
                             </Grid>
                         </Expander>
                     </DataTemplate>

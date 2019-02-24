@@ -12,12 +12,22 @@ namespace ModelEditor
     public class Torus : RenderableObj
     {
         public string Name { get; set; } = nameof(Torus);
-        public double LargeRadius { get; set; } = 5;
-        public double SmallRadius { get; set; } = 1;
-        public int LargeDensity { get; set; } = 20;
-        public int SmallDensity { get; set; } = 20;
 
-        public override List<Vector3> GetVertices()
+        private double _largeRadius = 5;
+        private double _smallRadius = 1;
+        private int _largeDensity = 20;
+        private int _smallDensity = 20;
+
+        public double LargeRadius { get { return _largeRadius; } set { _dataChanged = true; _largeRadius = value; } }
+        public double SmallRadius { get { return _smallRadius; } set { _dataChanged = true; _smallRadius = value; } }
+        public int LargeDensity { get { return _largeDensity; } set { _dataChanged = true; _largeDensity = value; } }
+        public int SmallDensity { get { return _smallDensity; } set { _dataChanged = true; _smallDensity = value; } }
+
+        private bool _dataChanged = true;
+        private bool _edgeChanged = true;
+        private RenderData _renderData;
+
+        private List<Vector3> GetVertices()
         {
             var vertices = new List<Vector3>();
 
@@ -35,10 +45,11 @@ namespace ModelEditor
                     vertices.Add(new Vector3(x, y, z));
                 }
             }
+            _dataChanged = false;
 
             return vertices;
         }
-        public override List<Edge> GetEdges()
+        private List<Edge> GetEdges()
         {
             var edges = new List<Edge>();
 
@@ -53,6 +64,18 @@ namespace ModelEditor
 
             return edges;
 
+        }
+
+        public override RenderData GetRenderData()
+        {
+            if (_dataChanged)
+            {
+                _renderData = new RenderData();
+                _renderData.Vertices = GetVertices();
+                _renderData.Edges = GetEdges();
+            }
+
+            return _renderData;
         }
     }
 }

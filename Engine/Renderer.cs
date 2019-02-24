@@ -31,12 +31,12 @@ namespace ModelEditor
 
             foreach (var obj in _scene.Objects)
             {
-                var vertices = obj.GetVertices();
+                var data = obj.GetRenderData();
                 var matrix = MyMatrix4x4.Compose(projection, view, _scene.Matrix, obj.Matrix);
-                foreach (var edge in obj.GetEdges())
+                foreach (var edge in data.Edges)
                 {
-                    var vertA = matrix.Multiply(vertices[edge.IdxA].ToVector4());
-                    var vertB = matrix.Multiply(vertices[edge.IdxB].ToVector4());
+                    var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
+                    var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
                     DrawLine(vertA, vertB);
                 }
             }

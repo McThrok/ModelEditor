@@ -11,7 +11,28 @@ namespace ModelEditor
 {
     public class TestObj : RenderableObj
     {
-        public override List<Edge> GetEdges()
+        public override RenderData GetRenderData()
+        {
+            return new RenderData()
+            {
+                Vertices = GetVertices(),
+                Edges = GetEdges(),
+            };
+        }
+        private  List<Vector3> GetVertices()
+        {
+            return new List<Vector3>() {
+                new Vector3(-0.5f, -0.5f,-2),
+                new Vector3(0.5f, -0.5f,-2),
+                new Vector3(0.5f, -0.5f, -3),
+                new Vector3(-0.5f, -0.5f, -3),
+                new Vector3(-0.5f, 0.5f,-2),
+                new Vector3(0.5f, 0.5f,-2),
+                new Vector3(0.5f, 0.5f, -3),
+                new Vector3(-0.5f, 0.5f, -3),
+            };
+        }
+        private List<Edge> GetEdges()
         {
             return new List<Edge>() {
                 new Edge(0, 1),
@@ -30,18 +51,6 @@ namespace ModelEditor
                 new Edge(4, 7),
             };
         }
-        public override List<Vector3> GetVertices()
-        {
-            return new List<Vector3>() {
-                new Vector3(-0.5f, -0.5f,-2),
-                new Vector3(0.5f, -0.5f,-2),
-                new Vector3(0.5f, -0.5f, -3),
-                new Vector3(-0.5f, -0.5f, -3),
-                new Vector3(-0.5f, 0.5f,-2),
-                new Vector3(0.5f, 0.5f,-2),
-                new Vector3(0.5f, 0.5f, -3),
-                new Vector3(-0.5f, 0.5f, -3),
-            };
-        }
+
     }
 }
