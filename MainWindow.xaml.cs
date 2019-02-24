@@ -33,29 +33,23 @@ namespace ModelEditor
         {
             _engine = new Engine(BitmapContainer);
             _engine.Run();
-
         }
 
-        public Point GetMousePosition()
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-           return Mouse.GetPosition(BitmapImage);
+            base.OnMouseLeftButtonDown(e);
+            _engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapImage));
         }
-
-        //protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-        //{
-        //    base.OnMouseLeftButtonDown(e);
-        //    _engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapImage));
-        //}
-        //protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-        //{
-        //    base.OnMouseLeftButtonUp(e);
-        //    _engine?.Input.OnMouseLeftButtonUp(e.GetPosition(BitmapImage));
-        //}
-        //protected override void OnMouseWheel(MouseWheelEventArgs e)
-        //{
-        //    base.OnMouseWheel(e);
-        //    _engine?.Input.OnMouseWheel(e.Delta);
-        //}
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonUp(e);
+            _engine?.Input.OnMouseLeftButtonUp(e.GetPosition(BitmapImage));
+        }
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel(e);
+            _engine?.Input.OnMouseWheel(e.Delta);
+        }
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModelEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        WindowState="Maximized"
+        Title="MainWindow">
     <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -19,9 +20,9 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal">
-                <!--<Button>aaaaaaaaaaa</Button>
+                <Button>aaaaaaaaaaa</Button>
                 <Button>bbbbbbbbbbbbbbbb</Button>
-                <Button>cccccccccccccc</Button>-->
+                <Button>cccccccccccccc</Button>
             </StackPanel>
 
             <Grid Grid.Row="1" Name="BitmapContainer">
@@ -30,9 +31,9 @@
         </Grid>
 
             <StackPanel  Grid.Column="1">
-                <!--<Button>aaaaaaaaaaa</Button>
+                <Button>aaaaaaaaaaa</Button>
                 <Button>bbbbbbbbbbbbbbbb</Button>
-                <Button>cccccccccccccc</Button>-->
+                <Button>cccccccccccccc</Button>
             </StackPanel>
     </Grid>
 </Window>

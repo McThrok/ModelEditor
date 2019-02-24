@@ -77,12 +77,7 @@ namespace ModelEditor
 
         public static Matrix4x4 Compose(params Matrix4x4[] matrices)
         {
-            var composition = Identity;
-            foreach (var matrix in matrices.Reverse())
-            {
-                composition = matrix.Multiply(composition);
-            }
-            return composition;
+            return matrices.Aggregate(Identity, (composition, matrix) => composition.Multiply(matrix));
         }
     }
 }

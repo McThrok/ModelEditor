@@ -40,7 +40,6 @@ namespace ModelEditor
             _scene = scene;
 
             InitMoveActions();
-            InitMouseHandling();
         }
 
         private void InitMoveActions()
@@ -52,12 +51,6 @@ namespace ModelEditor
             _moveActions[Move.Right] = false;
             _moveActions[Move.Up] = false;
             _moveActions[Move.Down] = false;
-        }
-        private void InitMouseHandling()
-        {
-            _bitmapConatiner.MouseLeftButtonDown += OnMouseLeftButtonDown;
-            _bitmapConatiner.MouseLeftButtonUp += OnMouseLeftButtonUp;
-            _bitmapConatiner.MouseWheel += OnMouseWheel;
         }
 
         public void Update(double deltaTime)
@@ -93,7 +86,7 @@ namespace ModelEditor
                 throw new InvalidOperationException("Cannot decompose matrix");
             }
 
-            var rotationSpeed = 0.003f;
+            var rotationSpeed = 0.002f;
             var rotationX = MyMatrix4x4.RotationX((float)(rotationSpeed * diff.Y));
             var rotationY = MyMatrix4x4.RotationY((float)(rotationSpeed * diff.X));
             var currRotation = Matrix4x4.CreateFromQuaternion(rotation);
@@ -102,20 +95,21 @@ namespace ModelEditor
             _scene.Camera.Matrix = MyMatrix4x4.Compose(trainslation, rotationX, currRotation, rotationY);
         }
 
-        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        public void OnMouseLeftButtonDown(Point position)
         {
-            var position = e.GetPosition(_bitmapConatiner);
+            position.X += _writeableBitmap.PixelWidth / 2;
+            position.Y += _writeableBitmap.Height / 2;
             if (position.X >= 0 && position.Y >= 0 && position.X < _writeableBitmap.PixelWidth && position.Y < _writeableBitmap.PixelHeight)
                 _lastMousePosition = position;
         }
-        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        public void OnMouseLeftButtonUp(Point position)
         {
             _lastMousePosition = null;
         }
-        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        public void OnMouseWheel(int delta)
         {
-            var scaleSpeed = 0.01;
-            _scene.Scale(Math.Exp( scaleSpeed * e.Delta));
+            var scaleSpeed = 0.001;
+            _scene.Scale(Math.Exp(scaleSpeed * delta));
         }
 
         public void OnKeyDown(Key key)

@@ -14,7 +14,7 @@ namespace ModelEditor
         public double LargeRadius { get; set; } = 5;
         public double SmallRadius { get; set; } = 1;
         public int LargeDensity { get; set; } = 20;
-        public int SmallDensity { get; set; } = 10;
+        public int SmallDensity { get; set; } = 20;
 
         public override List<Vector3> GetVertices()
         {
@@ -51,6 +51,7 @@ namespace ModelEditor
             }
 
             return edges;
+
         }
     }
 }

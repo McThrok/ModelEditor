@@ -48,8 +48,11 @@ namespace ModelEditor
         private void InitScene()
         {
             _scene = new Scene();
+            _scene.Camera.Move(0, 0, 10);
             //_scene.Camera.Rotate(0, Math.PI / 4, 0);
             var obj = new Torus();
+            obj.Rotate(Math.PI / 2, 0, 0);
+            //var obj = new TestObj();
             _scene.Objects.Add(obj);
         }
 
