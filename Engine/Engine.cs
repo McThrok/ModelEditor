@@ -21,8 +21,8 @@ namespace ModelEditor
         private readonly float _maxFPS = 60;
 
         public InputManager Input { get; private set; }
+        public SceneMnager SceneMnager { get; private set; }
 
-        private Scene _scene;
         private Renderer _renderer;
         private Stopwatch _frameStopWatch = new Stopwatch();
         private double _deltaTime;
@@ -31,10 +31,10 @@ namespace ModelEditor
         {
             _bitmapConatiner = bitmapConatiner;
             InitBitmap();
-            InitScene();
 
-            _renderer = new Renderer(_writableBitmap, _scene);
-            Input = new InputManager(_bitmapConatiner,_writableBitmap, _scene);
+            SceneMnager = new SceneMnager();
+            _renderer = new Renderer(_writableBitmap, SceneMnager.Scene);
+            Input = new InputManager(_bitmapConatiner,_writableBitmap, SceneMnager.Scene);
         }
 
         private void InitBitmap()
@@ -43,17 +43,6 @@ namespace ModelEditor
             var img = new System.Windows.Controls.Image();
             img.Source = _writableBitmap;
             _bitmapConatiner.Children.Add(img);
-        }
-
-        private void InitScene()
-        {
-            _scene = new Scene();
-            _scene.Camera.Move(0, 0, 10);
-            //_scene.Camera.Rotate(0, Math.PI / 4, 0);
-            var obj = new Torus();
-            obj.Rotate(Math.PI / 2, 0, 0);
-            //var obj = new TestObj();
-            _scene.Objects.Add(obj);
         }
 
         public async void Run()

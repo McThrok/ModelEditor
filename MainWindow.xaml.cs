@@ -32,18 +32,21 @@ namespace ModelEditor
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             _engine = new Engine(BitmapContainer);
+            _engine.SceneMnager.AddTorus();
+            itemList.ItemsSource = _engine.SceneMnager.Scene.Objects;
+
             _engine.Run();
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            _engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapImage));
+            _engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapContainer));
         }
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonUp(e);
-            _engine?.Input.OnMouseLeftButtonUp(e.GetPosition(BitmapImage));
+            _engine?.Input.OnMouseLeftButtonUp();
         }
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
@@ -60,5 +63,12 @@ namespace ModelEditor
             base.OnKeyUp(e);
             _engine?.Input.OnKeyUp(e.Key);
         }
+
+        private void Torus_Click(object sender, RoutedEventArgs e)
+        {
+            _engine.SceneMnager.AddTorus();
+        }
+
+
     }
 }

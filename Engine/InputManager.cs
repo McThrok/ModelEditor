@@ -30,7 +30,7 @@ namespace ModelEditor
         private readonly WriteableBitmap _writeableBitmap;
         private readonly Panel _bitmapConatiner;
         private Dictionary<Move, bool> _moveActions;
-
+        private Vector3 _cameraRotation = Vector3.Zero;
         private Point? _lastMousePosition;
 
         public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene)
@@ -72,6 +72,7 @@ namespace ModelEditor
             var translateMatrix = MyMatrix4x4.Translate(cameraSpeed * moveDir);
             _scene.Camera.Matrix = _scene.Camera.Matrix.Multiply(translateMatrix);
         }
+
         private void UpdateRotations()
         {
             if (!_lastMousePosition.HasValue)
@@ -87,22 +88,28 @@ namespace ModelEditor
             }
 
             var rotationSpeed = 0.002f;
-            var rotationX = MyMatrix4x4.RotationX((float)(rotationSpeed * diff.Y));
-            var rotationY = MyMatrix4x4.RotationY((float)(rotationSpeed * diff.X));
-            var currRotation = Matrix4x4.CreateFromQuaternion(rotation);
-            var trainslation = MyMatrix4x4.Translate(translation);
 
-            _scene.Camera.Matrix = MyMatrix4x4.Compose(trainslation, rotationX, currRotation, rotationY);
+
+            _cameraRotation.X += (float)(rotationSpeed * diff.Y);
+            _cameraRotation.X = (float)Math.Max(-Math.PI * 0.4, Math.Min(Math.PI * 0.4, _cameraRotation.X));
+            _cameraRotation.Y += (float)(rotationSpeed * diff.X);
+
+            var rotationX = MyMatrix4x4.RotationX(_cameraRotation.X);
+            var rotationY = MyMatrix4x4.RotationY(_cameraRotation.Y);
+            var move = MyMatrix4x4.Translate(translation);
+
+            _scene.Camera.Matrix = MyMatrix4x4.Compose(move, rotationY, rotationX);
         }
 
         public void OnMouseLeftButtonDown(Point position)
         {
-            position.X += _writeableBitmap.PixelWidth / 2;
-            position.Y += _writeableBitmap.Height / 2;
-            if (position.X >= 0 && position.Y >= 0 && position.X < _writeableBitmap.PixelWidth && position.Y < _writeableBitmap.PixelHeight)
-                _lastMousePosition = position;
+            var pos = position;
+            //pos.X += _writeableBitmap.PixelWidth / 2;
+            //pos.Y += _writeableBitmap.Height / 2;
+            if (pos.X >= 0 && pos.Y >= 0 && pos.X < _writeableBitmap.PixelWidth && pos.Y < _writeableBitmap.PixelHeight)
+                _lastMousePosition = pos;
         }
-        public void OnMouseLeftButtonUp(Point position)
+        public void OnMouseLeftButtonUp()
         {
             _lastMousePosition = null;
         }

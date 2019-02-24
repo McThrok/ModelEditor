@@ -100,5 +100,48 @@ namespace ModelEditor
             result.Z = (num8 - num11) * vec.X + (num9 + num10) * vec.Y + (1f - (num4 + num5)) * vec.Z;
             return result;
         }
+        //public static Vector3 GetEuler(this Quaternion quaternion)
+        //{
+        //    var m = Matrix4x4.CreateFromQuaternion(quaternion);
+
+        //    Vector3 result = Vector3.Zero;
+        //    result.Y = (float)Math.Asin(-Math.Min(-1, Math.Max(1, m.M31)));
+
+        //    if (Math.Abs(m.M31) < 0.99999)
+        //    {
+
+        //        result.X = (float)Math.Atan2(m.M32, m.M33);
+        //        result.Z = (float)Math.Atan2(m.M21, m.M11);
+        //    }
+        //    else
+        //    {
+        //        result.X = 0;
+        //        result.Z = (float)Math.Atan2(-m.M12, m.M22);
+        //    }
+
+        //    return result;
+        //}
     }
 }
+
+//if (false)//xyz
+//           {
+
+//              y = Math.Asin(clamp(m13, -1, 1));
+
+//               if (Math.Abs(m13) < 0.99999)
+//               {
+
+//                  x = Math.Atan2(-m23, m33);
+//                  z = Math.Atan2(-m12, m11);
+
+//               }
+//               else
+//               {
+
+//                  x = Math.Atan2(m32, m22);
+//                  z = 0;
+
+//               }
+
+//           }

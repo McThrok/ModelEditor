@@ -20,5 +20,3 @@ namespace ModelEditor
         public int IdxB { get; set; }
     }
 }
-
-

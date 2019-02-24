@@ -10,7 +10,7 @@
     <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="150" />
         </Grid.ColumnDefinitions>
 
         <Grid >
@@ -20,9 +20,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal">
-                <Button>aaaaaaaaaaa</Button>
-                <Button>bbbbbbbbbbbbbbbb</Button>
-                <Button>cccccccccccccc</Button>
+                <Button Click="Torus_Click">Add Torus</Button>
             </StackPanel>
 
             <Grid Grid.Row="1" Name="BitmapContainer">
@@ -30,10 +28,31 @@
             </Grid>
         </Grid>
 
-            <StackPanel  Grid.Column="1">
-                <Button>aaaaaaaaaaa</Button>
-                <Button>bbbbbbbbbbbbbbbb</Button>
-                <Button>cccccccccccccc</Button>
-            </StackPanel>
+        <StackPanel Grid.Column="1" >
+            <TextBlock Text="Object list:" />
+            <ListBox Name="itemList">
+                <ListBox.ItemTemplate>
+                    <DataTemplate >
+                        <Expander Header="{Binding Name,NotifyOnSourceUpdated=True,UpdateSourceTrigger=PropertyChanged}" >
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="30" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Small Density:" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SmallDensity}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Large Density:" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LargeDensity}" />
+                            </Grid>
+                        </Expander>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
     </Grid>
 </Window>

@@ -11,6 +11,7 @@ namespace ModelEditor
 {
     public class Torus : RenderableObj
     {
+        public string Name { get; set; } = nameof(Torus);
         public double LargeRadius { get; set; } = 5;
         public double SmallRadius { get; set; } = 1;
         public int LargeDensity { get; set; } = 20;

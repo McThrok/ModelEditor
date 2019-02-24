@@ -68,14 +68,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Common\MathExtension.cs" />
-    <Compile Include="InputManager.cs" />
-    <Compile Include="Engine.cs" />
+    <Compile Include="Engine\InputManager.cs" />
+    <Compile Include="Engine\Engine.cs" />
     <Compile Include="SceneObjects\Objects\Torus.cs" />
     <Compile Include="SceneObjects\Objects\TestObj.cs" />
     <Compile Include="SceneObjects\RenderableObj.cs" />
     <Compile Include="Common\Edge.cs" />
+    <Compile Include="Engine\SceneMnager.cs" />
     <Compile Include="SceneObjects\Scene.cs" />
-    <Compile Include="Renderer.cs" />
+    <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Common\MyMatrix4x4.cs" />
     <Compile Include="SceneObjects\ManipObj.cs" />
     <Compile Include="MainWindow.xaml.cs">
