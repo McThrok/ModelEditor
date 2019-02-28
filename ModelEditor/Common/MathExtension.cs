@@ -22,6 +22,7 @@ namespace ModelEditor
 
         public static Matrix4x4 Multiply(this Matrix4x4 m1, Matrix4x4 m2)
         {
+            return m2 * m1;
             return new Matrix4x4(
                 Vector4.Dot(m1.GetRow1(), m2.GetCol1()),
                 Vector4.Dot(m1.GetRow2(), m2.GetCol1()),
@@ -100,27 +101,6 @@ namespace ModelEditor
             result.Z = (num8 - num11) * vec.X + (num9 + num10) * vec.Y + (1f - (num4 + num5)) * vec.Z;
             return result;
         }
-        //public static Vector3 GetEuler(this Quaternion quaternion)
-        //{
-        //    var m = Matrix4x4.CreateFromQuaternion(quaternion);
-
-        //    Vector3 result = Vector3.Zero;
-        //    result.Y = (float)Math.Asin(-Math.Min(-1, Math.Max(1, m.M31)));
-
-        //    if (Math.Abs(m.M31) < 0.99999)
-        //    {
-
-        //        result.X = (float)Math.Atan2(m.M32, m.M33);
-        //        result.Z = (float)Math.Atan2(m.M21, m.M11);
-        //    }
-        //    else
-        //    {
-        //        result.X = 0;
-        //        result.Z = (float)Math.Atan2(-m.M12, m.M22);
-        //    }
-
-        //    return result;
-        //}
     }
 }
 

@@ -51,6 +51,5 @@ namespace ModelEditor
                 new Edge(4, 7),
             };
         }
-
     }
 }

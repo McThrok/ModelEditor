@@ -10,7 +10,7 @@
     <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="180" />
         </Grid.ColumnDefinitions>
 
         <Grid >
@@ -20,8 +20,8 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal">
-                <Button Click="Torus_Click">Add Torus</Button>
-                <Button Click="Button_Click">Delete</Button>
+                <Button Height="20" Click="Torus_Click">Add Torus</Button>
+                <Button Height="20" Click="Button_Click">Delete</Button>
             </StackPanel>
 
             <Grid Grid.Row="1" Name="BitmapContainer">
@@ -32,7 +32,7 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" >
@@ -47,7 +47,91 @@
                 </ListView>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Name="ObjectMenu" Visibility="Hidden">
+
+
+            <StackPanel Grid.Row="1" Name="objectMenu" Visibility="Hidden">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Large Density:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedItem.LargeDensity, ElementName=objectList}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Small Density:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.SmallDensity, ElementName=objectList}" /> 
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Large radius:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.LargeRadius, ElementName=objectList}" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Small radius:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedItem.SmallRadius, ElementName=objectList}" />
+                </Grid>
+
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70" />
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="X" VerticalAlignment="Center" TextAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Y" VerticalAlignment="Center" TextAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Z" VerticalAlignment="Center" TextAlignment="Center"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Position" VerticalAlignment="Center" TextAlignment="Center"/>
+                    <StackPanel Grid.Row="1" Grid.Column="1" >
+                        <Button Height="20" Click="PositionXUp">+</Button>
+                        <Button Height="20" Click="PositionXDown">-</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="2" >
+                        <Button Height="20" Click="PositionYUp">+</Button>
+                        <Button Height="20" Click="PositionYDown">-</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="3" >
+                        <Button Height="20" Click="PositionZUp">+</Button>
+                        <Button Height="20" Click="PositionZDown">-</Button>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Rotation" VerticalAlignment="Center" TextAlignment="Center"/>
+                    <StackPanel Grid.Row="2" Grid.Column="1" >
+                        <Button Height="20" Click="RotationXUp">+</Button>
+                        <Button Height="20" Click="RotationXDown">-</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="2" >
+                        <Button Height="20" Click="RotationYUp">+</Button>
+                        <Button Height="20" Click="RotationYDown">-</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="3" >
+                        <Button Height="20" Click="RotationZUp">+</Button>
+                        <Button Height="20" Click="RotationZDown">-</Button>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Scale" VerticalAlignment="Center" TextAlignment="Center"/>
+                    <StackPanel Grid.Row="3" Grid.Column="1" >
+                        <Button Height="20" Click="ScaleXUp">+</Button>
+                        <Button Height="20" Click="ScaleXDown">-</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="2" >
+                        <Button Height="20" Click="ScaleYUp">+</Button>
+                        <Button Height="20" Click="ScaleYDown">-</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="3" >
+                        <Button Height="20" Click="ScaleZUp">+</Button>
+                        <Button Height="20" Click="ScaleZDown">-</Button>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
 
         </Grid>

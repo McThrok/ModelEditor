@@ -15,8 +15,8 @@ namespace ModelEditor
 
         private double _largeRadius = 5;
         private double _smallRadius = 1;
-        private int _largeDensity = 1;
-        private int _smallDensity = 1;
+        private int _largeDensity = 10;
+        private int _smallDensity = 10;
 
         public double LargeRadius { get { return _largeRadius; } set { _dataChanged = true; _largeRadius = value; } }
         public double SmallRadius { get { return _smallRadius; } set { _dataChanged = true; _smallRadius = value; } }

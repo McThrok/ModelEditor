@@ -73,15 +73,79 @@ namespace ModelEditor
         private void SelectedObjectChange(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count - e.RemovedItems.Count >= 0)
-                ObjectMenu.Visibility = Visibility.Visible;
+                objectMenu.Visibility = Visibility.Visible;
             else
-                ObjectMenu.Visibility = Visibility.Hidden;
+                objectMenu.Visibility = Visibility.Hidden;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var objs = _engine.SceneMnager.Scene.Objects;
             objs.RemoveAt(objs.Count - 1);
+        }
+
+        private void PositionXUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void PositionXDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void PositionYUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void PositionYDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void PositionZUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void PositionZDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void RotationXUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void RotationXDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void RotationYUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void RotationYDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void RotationZUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void RotationZDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+
+        private void ScaleXUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void ScaleXDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void ScaleYUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void ScaleYDown(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void ScaleZUp(object sender, RoutedEventArgs e)
+        {
+        }
+        private void ScaleZDown(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
