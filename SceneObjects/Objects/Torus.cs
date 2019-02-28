@@ -15,8 +15,8 @@ namespace ModelEditor
 
         private double _largeRadius = 5;
         private double _smallRadius = 1;
-        private int _largeDensity = 20;
-        private int _smallDensity = 20;
+        private int _largeDensity = 1;
+        private int _smallDensity = 1;
 
         public double LargeRadius { get { return _largeRadius; } set { _dataChanged = true; _largeRadius = value; } }
         public double SmallRadius { get { return _smallRadius; } set { _dataChanged = true; _smallRadius = value; } }
@@ -24,7 +24,6 @@ namespace ModelEditor
         public int SmallDensity { get { return _smallDensity; } set { _dataChanged = true; _smallDensity = value; } }
 
         private bool _dataChanged = true;
-        private bool _edgeChanged = true;
         private RenderData _renderData;
 
         private List<Vector3> GetVertices()

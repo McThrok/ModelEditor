@@ -23,6 +23,7 @@ namespace ModelEditor
     public partial class MainWindow : Window
     {
         private Engine _engine;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -33,7 +34,7 @@ namespace ModelEditor
         {
             _engine = new Engine(BitmapContainer);
             _engine.SceneMnager.AddTorus();
-            itemList.ItemsSource = _engine.SceneMnager.Scene.Objects;
+            objectList.ItemsSource = _engine.SceneMnager.Scene.Objects;
 
             _engine.Run();
         }
@@ -69,6 +70,18 @@ namespace ModelEditor
             _engine.SceneMnager.AddTorus();
         }
 
+        private void SelectedObjectChange(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count - e.RemovedItems.Count >= 0)
+                ObjectMenu.Visibility = Visibility.Visible;
+            else
+                ObjectMenu.Visibility = Visibility.Hidden;
+        }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var objs = _engine.SceneMnager.Scene.Objects;
+            objs.RemoveAt(objs.Count - 1);
+        }
     }
 }

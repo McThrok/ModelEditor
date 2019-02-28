@@ -21,6 +21,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <Button Click="Torus_Click">Add Torus</Button>
+                <Button Click="Button_Click">Delete</Button>
             </StackPanel>
 
             <Grid Grid.Row="1" Name="BitmapContainer">
@@ -28,36 +29,27 @@
             </Grid>
         </Grid>
 
-        <StackPanel Grid.Column="1" >
-            <TextBlock Text="Object list:" />
-            <ListBox Name="itemList">
-                <ListBox.ItemTemplate>
-                    <DataTemplate >
-                        <Expander Header="{Binding Name,NotifyOnSourceUpdated=True,UpdateSourceTrigger=PropertyChanged}" >
-                            <Grid >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100" />
-                                    <ColumnDefinition Width="30" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Large Density:" />
-                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LargeDensity}" />
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Small Density:" />
-                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SmallDensity}" />
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Large radius:" />
-                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding LargeRadius}" />
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Small radius:" />
-                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SmallRadius}" />
-                            </Grid>
-                        </Expander>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" >
+                <TextBlock Text="Object list:" />
+                <ListView Name="objectList" SelectionChanged="SelectedObjectChange" SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Name="ObjectMenu" Visibility="Hidden">
+            </StackPanel>
+
+        </Grid>
     </Grid>
 </Window>
