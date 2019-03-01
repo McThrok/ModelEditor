@@ -104,8 +104,6 @@ namespace ModelEditor
         public void OnMouseLeftButtonDown(Point position)
         {
             var pos = position;
-            //pos.X += _writeableBitmap.PixelWidth / 2;
-            //pos.Y += _writeableBitmap.Height / 2;
             if (pos.X >= 0 && pos.Y >= 0 && pos.X < _writeableBitmap.PixelWidth && pos.Y < _writeableBitmap.PixelHeight)
                 _lastMousePosition = pos;
         }
@@ -113,12 +111,6 @@ namespace ModelEditor
         {
             _lastMousePosition = null;
         }
-        public void OnMouseWheel(int delta)
-        {
-            var scaleSpeed = 0.001;
-            _scene.Scale(Math.Exp(scaleSpeed * delta));
-        }
-
         public void OnKeyDown(Key key)
         {
             HandleMoveAction(key, true);

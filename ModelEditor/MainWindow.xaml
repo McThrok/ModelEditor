@@ -119,18 +119,11 @@
                     </StackPanel>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Scale" VerticalAlignment="Center" TextAlignment="Center"/>
-                    <StackPanel Grid.Row="3" Grid.Column="1" >
-                        <Button Height="20" Click="ScaleXUp">+</Button>
-                        <Button Height="20" Click="ScaleXDown">-</Button>
+                    <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" >
+                        <Button Height="20" Click="ScaleUp">+</Button>
+                        <Button Height="20" Click="ScaleDown">-</Button>
                     </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="2" >
-                        <Button Height="20" Click="ScaleYUp">+</Button>
-                        <Button Height="20" Click="ScaleYDown">-</Button>
-                    </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="3" >
-                        <Button Height="20" Click="ScaleZUp">+</Button>
-                        <Button Height="20" Click="ScaleZDown">-</Button>
-                    </StackPanel>
+    
                 </Grid>
             </StackPanel>
 

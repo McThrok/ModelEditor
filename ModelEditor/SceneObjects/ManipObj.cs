@@ -17,25 +17,43 @@ namespace ModelEditor
         {
             Matrix = MyMatrix4x4.Translate(translate).Multiply(Matrix);
         }
-
         public void Move(double x, double y, double z)
         {
             Move(new Vector3((float)x, (float)y, (float)z));
+        }
+        public void MoveLoc(Vector3 translate)
+        {
+            Matrix = Matrix.Multiply(MyMatrix4x4.Translate(translate));
+        }
+        public void MoveLoc(double x, double y, double z)
+        {
+            MoveLoc(new Vector3((float)x, (float)y, (float)z));
         }
 
         public void Rotate(Vector3 rotation)
         {
             Matrix = MyMatrix4x4.Compose(MyMatrix4x4.RotationX(rotation.X), MyMatrix4x4.RotationY(rotation.Y), MyMatrix4x4.RotationZ(rotation.Z), Matrix);
         }
-
         public void Rotate(double x, double y, double z)
         {
             Rotate(new Vector3((float)x, (float)y, (float)z));
+        }
+        public void RotateLoc(Vector3 rotation)
+        {
+            Matrix = MyMatrix4x4.Compose(Matrix, MyMatrix4x4.RotationX(rotation.X), MyMatrix4x4.RotationY(rotation.Y), MyMatrix4x4.RotationZ(rotation.Z));
+        }
+        public void RotateLoc(double x, double y, double z)
+        {
+            RotateLoc(new Vector3((float)x, (float)y, (float)z));
         }
 
         public void Scale(double scale)
         {
             Matrix = MyMatrix4x4.Scale((float)scale).Multiply(Matrix);
+        }
+        public void ScaleLoc(double scale)
+        {
+            Matrix = Matrix.Multiply(MyMatrix4x4.Scale((float)scale));
         }
 
     }

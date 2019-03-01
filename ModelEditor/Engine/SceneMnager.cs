@@ -27,7 +27,7 @@ namespace ModelEditor
         {
             var obj = new Torus();
             obj.Rotate(Math.PI / 2, 0,0);
-            obj.Move(GetRandomPosition());
+            //obj.Move(GetRandomPosition());
             Scene.Objects.Add(obj);
         }
 

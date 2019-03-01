@@ -24,6 +24,10 @@ namespace ModelEditor
     {
         private Engine _engine;
 
+        private float _positionChangeSpeed = 1f;
+        private float _rotationChangeSpeed = (float)(Math.PI / 8);
+        private float _scaleChangeSpeed = 1.2f;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -48,11 +52,6 @@ namespace ModelEditor
         {
             base.OnMouseLeftButtonUp(e);
             _engine?.Input.OnMouseLeftButtonUp();
-        }
-        protected override void OnMouseWheel(MouseWheelEventArgs e)
-        {
-            base.OnMouseWheel(e);
-            _engine?.Input.OnMouseWheel(e.Delta);
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -84,68 +83,27 @@ namespace ModelEditor
             objs.RemoveAt(objs.Count - 1);
         }
 
-        private void PositionXUp(object sender, RoutedEventArgs e)
+        private ManipObj GetSelectedObj()
         {
-        }
-        private void PositionXDown(object sender, RoutedEventArgs e)
-        {
+            return objectList.SelectedIndex >= 0 ? _engine.SceneMnager.Scene.Objects[objectList.SelectedIndex] : null;
         }
 
-        private void PositionYUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void PositionYDown(object sender, RoutedEventArgs e)
-        {
-        }
+        private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
+        private void PositionXDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(-_positionChangeSpeed, 0, 0); }
+        private void PositionYUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, _positionChangeSpeed, 0); }
+        private void PositionYDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, -_positionChangeSpeed, 0); }
+        private void PositionZUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, 0, _positionChangeSpeed); }
+        private void PositionZDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, 0, -_positionChangeSpeed); }
 
-        private void PositionZUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void PositionZDown(object sender, RoutedEventArgs e)
-        {
-        }
+        private void RotationXUp(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(_rotationChangeSpeed, 0, 0); }
+        private void RotationXDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(-_rotationChangeSpeed, 0, 0); }
+        private void RotationYUp(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, _rotationChangeSpeed, 0); }
+        private void RotationYDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, -_rotationChangeSpeed, 0); }
+        private void RotationZUp(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, 0, _rotationChangeSpeed); }
+        private void RotationZDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, 0, -_rotationChangeSpeed); }
 
-        private void RotationXUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void RotationXDown(object sender, RoutedEventArgs e)
-        {
-        }
+        private void ScaleUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(_scaleChangeSpeed); }
+        private void ScaleDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1/ _scaleChangeSpeed); }
 
-        private void RotationYUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void RotationYDown(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void RotationZUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void RotationZDown(object sender, RoutedEventArgs e)
-        {
-        }
-
-
-        private void ScaleXUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void ScaleXDown(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void ScaleYUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void ScaleYDown(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void ScaleZUp(object sender, RoutedEventArgs e)
-        {
-        }
-        private void ScaleZDown(object sender, RoutedEventArgs e)
-        {
-        }
     }
 }
