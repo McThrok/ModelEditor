@@ -73,6 +73,10 @@ namespace ModelEditor
                 objectMenu.Visibility = Visibility.Visible;
             else
                 objectMenu.Visibility = Visibility.Hidden;
+
+            var item = GetSelectedObj();
+            TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
+            ElipsoidMenu.Visibility = item.Name == nameof(Elipsoid) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -83,7 +87,7 @@ namespace ModelEditor
 
         private ManipObj GetSelectedObj()
         {
-            return objectList.SelectedIndex >= 0 ? _engine.SceneMnager.Scene.Objects[objectList.SelectedIndex] : null;
+            return objectList.SelectedIndex >= 0 ? _engine.SceneMnager.Scene.MainpObjects[objectList.SelectedIndex] : null;
         }
 
         private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
@@ -101,7 +105,7 @@ namespace ModelEditor
         private void RotationZDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, 0, -_rotationChangeSpeed); }
 
         private void ScaleUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(_scaleChangeSpeed); }
-        private void ScaleDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1/ _scaleChangeSpeed); }
+        private void ScaleDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1 / _scaleChangeSpeed); }
 
     }
 }
