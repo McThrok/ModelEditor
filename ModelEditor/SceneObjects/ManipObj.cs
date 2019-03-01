@@ -12,6 +12,7 @@ namespace ModelEditor
     public class ManipObj
     {
         public Matrix4x4 Matrix { get; set; } = MyMatrix4x4.Identity;
+        public virtual string Name { get; set; }
 
         public virtual void Move(Vector3 translate)
         {
@@ -29,7 +30,7 @@ namespace ModelEditor
         {
             MoveLoc(new Vector3((float)x, (float)y, (float)z));
         }
-                
+
         public virtual void Rotate(Vector3 rotation)
         {
             Matrix = MyMatrix4x4.Compose(MyMatrix4x4.RotationX(rotation.X), MyMatrix4x4.RotationY(rotation.Y), MyMatrix4x4.RotationZ(rotation.Z), Matrix);
@@ -46,7 +47,7 @@ namespace ModelEditor
         {
             RotateLoc(new Vector3((float)x, (float)y, (float)z));
         }
-                
+
         public virtual void Scale(double scale)
         {
             Matrix = MyMatrix4x4.Scale((float)scale).Multiply(Matrix);

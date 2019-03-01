@@ -37,7 +37,7 @@ namespace ModelEditor
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             _engine = new Engine(BitmapContainer);
-            objectList.ItemsSource = _engine.SceneMnager.Scene.Objects;
+            objectList.ItemsSource = _engine.SceneMnager.Scene.MainpObjects;
             _engine.Run();
         }
 

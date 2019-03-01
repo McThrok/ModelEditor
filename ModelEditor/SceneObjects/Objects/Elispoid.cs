@@ -15,17 +15,16 @@ namespace ModelEditor
         public Vector4 normal;
     }
 
-    public class Elipsoid : RenderableObj
+    public class Elipsoid : ManipObj
     {
-        public string Name { get; set; } = nameof(Elipsoid);
-
         public double RadiusX { get; set; } = 10;
         public double RadiusY { get; set; } = 20;
         public double RadiusZ { get; set; } = 30;
 
-        public override RenderData GetRenderData()
+
+        public Elipsoid()
         {
-            return null;
+            Name = nameof(Elipsoid);
         }
 
         public ElipsoidRenderPointData? CastRay(int x, int y, Matrix4x4 invModel)
@@ -51,7 +50,8 @@ namespace ModelEditor
 
             var result = new ElipsoidRenderPointData();
             result.z = (float)((-b + Math.Sqrt(delta)) / (2 * a));
-            result.normal = new Vector4(x, y, result.z, 0).Multiply(invModel.Transposed().Multiply(m));
+            //result.normal = new Vector4(x, y, result.z, 0).Multiply(invModel.Transposed().Multiply(m));
+            result.normal = new Vector4(x, y, result.z, 0).Multiply(invModel.Transposed());
             result.normal = result.normal / result.normal.Length();
 
             return result;

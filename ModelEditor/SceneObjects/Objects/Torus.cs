@@ -11,8 +11,6 @@ namespace ModelEditor
 {
     public class Torus : RenderableObj
     {
-        public string Name { get; set; } = nameof(Torus);
-
         private double _largeRadius = 5;
         private double _smallRadius = 1;
         private int _largeDensity = 10;
@@ -63,6 +61,11 @@ namespace ModelEditor
 
             return edges;
 
+        }
+
+        public Torus()
+        {
+            Name = nameof(Torus);
         }
 
         public override RenderData GetRenderData()

@@ -26,7 +26,7 @@ namespace ModelEditor
         {
             _wb.Clear(Colors.Black);
 
-            var elip = _scene.Objects[0] as Elipsoid;
+            var elip = _scene.Elipsoid;
             var invModel = elip.Matrix.Inversed();
 
             _wb.ForEach((int x, int y) =>
@@ -39,9 +39,10 @@ namespace ModelEditor
                 }
                 else
                 {
-                    return Colors.Yellow;
-                    //var col = Convert.ToByte(data.HasValue);
-                    //return Color.FromRgb(col, col, col);
+                    var val = Vector4.Dot(data.Value.normal, new Vector4(0, 0, 1, 1));
+                    //return Colors.Yellow;
+                    var col = Convert.ToByte(val*255);
+                    return Color.FromRgb(col, col, 0);
                 }
             });
         }
