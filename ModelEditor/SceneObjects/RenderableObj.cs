@@ -18,5 +18,7 @@ namespace ModelEditor
     {
         public List<Vector3> Vertices { get; set; }
         public List<Edge> Edges { get; set; }
+
     }
+    
 }

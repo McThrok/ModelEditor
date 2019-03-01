@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModelEditor"
         mc:Ignorable="d"
-        WindowState="Maximized"
+        Width="600"
+        Height="400"
         Title="MainWindow">
     <Grid >
         <Grid.ColumnDefinitions>

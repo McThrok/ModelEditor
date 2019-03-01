@@ -26,27 +26,51 @@ namespace ModelEditor
         {
             _wb.Clear(Colors.Black);
 
-            var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.01f, 100.0f);
-            var view = _scene.Camera.Matrix.Inversed();
+            var elip = _scene.Objects[0] as Elipsoid;
+            var invModel = elip.Matrix.Inversed();
 
-            foreach (var obj in _scene.Objects)
+            _wb.ForEach((int x, int y) =>
             {
-                var data = obj.GetRenderData();
-                var matrix = MyMatrix4x4.Compose(projection, view, _scene.Matrix, obj.Matrix);
-                foreach (var edge in data.Edges)
+
+                var data = elip.CastRay(x, y, invModel);
+                if (!data.HasValue)
                 {
-                    var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
-                    var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
-                    DrawLine(vertA, vertB);
+                    return Colors.Red;
                 }
-            }
+                else
+                {
+                    return Colors.Yellow;
+                    //var col = Convert.ToByte(data.HasValue);
+                    //return Color.FromRgb(col, col, col);
+                }
+            });
         }
+
+
+        //public void RenderFrame()
+        //{
+        //    _wb.Clear(Colors.Black);
+
+        //    var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.01f, 100.0f);
+        //    var view = _scene.Camera.Matrix.Inversed();
+
+        //    foreach (var obj in _scene.Objects)
+        //    {
+        //        var data = obj.GetRenderData();
+        //        var matrix = MyMatrix4x4.Compose(projection, view, _scene.Matrix, obj.Matrix);
+        //        foreach (var edge in data.Edges)
+        //        {
+        //            var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
+        //            var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
+
+        //            if (vertA.Z > 0 || vertB.Z > 0)
+        //                DrawLine(vertA, vertB);
+        //        }
+        //    }
+        //}
 
         private void DrawLine(Vector4 vertA, Vector4 vertB)
         {
-            if (vertA.Z < 0 || vertB.Z < 0)
-                return;
-
             var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
             var B = new Point(vertB.X / vertB.W, vertB.Y / vertB.W);
 

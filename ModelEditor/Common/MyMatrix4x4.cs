@@ -60,10 +60,6 @@ namespace ModelEditor
                                  0, 0, c, -1,
                                  0, 0, d, 0);
 
-            //var matrix = new Matrix4x4(x, 0, 0, 0,
-            //                     0, y, 0, 0,
-            //                     a, b, c, -1,
-            //                     0, 0, d, 0);
             return matrix;
         }
 

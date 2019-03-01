@@ -22,12 +22,19 @@ namespace ModelEditor
         private void InitScene()
         {
             Scene.Camera.Move(0, 0, 10);
+            AddElipsoid();
         }
         public void AddTorus()
         {
             var obj = new Torus();
             obj.Rotate(Math.PI / 2, 0,0);
             //obj.Move(GetRandomPosition());
+            Scene.Objects.Add(obj);
+        }
+        public void AddElipsoid()
+        {
+            var obj = new Elipsoid();
+            obj.Move(50, 50, 0);
             Scene.Objects.Add(obj);
         }
 

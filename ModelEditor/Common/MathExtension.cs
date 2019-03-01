@@ -61,7 +61,7 @@ namespace ModelEditor
                 Vector4.Dot(vector, matrix.GetCol4()));
         }
 
-        public static Matrix4x4 Transpose(this Matrix4x4 matrix)
+        public static Matrix4x4 Transposed(this Matrix4x4 matrix)
         {
             return Matrix4x4.Transpose(matrix);
         }
