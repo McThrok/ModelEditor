@@ -17,9 +17,9 @@ namespace ModelEditor
 
     public class Elipsoid : ManipObj
     {
-        public double RadiusX { get; set; } = 10;
-        public double RadiusY { get; set; } = 20;
-        public double RadiusZ { get; set; } = 30;
+        public double RadiusX { get; set; } = 1;
+        public double RadiusY { get; set; } = 1;
+        public double RadiusZ { get; set; } = 1;
 
 
         public Elipsoid()
@@ -27,31 +27,40 @@ namespace ModelEditor
             Name = nameof(Elipsoid);
         }
 
-        public ElipsoidRenderPointData? CastRay(int x, int y, Matrix4x4 invModel)
+        public ElipsoidRenderPointData? CastRay(float x, float y, Matrix4x4 invMat)
         {
             var m = new Matrix4x4();
             m.M11 = (float)(1f / (RadiusX * RadiusX));
             m.M22 = (float)(1f / (RadiusY * RadiusY));
             m.M33 = (float)(1f / (RadiusZ * RadiusZ));
             m.M44 = -1;
+            //m.M11 = (float)(RadiusX);
+            //m.M22 = (float)(RadiusY);
+            //m.M33 = (float)(RadiusZ);
+            //m.M44 = -1;
 
-            m = invModel.Transposed().Multiply(m.Multiply(invModel));
+            m = invMat.Transposed().Multiply(m.Multiply(invMat));
 
             var c = (m.M11 * x + m.M12 * y + m.M14) * x
                     + (m.M21 * x + m.M22 * y + m.M24) * y
                     + (m.M41 * x + m.M42 * y + m.M44);
-            var b = m.M13 + m.M23 + m.M43 + m.M31 * x + m.M32 * y + m.M34;
+            var b = m.M13 * x + m.M23 * y + m.M43 + m.M31 * x + m.M32 * y + m.M34;
             var a = m.M33;
-
+                
             var delta = b * b - 4 * a * c;
 
             if (delta < 0)
                 return null;
 
+            return new ElipsoidRenderPointData();
+
+            var z = (float)((-b - Math.Sqrt(delta)) / (2 * a));
+
             var result = new ElipsoidRenderPointData();
-            result.z = (float)((-b + Math.Sqrt(delta)) / (2 * a));
-            //result.normal = new Vector4(x, y, result.z, 0).Multiply(invModel.Transposed().Multiply(m));
-            result.normal = new Vector4(x, y, result.z, 0).Multiply(invModel.Transposed());
+            result.z = z;
+            result.normal = invMat.Multiply(new Vector4(x, y, result.z, 1));
+            result.normal = (new Vector4(x, y, result.z, 1)).Multiply(invMat);
+            result.normal.W = 0;
             result.normal = result.normal / result.normal.Length();
 
             return result;

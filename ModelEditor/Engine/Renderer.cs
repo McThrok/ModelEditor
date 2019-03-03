@@ -26,22 +26,32 @@ namespace ModelEditor
         {
             _wb.Clear(Colors.Black);
 
+
             var elip = _scene.Elipsoid;
-            var invModel = elip.Matrix.Inversed();
+            var model = elip.Matrix;
+            var view = _scene.Camera.Matrix.Inversed();
+            var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.01f, 10000.0f);
+
+            var invMat = MyMatrix4x4.Compose(projection, view).Inversed();
 
             _wb.ForEach((int x, int y) =>
             {
 
-                var data = elip.CastRay(x, y, invModel);
+                var xScaled = (1.0f * x / _wb.PixelWidth) * 2 - 1;
+                var yScaled = (1 - 1.0f * y / _wb.PixelHeight) * 2 - 1;
+                var data = elip.CastRay(xScaled, yScaled, invMat);
                 if (!data.HasValue)
                 {
                     return Colors.Red;
                 }
                 else
                 {
-                    var val = Vector4.Dot(data.Value.normal, new Vector4(0, 0, 1, 1));
-                    //return Colors.Yellow;
-                    var col = Convert.ToByte(val*255);
+                    return Colors.Yellow;
+                    var val = Vector3.Dot(data.Value.normal.ToVector3(), new Vector3(0, 0, 1));
+                    val = Math.Min(1,Math.Max(0, val));
+                    //if (val == 0)
+                    //    return Colors.Blue;
+                    var col = Convert.ToByte(val * 255);
                     return Color.FromRgb(col, col, 0);
                 }
             });
@@ -64,7 +74,7 @@ namespace ModelEditor
         //            var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
         //            var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
 
-        //            if (vertA.Z > 0 || vertB.Z > 0)
+        //            if (vertA.Z > 0 && vertB.Z > 0)
         //                DrawLine(vertA, vertB);
         //        }
         //    }
