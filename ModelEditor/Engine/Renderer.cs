@@ -16,10 +16,18 @@ namespace ModelEditor
         private Scene _scene;
         private Color _drawColor = Colors.Green;
 
+        private int _renderLevel = 0;
+        private bool _resetRenderLevel = false;
+
         public Renderer(WriteableBitmap wb, Scene scene)
         {
             _wb = wb;
             _scene = scene;
+        }
+
+        public void ResetRenderLevel()
+        {
+            _resetRenderLevel = true;
         }
 
         public void RenderFrame()
@@ -35,9 +43,12 @@ namespace ModelEditor
 
             using (var context = _wb.GetBitmapContext())
             {
-                for (int x = 0; x < _wb.PixelWidth; x++)
+                var quadWidth = GetSize(_wb.PixelWidth);
+                var quadHeight = GetSize(_wb.PixelHeight);
+
+                for (int x = 0; x < _wb.PixelWidth; x += quadWidth)
                 {
-                    for (int y = 0; y < _wb.PixelHeight; y++)
+                    for (int y = 0; y < _wb.PixelHeight; y += quadHeight)
                     {
                         var xScaled = (1.0f * x / _wb.PixelWidth) * 2 - 1;
                         var yScaled = (1 - 1.0f * y / _wb.PixelHeight) * 2 - 1;
@@ -49,14 +60,29 @@ namespace ModelEditor
                         var pos = invMat.Multiply(new Vector4(xScaled, yScaled, zScaled, 1));
                         pos /= pos.W;
                         var light_pos = _scene.Light.Matrix.Multiply(new Vector4(0, 0, 0, 1));
-                        light_pos = new Vector4(0, 0, 5, 1);
 
                         var color = GetColor(elip, pos, light_pos, model, view);
-                        DrawRectangle(context, x, y, x + 1, y + 1, color);
+                        FillRectangle(context, x, y, x + quadWidth, y + quadHeight, color);
 
                     }
                 }
+                _renderLevel++;
             }
+
+            if (_resetRenderLevel)
+            {
+                _renderLevel = 0;
+                _resetRenderLevel = false;
+
+            }
+        }
+
+        private int GetSize(int size)
+        {
+            var result = size / 3;
+            result = result >> Math.Min(31, _renderLevel);
+            result = Math.Max(1, result);
+            return result;
         }
 
         private Color GetColor(Elipsoid e, Vector4 position, Vector4 light, Matrix4x4 model, Matrix4x4 view)
@@ -76,12 +102,21 @@ namespace ModelEditor
             return col;
         }
 
-        unsafe private void DrawRectangle(BitmapContext context, int x1, int y1, int x2, int y2, Color col)
+        unsafe public static void FillRectangle(BitmapContext context, int x1, int y1, int x2, int y2, Color col)
         {
             int color = WriteableBitmapExtensions.ConvertColor(col);
+            const int SizeOfArgb = 4;
+
             // Use refs for faster access (really important!) speeds up a lot!
             var w = context.Width;
             var h = context.Height;
+
+            int sa = ((color >> 24) & 0xff);
+            int sr = ((color >> 16) & 0xff);
+            int sg = ((color >> 8) & 0xff);
+            int sb = ((color) & 0xff);
+
+
             var pixels = context.Pixels;
 
             // Check boundaries
@@ -96,35 +131,86 @@ namespace ModelEditor
             if (y1 < 0) { y1 = 0; }
             if (x2 < 0) { x2 = 0; }
             if (y2 < 0) { y2 = 0; }
-            if (x1 >= w) { x1 = w - 1; }
-            if (y1 >= h) { y1 = h - 1; }
-            if (x2 >= w) { x2 = w - 1; }
-            if (y2 >= h) { y2 = h - 1; }
+            if (x1 > w) { x1 = w; }
+            if (y1 > h) { y1 = h; }
+            if (x2 > w) { x2 = w; }
+            if (y2 > h) { y2 = h; }
 
-            var startY = y1 * w;
-            var endY = y2 * w;
-
-            var offset2 = endY + x1;
-            var endOffset = startY + x2;
-            var startYPlusX1 = startY + x1;
-
-            for (var x = startYPlusX1; x <= endOffset; x++)
+            //swap values
+            if (y1 > y2)
             {
-                pixels[x] = color;
-                pixels[offset2] = color;
-                offset2++;
+                y2 -= y1;
+                y1 += y2;
+                y2 = (y1 - y2);
             }
 
-            endOffset = startYPlusX1 + w;
-            offset2 -= w;
-
-            for (var y = startY + x2 + w; y <= offset2; y += w)
+            // Fill first line
+            var startY = y1 * w;
+            var startYPlusX1 = startY + x1;
+            var endOffset = startY + x2;
+            for (var idx = startYPlusX1; idx < endOffset; idx++)
             {
-                pixels[y] = color;
-                pixels[endOffset] = color;
-                endOffset += w;
+                pixels[idx] = color;
+            }
+
+            // Copy first line
+            var len = (x2 - x1);
+            var srcOffsetBytes = startYPlusX1 * SizeOfArgb;
+            var offset2 = y2 * w + x1;
+            for (var y = startYPlusX1 + w; y < offset2; y += w)
+            {
+                BitmapContext.BlockCopy(context, srcOffsetBytes, context, y * SizeOfArgb, len * SizeOfArgb);
             }
         }
+        //unsafe private void DrawRectangle(BitmapContext context, int x1, int y1, int x2, int y2, Color col)
+        //{
+        //    int color = WriteableBitmapExtensions.ConvertColor(col);
+        //    // Use refs for faster access (really important!) speeds up a lot!
+        //    var w = context.Width;
+        //    var h = context.Height;
+        //    var pixels = context.Pixels;
+
+        //    // Check boundaries
+        //    if ((x1 < 0 && x2 < 0) || (y1 < 0 && y2 < 0)
+        //     || (x1 >= w && x2 >= w) || (y1 >= h && y2 >= h))
+        //    {
+        //        return;
+        //    }
+
+        //    // Clamp boundaries
+        //    if (x1 < 0) { x1 = 0; }
+        //    if (y1 < 0) { y1 = 0; }
+        //    if (x2 < 0) { x2 = 0; }
+        //    if (y2 < 0) { y2 = 0; }
+        //    if (x1 >= w) { x1 = w - 1; }
+        //    if (y1 >= h) { y1 = h - 1; }
+        //    if (x2 >= w) { x2 = w - 1; }
+        //    if (y2 >= h) { y2 = h - 1; }
+
+        //    var startY = y1 * w;
+        //    var endY = y2 * w;
+
+        //    var offset2 = endY + x1;
+        //    var endOffset = startY + x2;
+        //    var startYPlusX1 = startY + x1;
+
+        //    for (var x = startYPlusX1; x <= endOffset; x++)
+        //    {
+        //        pixels[x] = color;
+        //        pixels[offset2] = color;
+        //        offset2++;
+        //    }
+
+        //    endOffset = startYPlusX1 + w;
+        //    offset2 -= w;
+
+        //    for (var y = startY + x2 + w; y <= offset2; y += w)
+        //    {
+        //        pixels[y] = color;
+        //        pixels[endOffset] = color;
+        //        endOffset += w;
+        //    }
+        //}
         //_wb.ForEach((int x, int y) =>
         //{
         //    var xScaled = (1.0f * x / _wb.PixelWidth) * 2 - 1;

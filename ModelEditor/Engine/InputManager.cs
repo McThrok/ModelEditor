@@ -32,12 +32,15 @@ namespace ModelEditor
         private Dictionary<Move, bool> _moveActions;
         private Vector3 _cameraRotation = Vector3.Zero;
         private Point? _lastMousePosition;
+        private Renderer _renderer;
 
-        public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene)
+        public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene, Renderer renderer)
         {
             _bitmapConatiner = bitmapConatiner;
             _writeableBitmap = writeableBitmap;
             _scene = scene;
+
+            _renderer = renderer;
 
             InitMoveActions();
         }
@@ -68,6 +71,9 @@ namespace ModelEditor
             if (_moveActions[Move.Up]) moveDir.Y++;
             if (_moveActions[Move.Down]) moveDir.Y--;
 
+            if (moveDir != Vector3.Zero)
+                _renderer.ResetRenderLevel();
+
             var cameraSpeed = 0.1f;
             var translateMatrix = MyMatrix4x4.Translate(cameraSpeed * moveDir);
             _scene.Camera.Matrix = _scene.Camera.Matrix.Multiply(translateMatrix);
@@ -77,6 +83,8 @@ namespace ModelEditor
         {
             if (!_lastMousePosition.HasValue)
                 return;
+
+            _renderer.ResetRenderLevel();
 
             var position = Mouse.GetPosition(_bitmapConatiner);
             var diff = position - _lastMousePosition.Value;

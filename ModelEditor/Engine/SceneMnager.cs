@@ -22,7 +22,7 @@ namespace ModelEditor
         private void InitScene()
         {
             Scene.Camera.Move(0, 0, 5);
-            Scene.Light.Move(0, 0, 10);
+            Scene.Light.Move(0, 5, 0);
             Scene.MainpObjects.Add(Scene.Light);
             AddElipsoid();
         }

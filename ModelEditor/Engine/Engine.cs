@@ -34,7 +34,7 @@ namespace ModelEditor
 
             SceneMnager = new SceneMnager();
             _renderer = new Renderer(_writableBitmap, SceneMnager.Scene);
-            Input = new InputManager(_bitmapConatiner,_writableBitmap, SceneMnager.Scene);
+            Input = new InputManager(_bitmapConatiner,_writableBitmap, SceneMnager.Scene, _renderer);
         }
 
         private void InitBitmap()

@@ -16,10 +16,10 @@ namespace ModelEditor
         public byte G { get; set; } = 255;
         public byte B { get; set; } = 255;
 
-        public float M { get; set; } = 10;
+        public float M { get; set; } = 30;
 
-        public float Ka { get; set; } = 0.2f;
-        public float Kd { get; set; } = 0.6f;
+        public float Ka { get; set; } = 0.1f;
+        public float Kd { get; set; } = 0.7f;
         public float Ks { get; set; } = 0.5f;
 
 
