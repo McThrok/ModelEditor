@@ -21,7 +21,7 @@ namespace ModelEditor
         }
         private void InitScene()
         {
-            Scene.Camera.Move(0, 0, 15);
+            Scene.Camera.Move(0, 0, 5);
             Scene.Light.Move(0, 0, 10);
             Scene.MainpObjects.Add(Scene.Light);
             AddElipsoid();

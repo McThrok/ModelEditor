@@ -101,6 +101,14 @@ namespace ModelEditor
             result.Z = (num8 - num11) * vec.X + (num9 + num10) * vec.Y + (1f - (num4 + num5)) * vec.Z;
             return result;
         }
+        public static Vector4 Normalized(this Vector4 v)
+        {
+            return v / v.Length();
+        }
+        public static Vector3 Normalized(this Vector3 v)
+        {
+            return v / v.Length();
+        }
     }
 }
 
