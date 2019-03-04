@@ -92,6 +92,28 @@
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedItem.SmallRadius, ElementName=objectList}" />
                 </Grid>
 
+                <Grid Margin="5" Name="Light">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Ka:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedItem.Ka, ElementName=objectList}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Kd:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.Kd, ElementName=objectList}" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Ks:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.Ks, ElementName=objectList}" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="M:" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedItem.M, ElementName=objectList}" />
+                </Grid>
+
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="70" />
