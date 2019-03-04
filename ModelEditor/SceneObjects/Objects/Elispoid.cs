@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Numerics;
+using System.Windows.Media;
 
 namespace ModelEditor
 {
@@ -24,6 +25,8 @@ namespace ModelEditor
         public byte R { get; set; } = 255;
         public byte G { get; set; } = 255;
         public byte B { get; set; } = 0;
+
+        public Color Color => Color.FromArgb(255, R, G, B);
 
 
         public Elipsoid()

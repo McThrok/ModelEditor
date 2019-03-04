@@ -49,7 +49,7 @@ namespace ModelEditor
                         var pos = invMat.Multiply(new Vector4(xScaled, yScaled, zScaled, 1));
                         pos /= pos.W;
                         var light_pos = _scene.Light.Matrix.Multiply(new Vector4(0, 0, 0, 1));
-                        light_pos = new Vector4(0, 5, 0, 1);
+                        light_pos = new Vector4(0, 0, 5, 1);
 
                         var color = GetColor(elip, pos, light_pos, model, view);
                         DrawRectangle(context, x, y, x + 1, y + 1, color);
@@ -64,26 +64,16 @@ namespace ModelEditor
             var nx = (float)(position.X / e.RadiusX * e.RadiusX);
             var ny = (float)(position.Y / e.RadiusY * e.RadiusY);
             var nz = (float)(position.Z / e.RadiusZ * e.RadiusZ);
-            var normal = view.Multiply(model.Multiply(new Vector4(nx, ny, nz, 0).Normalized()));
-            //var normal =model.Multiply(new Vector4(nx, ny, nz, 0).Normalized());
+            var normal = view.Multiply(model.Multiply(new Vector4(nx, ny, nz, 0).Normalized())).ToVector3();
 
             var pos = view.Multiply(model.Multiply(position));
-            //var pos = model.Multiply(position);
             var lightPos = view.Multiply(light);
-            //var lightPos =light;
 
-            var toLight = lightPos - pos;
+            var toCamera = -pos.ToVector3();
+            var toLight = (lightPos - pos).ToVector3();
 
-            var angle = Math.Max(0, Vector3.Dot(toLight.ToVector3().Normalized(), normal.ToVector3().Normalized()));
-
-            var xn = Convert.ToByte(Math.Max(0, normal.X) * 255);
-            var yn = Convert.ToByte(Math.Max(0, normal.Y) * 255);
-            var zn = Convert.ToByte(Math.Max(0, normal.Z) * 255);
-            //return Color.FromArgb(255, xn, yn, zn);
-
-            var col = Convert.ToByte(angle * 255);
-            return Color.FromArgb(255, col, col, 0);
-
+            var col = _scene.Light.GetColor(normal, toLight, toCamera, e.Color);
+            return col;
         }
 
         unsafe private void DrawRectangle(BitmapContext context, int x1, int y1, int x2, int y2, Color col)

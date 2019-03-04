@@ -13,7 +13,7 @@ namespace ModelEditor
     public class Scene : ManipObj
     {
         public ManipObj Camera { get; private set; }
-        public ManipObj Light { get; private set; }
+        public Light Light { get; private set; }
         public Elipsoid Elipsoid { get; set; }
         public List<RenderableObj> Objects { get; private set; }
         public ObservableCollection<ManipObj> MainpObjects { get; private set; }
@@ -24,7 +24,7 @@ namespace ModelEditor
             Objects = new List<RenderableObj>();
             MainpObjects = new ObservableCollection<ManipObj>();
 
-            Light = new ManipObj();
+            Light = new Light();
             Light.Name = nameof(Light);
         }
     }
