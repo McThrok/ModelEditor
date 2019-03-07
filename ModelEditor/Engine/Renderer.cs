@@ -54,7 +54,7 @@ namespace ModelEditor
                         var yScaled = (1 - 1.0f * y / _wb.PixelHeight) * 2 - 1;
 
                         var zScaled = CastRay(elip, xScaled, yScaled, invMat);
-                        if (float.IsNaN(zScaled))
+                        if (float.IsNaN(zScaled) || zScaled < 0f || zScaled > 1)
                             continue;
 
                         var pos = invMat.Multiply(new Vector4(xScaled, yScaled, zScaled, 1));
