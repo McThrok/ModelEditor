@@ -14,7 +14,6 @@ namespace ModelEditor
     {
         public ManipObj Camera { get; private set; }
         public Light Light { get; private set; }
-        public Elipsoid Elipsoid { get; set; }
         public List<RenderableObj> Objects { get; private set; }
         public ObservableCollection<ManipObj> MainpObjects { get; private set; }
 

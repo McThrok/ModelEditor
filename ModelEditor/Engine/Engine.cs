@@ -18,7 +18,7 @@ namespace ModelEditor
     {
         private Panel _bitmapConatiner;
         private WriteableBitmap _writableBitmap;
-        private readonly float _maxFPS = 6;
+        private readonly float _maxFPS = 30;
 
         public InputManager Input { get; private set; }
         public SceneMnager SceneMnager { get; private set; }

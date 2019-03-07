@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModelEditor"
         mc:Ignorable="d"
-        Width="600"
-        Height="400"
+        WindowStartupLocation="CenterScreen"
+        Width="1000"
+        Height="600"
         Title="MainWindow">
     <Grid >
         <Grid.ColumnDefinitions>
@@ -51,25 +52,6 @@
 
 
             <StackPanel Grid.Row="1" Name="objectMenu" Visibility="Hidden">
-                <Grid Margin="5" Name="ElipsoidMenu">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
-                        <ColumnDefinition Width="30"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Radius X:" VerticalAlignment="Center" TextAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedItem.RadiusX, ElementName=objectList}" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Radius Y:" VerticalAlignment="Center" TextAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.RadiusY, ElementName=objectList}" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Radius Z:" VerticalAlignment="Center" TextAlignment="Center" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.RadiusZ, ElementName=objectList}" />
-                </Grid>
-                
                 <Grid Margin="5" Name="TorusMenu">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>

@@ -24,7 +24,6 @@ namespace ModelEditor
             Scene.Camera.Move(0, 0, 5);
             Scene.Light.Move(5, 0, 5);
             Scene.MainpObjects.Add(Scene.Light);
-            AddElipsoid();
         }
         public void AddTorus()
         {
@@ -34,12 +33,7 @@ namespace ModelEditor
             Scene.MainpObjects.Add(obj);
             Scene.Objects.Add(obj);
         }
-        public void AddElipsoid()
-        {
-            var obj = new Elipsoid();
-            Scene.MainpObjects.Add(obj);
-            Scene.Elipsoid = obj;
-        }
+      
 
         private Vector3 GetRandomPosition()
         {
