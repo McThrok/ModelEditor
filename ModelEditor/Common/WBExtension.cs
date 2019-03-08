@@ -406,10 +406,10 @@ namespace ModelEditor
             var c1 = GetColor(col1);
             var c2 = GetColor(col2);
 
-            var result = Color.FromArgb((byte)(c1.A + c2.A),
-                                        (byte)(c1.R + c2.R),
-                                        (byte)(c1.G + c2.G),
-                                        (byte)(c1.B + c2.B));
+            var result = Color.FromArgb((byte)(Math.Min(255,c1.A + c2.A)),
+                                        (byte)(Math.Min(255, c1.R + c2.R)),
+                                        (byte)(Math.Min(255, c1.G + c2.G)),
+                                        (byte)(Math.Min(255, c1.B + c2.B)));
             return WriteableBitmapExtensions.ConvertColor(result);
         }
 

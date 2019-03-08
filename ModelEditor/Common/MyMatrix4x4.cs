@@ -50,8 +50,6 @@ namespace ModelEditor
 
             float x = (2.0f * zNear) / (xMax - xMin);
             float y = (2.0f * zNear) / (yMax - yMin);
-            float a = (xMax + xMin) / (xMax - xMin);
-            float b = (yMax + yMin) / (yMax - yMin);
             float c = -(zFar + zNear) / (zFar - zNear);
             float d = -(2.0f * zFar * zNear) / (zFar - zNear);
 

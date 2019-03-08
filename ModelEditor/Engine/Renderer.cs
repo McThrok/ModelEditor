@@ -12,11 +12,13 @@ namespace ModelEditor
 {
     public class Renderer
     {
-        public bool Anaglyphic { get; set; } = false;
+        public bool Anaglyphic { get; set; } = true;
 
         private WriteableBitmap _wb;
         private Scene _scene;
         private Color _drawColor = Colors.Green;
+        private Color _drawLeftColor = Colors.Red;
+        private Color _drawRightColor = Colors.Blue;
 
         public Renderer(WriteableBitmap wb, Scene scene)
         {
@@ -26,18 +28,25 @@ namespace ModelEditor
 
         public void RenderFrame()
         {
+            _wb.Clear(Colors.Black);
             if (Anaglyphic)
-                RenderAnaglyphic();
+            {
+                var projLeft = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
+                Render(projLeft, _drawLeftColor, false);
+
+                var projRight = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
+                Render(projRight, _drawRightColor, true);
+            }
             else
-                RenderNormal();
+            {
+                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
+                Render(projection, _drawColor, false);
+            }
         }
 
-        private void RenderNormal()
+        private void Render(Matrix4x4 projMatrix, Color color, bool addColors)
         {
-            _wb.Clear(Colors.Black);
-
             var view = _scene.Camera.Matrix.Inversed();
-            var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
 
 
             using (var context = _wb.GetBitmapContext())
@@ -45,26 +54,20 @@ namespace ModelEditor
                 foreach (var obj in _scene.Objects)
                 {
                     var data = obj.GetRenderData();
-                    var matrix = MyMatrix4x4.Compose(projection, view, _scene.Matrix, obj.Matrix);
+                    var matrix = MyMatrix4x4.Compose(projMatrix, view, _scene.Matrix, obj.Matrix);
                     foreach (var edge in data.Edges)
                     {
                         var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
                         var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
 
                         if (vertA.Z > 0 && vertB.Z > 0)
-                            DrawLine(context,vertA, vertB);
+                            DrawLine(context, vertA, vertB, color, addColors);
                     }
                 }
             }
-
         }
 
-        public void RenderAnaglyphic()
-        {
-
-        }
-
-        private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, bool addColors = false)
+        private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, Color col, bool addColors)
         {
             var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
             var B = new Point(vertB.X / vertB.W, vertB.Y / vertB.W);
@@ -77,7 +80,7 @@ namespace ModelEditor
             var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
             var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
 
-            ctx.MyDrawLine(x1, y1, x2, y2, _drawColor, addColors);
+            ctx.MyDrawLine(x1, y1, x2, y2, col, addColors);
         }
     }
 }
