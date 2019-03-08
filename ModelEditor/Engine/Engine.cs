@@ -22,8 +22,8 @@ namespace ModelEditor
 
         public InputManager Input { get; private set; }
         public SceneMnager SceneMnager { get; private set; }
+        public Renderer Renderer { get; private set; }
 
-        private Renderer _renderer;
         private Stopwatch _frameStopWatch = new Stopwatch();
         private double _deltaTime;
 
@@ -33,7 +33,7 @@ namespace ModelEditor
             InitBitmap();
 
             SceneMnager = new SceneMnager();
-            _renderer = new Renderer(_writableBitmap, SceneMnager.Scene);
+            Renderer = new Renderer(_writableBitmap, SceneMnager.Scene);
             Input = new InputManager(_bitmapConatiner,_writableBitmap, SceneMnager.Scene);
         }
 
@@ -64,7 +64,7 @@ namespace ModelEditor
             //Console.WriteLine(_deltaTime);
 
             Input.Update(_deltaTime);
-            _renderer.RenderFrame();
+            Renderer.RenderFrame();
         }
     }
 }

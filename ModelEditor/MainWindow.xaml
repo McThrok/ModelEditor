@@ -8,6 +8,7 @@
         WindowStartupLocation="CenterScreen"
         Width="1000"
         Height="600"
+        x:Name="mainWindow"
         Title="MainWindow">
     <Grid >
         <Grid.ColumnDefinitions>
@@ -21,9 +22,16 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal">
-                <Button Height="20" Click="Torus_Click">Add Torus</Button>
-                <Button Height="20" Click="Button_Click">Delete</Button>
+            <StackPanel Orientation="Horizontal" >
+                <Button Margin="5" Height="20" Click="Torus_Click">Add Torus</Button>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
+                    <TextBlock Text="Anaglyph:  "/>
+                    <CheckBox Checked="CbxAnaglyph_Checked" Unchecked="CbxAnaglyph_Unchecked" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
+                    <TextBlock Text="Eye distance:  "/>
+                    <Slider Maximum="1" Width="200" VerticalAlignment="Center" ValueChanged="Anaglyph_Change"/>
+                </StackPanel>
             </StackPanel>
 
             <Grid Grid.Row="1" Name="BitmapContainer">
@@ -67,7 +75,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Large Density:" VerticalAlignment="Center" TextAlignment="Center" />
                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedItem.LargeDensity, ElementName=objectList}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Small Density:" VerticalAlignment="Center" TextAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.SmallDensity, ElementName=objectList}" /> 
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedItem.SmallDensity, ElementName=objectList}" />
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Large radius:" VerticalAlignment="Center" TextAlignment="Center" />
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.LargeRadius, ElementName=objectList}" />
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Small radius:" VerticalAlignment="Center" TextAlignment="Center" />
@@ -147,7 +155,7 @@
                         <Button Height="20" Click="ScaleUp">+</Button>
                         <Button Height="20" Click="ScaleDown">-</Button>
                     </StackPanel>
-    
+
                 </Grid>
             </StackPanel>
 
