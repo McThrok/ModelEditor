@@ -21,7 +21,7 @@ namespace ModelEditor
         }
         private void InitScene()
         {
-            Scene.Camera.Move(0, 0, 10);
+            Scene.Camera.Move(0, 0, 4);
             AddCube();
             //Scene.Light.Move(5, 0, 5);
             //Scene.MainpObjects.Add(Scene.Light);

@@ -16,12 +16,12 @@ namespace ModelEditor
             var vertices = new List<Vector3>();
             vertices.Add(new Vector3(-1, -1, 1));
             vertices.Add(new Vector3(1, -1, 1));
-            vertices.Add(new Vector3(1, -1, -1));
-            vertices.Add(new Vector3(-1, -1, -1));
+            vertices.Add(new Vector3(1, -1, -5));
+            vertices.Add(new Vector3(-1, -1, -5));
             vertices.Add(new Vector3(-1, 1, 1));
             vertices.Add(new Vector3(1, 1, 1));
-            vertices.Add(new Vector3(1, 1, -1));
-            vertices.Add(new Vector3(-1, 1, -1));
+            vertices.Add(new Vector3(1, 1, -5));
+            vertices.Add(new Vector3(-1, 1, -5));
 
             return vertices;
         }

@@ -29,7 +29,6 @@ namespace ModelEditor
         private float _rotationChangeSpeed = (float)(Math.PI / 8);
         private float _scaleChangeSpeed = 1.2f;
 
-
         public MainWindow()
         {
             InitializeComponent();
@@ -112,9 +111,6 @@ namespace ModelEditor
         private void CbxAnaglyph_Checked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = true; }
         private void CbxAnaglyph_Unchecked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = false; }
 
-        private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            Engine.Renderer.EyeDistance = (float)(0.02f * e.NewValue );
-        }
+        private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.EyeDistance = (float)(0.08f * e.NewValue); }
     }
 }
