@@ -78,7 +78,9 @@ namespace ModelEditor
 
             var item = GetSelectedObj();
             TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
+            LightMenu.Visibility = item.Name == nameof(Light) ? Visibility.Visible : Visibility.Collapsed;
         }
+        
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

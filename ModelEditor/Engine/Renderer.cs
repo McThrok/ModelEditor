@@ -32,27 +32,24 @@ namespace ModelEditor
             _wb.Clear(Colors.Black);
             if (Anaglyphic)
             {
-                var camera = _scene.Camera.Matrix;
+                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, EyeDistance / 2);
+                Render(projLeft, _drawLeftColor, false);
 
-                var view1 = (MyMatrix4x4.Translate(new Vector3(-EyeDistance / 2, 0, 0)).Multiply(camera)).Inversed();
-                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f, 0);
-                Render(projLeft, view1, _drawLeftColor, false);
-
-                var view2 = (MyMatrix4x4.Translate(new Vector3(EyeDistance / 2, 0, 0)).Multiply(camera)).Inversed();
-                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f, 0);
-                Render(projRight, view2, _drawRightColor, true);
+                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, -EyeDistance / 2);
+                Render(projRight, _drawRightColor, true);
             }
             else
             {
                 var view = _scene.Camera.Matrix.Inversed();
 
                 var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
-                Render(projection, view, _drawColor, false);
+                Render(projection, _drawColor, false);
             }
         }
 
-        private void Render(Matrix4x4 projMatrix, Matrix4x4 view, Color color, bool addColors)
+        private void Render(Matrix4x4 projMatrix, Color color, bool addColors)
         {
+            var view = _scene.Camera.Matrix.Inversed();
 
             using (var context = _wb.GetBitmapContext())
             {

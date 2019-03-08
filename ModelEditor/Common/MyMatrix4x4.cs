@@ -43,10 +43,7 @@ namespace ModelEditor
 
         public static Matrix4x4 CreateAnaglyphicPerspectiveFieldOfView(float fovy, float aspect, float zNear, float zFar, float e)
         {
-            var mat = CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar);
-            mat.M31 = e*mat.M34;
-
-            return mat;
+            return CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar).Multiply(Translate(new Vector3(e,0,0)));
         }
 
         public static Matrix4x4 CreatePerspectiveFieldOfView(float fovy, float aspect, float zNear, float zFar)
@@ -56,8 +53,8 @@ namespace ModelEditor
             float xMin = yMin * aspect;
             float xMax = yMax * aspect;
 
-            float x = (2.0f * zNear) / (xMax - xMin);
-            float y = (2.0f * zNear) / (yMax - yMin);
+            float x = (zNear) / (xMax - xMin);
+            float y = (zNear) / (yMax - yMin);
             float c = -(zFar + zNear) / (zFar - zNear);
             float d = -(2.0f * zFar * zNear) / (zFar - zNear);
 

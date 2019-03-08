@@ -82,7 +82,7 @@
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedItem.SmallRadius, ElementName=objectList}" />
                 </Grid>
 
-                <Grid Margin="5" Name="Light">
+                <Grid Margin="5" Name="LightMenu">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>
                         <ColumnDefinition Width="30"/>
