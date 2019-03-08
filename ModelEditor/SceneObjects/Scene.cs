@@ -23,8 +23,8 @@ namespace ModelEditor
             Objects = new List<RenderableObj>();
             MainpObjects = new ObservableCollection<ManipObj>();
 
-            Light = new Light();
-            Light.Name = nameof(Light);
+            //Light = new Light();
+            //Light.Name = nameof(Light);
         }
     }
 }

@@ -74,6 +74,7 @@
     <Compile Include="Engine\InputManager.cs" />
     <Compile Include="Engine\Engine.cs" />
     <Compile Include="SceneObjects\Objects\Light.cs" />
+    <Compile Include="SceneObjects\Objects\Cube.cs" />
     <Compile Include="SceneObjects\Objects\Torus.cs" />
     <Compile Include="SceneObjects\RenderableObj.cs" />
     <Compile Include="Common\Edge.cs" />

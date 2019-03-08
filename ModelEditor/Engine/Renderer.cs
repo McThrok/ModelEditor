@@ -12,7 +12,8 @@ namespace ModelEditor
 {
     public class Renderer
     {
-        public bool Anaglyphic { get; set; } = true;
+        public bool Anaglyphic { get; set; } = false;
+        public float EyeDistance { get; set; } = 10;
 
         private WriteableBitmap _wb;
         private Scene _scene;
@@ -31,10 +32,10 @@ namespace ModelEditor
             _wb.Clear(Colors.Black);
             if (Anaglyphic)
             {
-                var projLeft = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
+                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f,0.01f);
                 Render(projLeft, _drawLeftColor, false);
 
-                var projRight = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
+                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f,0);
                 Render(projRight, _drawRightColor, true);
             }
             else
@@ -47,7 +48,6 @@ namespace ModelEditor
         private void Render(Matrix4x4 projMatrix, Color color, bool addColors)
         {
             var view = _scene.Camera.Matrix.Inversed();
-
 
             using (var context = _wb.GetBitmapContext())
             {
