@@ -14,6 +14,7 @@ namespace ModelEditor
     {
         public bool Anaglyphic { get; set; }
         public float EyeDistance { get; set; }
+        public float ViewportDistance { get; set; }
 
         private WriteableBitmap _wb;
         private Scene _scene;
@@ -32,17 +33,17 @@ namespace ModelEditor
             _wb.Clear(Colors.Black);
             if (Anaglyphic)
             {
-                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, EyeDistance / 2);
+                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100.0f, EyeDistance / 2, ViewportDistance);
                 Render(projLeft, _drawLeftColor, false);
 
-                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, -EyeDistance / 2);
+                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100.0f, -EyeDistance / 2, ViewportDistance);
                 Render(projRight, _drawRightColor, true);
             }
             else
             {
                 var view = _scene.Camera.Matrix.Inversed();
 
-                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
+                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100);
                 Render(projection, _drawColor, false);
             }
         }
@@ -73,6 +74,7 @@ namespace ModelEditor
         {
             var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
             var B = new Point(vertB.X / vertB.W, vertB.Y / vertB.W);
+
 
             var width = _wb.PixelWidth;
             var height = _wb.PixelHeight;

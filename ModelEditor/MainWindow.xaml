@@ -30,7 +30,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                     <TextBlock Text="Eye distance:  "/>
-                    <Slider Maximum="1" Width="300" VerticalAlignment="Center" ValueChanged="Anaglyph_Change"/>
+                    <Slider Name="EyeSlider" Maximum="1" Width="300" VerticalAlignment="Center" ValueChanged="Anaglyph_Change"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
+                    <TextBlock Text="Viewport distance:  "/>
+                    <Slider Name="ViewportSlider" Maximum="1" Width="300" VerticalAlignment="Center" ValueChanged="Viewport_Changed"/>
                 </StackPanel>
             </StackPanel>
 

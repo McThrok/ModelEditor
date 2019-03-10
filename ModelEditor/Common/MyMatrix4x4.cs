@@ -41,9 +41,13 @@ namespace ModelEditor
             return Matrix4x4.CreateScale(Vector3.One * scale);
         }
 
-        public static Matrix4x4 CreateAnaglyphicPerspectiveFieldOfView(float fovy, float aspect, float zNear, float zFar, float e)
+        public static Matrix4x4 CreateAnaglyphicPerspectiveFieldOfView(float fovy, float aspect, float zNear, float zFar, float e, float r)
         {
-            return CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar).Multiply(Translate(new Vector3(e,0,0)));
+            var rad = (float)(Math.PI / 2 - Math.Atan2(r, e));
+            return CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar)
+                .Multiply(Translate(new Vector3(e, 0, 0))
+                .Multiply(RotationY(rad))
+                );
         }
 
         public static Matrix4x4 CreatePerspectiveFieldOfView(float fovy, float aspect, float zNear, float zFar)

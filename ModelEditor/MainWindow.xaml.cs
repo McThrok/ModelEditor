@@ -41,6 +41,9 @@ namespace ModelEditor
             objectList.ItemsSource = Engine.SceneMnager.Scene.MainpObjects;
             Engine.Run();
 
+            ViewportSlider.Value = 1;
+            EyeSlider.Value = 0.1;
+
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
@@ -114,5 +117,6 @@ namespace ModelEditor
         private void CbxAnaglyph_Unchecked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = false; }
 
         private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.EyeDistance = (float)(0.3f * e.NewValue); }
+        private void Viewport_Changed(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.ViewportDistance = (float)(2+38f * e.NewValue); }
     }
 }
