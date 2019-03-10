@@ -32,17 +32,17 @@ namespace ModelEditor
             _wb.Clear(Colors.Black);
             if (Anaglyphic)
             {
-                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, EyeDistance / 2);
+                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, EyeDistance / 2);
                 Render(projLeft, _drawLeftColor, false);
 
-                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, -EyeDistance / 2);
+                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 1000.0f, -EyeDistance / 2);
                 Render(projRight, _drawRightColor, true);
             }
             else
             {
                 var view = _scene.Camera.Matrix.Inversed();
 
-                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(1.3f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
+                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 10000.0f);
                 Render(projection, _drawColor, false);
             }
         }

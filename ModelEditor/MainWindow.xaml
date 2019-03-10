@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:ModelEditor"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Width="1000"
-        Height="600"
+        Width="1800"
+        Height="1000"
         x:Name="mainWindow"
         Title="MainWindow">
     <Grid >
@@ -30,7 +30,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                     <TextBlock Text="Eye distance:  "/>
-                    <Slider Maximum="1" Width="200" VerticalAlignment="Center" ValueChanged="Anaglyph_Change"/>
+                    <Slider Maximum="1" Width="300" VerticalAlignment="Center" ValueChanged="Anaglyph_Change"/>
                 </StackPanel>
             </StackPanel>
 

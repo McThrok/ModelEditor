@@ -35,7 +35,6 @@ namespace ModelEditor
         public void AddTorus()
         {
             var obj = new Torus();
-            obj.Rotate(Math.PI / 2, 0,0);
             //obj.Move(GetRandomPosition());
             Scene.MainpObjects.Add(obj);
             Scene.Objects.Add(obj);
