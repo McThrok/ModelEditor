@@ -20,7 +20,7 @@ namespace ModelEditor
         private Scene _scene;
         private Color _drawColor = Colors.Green;
         private Color _drawLeftColor = Colors.Red;
-        private Color _drawRightColor = Colors.Blue;
+        private Color _drawRightColor = Colors.Cyan;
 
         public Renderer(WriteableBitmap wb, Scene scene)
         {
