@@ -110,7 +110,7 @@ namespace ModelEditor
             return v / v.Length();
         }
 
-        private static Vector3 ToEuler(Quaternion rotation)
+        public static Vector3 ToEuler(this Quaternion rotation)
         {
             float sqw = rotation.W * rotation.W;
             float sqx = rotation.X * rotation.X;

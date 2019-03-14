@@ -10,21 +10,18 @@ using System.Collections.ObjectModel;
 
 namespace ModelEditor
 {
-    public class Scene : ManipObj
+    public class Scene : SceneObject
     {
-        public ManipObj Camera { get; private set; }
-        public Light Light { get; private set; }
+        public SceneObject Camera { get; private set; }
         public List<RenderableObj> Objects { get; private set; }
-        public ObservableCollection<ManipObj> MainpObjects { get; private set; }
+        public ObservableCollection<SceneObject> MainpObjects { get; private set; }
 
         public Scene()
         {
-            Camera = new ManipObj();
+            Camera = new SceneObject();
             Objects = new List<RenderableObj>();
-            MainpObjects = new ObservableCollection<ManipObj>();
+            MainpObjects = new ObservableCollection<SceneObject>();
 
-            //Light = new Light();
-            //Light.Name = nameof(Light);
         }
     }
 }

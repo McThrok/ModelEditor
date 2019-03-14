@@ -73,7 +73,6 @@
     <Compile Include="Common\WBExtension.cs" />
     <Compile Include="Engine\InputManager.cs" />
     <Compile Include="Engine\Engine.cs" />
-    <Compile Include="SceneObjects\Objects\Light.cs" />
     <Compile Include="SceneObjects\Objects\Cube.cs" />
     <Compile Include="SceneObjects\Objects\Torus.cs" />
     <Compile Include="SceneObjects\RenderableObj.cs" />
@@ -82,7 +81,7 @@
     <Compile Include="SceneObjects\Scene.cs" />
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Common\MyMatrix4x4.cs" />
-    <Compile Include="SceneObjects\ManipObj.cs" />
+    <Compile Include="SceneObjects\SceneObject.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

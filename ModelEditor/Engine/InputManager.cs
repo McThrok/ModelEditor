@@ -69,7 +69,7 @@ namespace ModelEditor
             if (_moveActions[Move.Down]) moveDir.Y--;
 
             var cameraSpeed = 0.1f;
-            var translateMatrix = MyMatrix4x4.Translate(cameraSpeed * moveDir);
+            var translateMatrix =  Matrix4x4.CreateTranslation(cameraSpeed * moveDir);
             _scene.Camera.Matrix = _scene.Camera.Matrix.Multiply(translateMatrix);
         }
 
@@ -93,9 +93,9 @@ namespace ModelEditor
             _cameraRotation.X = (float)Math.Max(-Math.PI * 0.4, Math.Min(Math.PI * 0.4, _cameraRotation.X));
             _cameraRotation.Y += (float)(rotationSpeed * diff.X);
 
-            var rotationX = MyMatrix4x4.RotationX(_cameraRotation.X);
-            var rotationY = MyMatrix4x4.RotationY(_cameraRotation.Y);
-            var move = MyMatrix4x4.Translate(translation);
+            var rotationX = Matrix4x4.CreateRotationX(_cameraRotation.X);
+            var rotationY = Matrix4x4.CreateRotationY(_cameraRotation.Y);
+            var move =  Matrix4x4.CreateTranslation(translation);
 
             _scene.Camera.Matrix = MyMatrix4x4.Compose(move, rotationY, rotationX);
         }

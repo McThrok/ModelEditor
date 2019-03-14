@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public abstract class RenderableObj : ManipObj
+    public abstract class RenderableObj : SceneObject
     {
         public abstract RenderData GetRenderData();
     }

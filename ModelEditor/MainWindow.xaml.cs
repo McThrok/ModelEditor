@@ -81,7 +81,6 @@ namespace ModelEditor
 
             var item = GetSelectedObj();
             TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
-            LightMenu.Visibility = item.Name == nameof(Light) ? Visibility.Visible : Visibility.Collapsed;
         }
         
 
@@ -91,7 +90,7 @@ namespace ModelEditor
             objs.RemoveAt(objs.Count - 1);
         }
 
-        private ManipObj GetSelectedObj()
+        private SceneObject GetSelectedObj()
         {
             return objectList.SelectedIndex >= 0 ? Engine.SceneMnager.Scene.MainpObjects[objectList.SelectedIndex] : null;
         }

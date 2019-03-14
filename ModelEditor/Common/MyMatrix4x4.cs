@@ -11,39 +11,21 @@ namespace ModelEditor
 {
     public static class MyMatrix4x4
     {
-        public static Matrix4x4 RotationX(float radians)
+        public static Matrix4x4 Compose(params Matrix4x4[] matrices)
         {
-            return Matrix4x4.CreateRotationX(radians);
+            return matrices.Aggregate(Matrix4x4.Identity, (composition, matrix) => composition.Multiply(matrix));
         }
-
-        public static Matrix4x4 RotationY(float radians)
+        public static Matrix4x4 Transform(Vector3 translation, Vector3 rotation,Vector3 scale)
         {
-            return Matrix4x4.CreateRotationY(radians);
+            return Matrix4x4.CreateScale(scale) * CreateRotation(rotation) * Matrix4x4.CreateTranslation(translation);
         }
-
-        public static Matrix4x4 RotationZ(float radians)
+        public static Matrix4x4 CreateRotation(Vector3 rotation)
         {
-            return Matrix4x4.CreateRotationZ(radians);
-        }
-
-        public static Matrix4x4 Translate(Vector3 translation)
-        {
-            return Matrix4x4.CreateTranslation(translation);
-        }
-
-        public static Matrix4x4 Scale(Vector3 scale)
-        {
-            return Matrix4x4.CreateScale(scale);
-        }
-
-        public static Matrix4x4 Scale(float scale)
-        {
-            return Matrix4x4.CreateScale(Vector3.One * scale);
+            return Matrix4x4.CreateRotationX(rotation.X) * Matrix4x4.CreateRotationY(rotation.Y) * Matrix4x4.CreateRotationZ(rotation.Z);
         }
 
         public static Matrix4x4 CreateAnaglyphicPerspectiveFieldOfView(float fov, float aspect, float zNear, float zFar, float eDiff, float r)
         {
-
             var top = zNear * (float)Math.Tan(fov / 2);
             var bottom = -top;
 
@@ -54,49 +36,10 @@ namespace ModelEditor
             var left = -b * zNear / r;
             var right = c * zNear / r;
 
-            var result = CreatePerspectiveOffCenter(left, right, bottom, top, zNear, zFar).Multiply(Translate(new Vector3(eDiff, 0, 0)));
+            var result = CreatePerspectiveOffCenter(left, right, bottom, top, zNear, zFar).Multiply(Matrix4x4.CreateTranslation(new Vector3(eDiff, 0, 0)));
             return result;
 
-            //var rad = (float)(Math.PI / 2 - Math.Atan2(r, e));
-            //return CreatePerspectiveFieldOfViewOld(fov, aspect, zNear, zFar)
-            //    .Multiply(Translate(new Vector3(e, 0, 0))
-            //    .Multiply(RotationY(rad))
-            //    );
         }
-
-        //public static Matrix4x4 CreatePerspectiveFieldOfViewOld(float fovy, float aspect, float zNear, float zFar)
-        //{
-        //    float yMax = zNear * (float)Math.Tan(0.5f * fovy);
-        //    float yMin = -yMax;
-        //    float xMin = yMin * aspect;
-        //    float xMax = yMax * aspect;
-
-        //    float x = (zNear) / (xMax - xMin);
-        //    float y = (zNear) / (yMax - yMin);
-        //    float c = -(zFar + zNear) / (zFar - zNear);
-        //    float d = -(2.0f * zFar * zNear) / (zFar - zNear);
-
-        //    var matrix = new Matrix4x4(x, 0, 0, 0,
-        //                               0, y, 0, 0,
-        //                               0, 0, c, -1,
-        //                               0, 0, d, 0);
-
-        //    return matrix;
-        //}
-
-        public static Matrix4x4 Identity
-        {
-            get
-            {
-                return Matrix4x4.Identity;
-            }
-        }
-
-        public static Matrix4x4 Compose(params Matrix4x4[] matrices)
-        {
-            return matrices.Aggregate(Identity, (composition, matrix) => composition.Multiply(matrix));
-        }
-
         public static Matrix4x4 CreatePerspectiveFieldOfView(float fovy, float aspect, float zNear, float zFar)
         {
             if (fovy <= 0 || fovy > Math.PI)
@@ -115,7 +58,6 @@ namespace ModelEditor
 
             return CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
         }
-
         public static Matrix4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             if (zNear <= 0)
