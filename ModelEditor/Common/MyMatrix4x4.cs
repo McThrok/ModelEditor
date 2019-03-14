@@ -64,25 +64,25 @@ namespace ModelEditor
             //    );
         }
 
-        public static Matrix4x4 CreatePerspectiveFieldOfViewOld(float fovy, float aspect, float zNear, float zFar)
-        {
-            float yMax = zNear * (float)Math.Tan(0.5f * fovy);
-            float yMin = -yMax;
-            float xMin = yMin * aspect;
-            float xMax = yMax * aspect;
+        //public static Matrix4x4 CreatePerspectiveFieldOfViewOld(float fovy, float aspect, float zNear, float zFar)
+        //{
+        //    float yMax = zNear * (float)Math.Tan(0.5f * fovy);
+        //    float yMin = -yMax;
+        //    float xMin = yMin * aspect;
+        //    float xMax = yMax * aspect;
 
-            float x = (zNear) / (xMax - xMin);
-            float y = (zNear) / (yMax - yMin);
-            float c = -(zFar + zNear) / (zFar - zNear);
-            float d = -(2.0f * zFar * zNear) / (zFar - zNear);
+        //    float x = (zNear) / (xMax - xMin);
+        //    float y = (zNear) / (yMax - yMin);
+        //    float c = -(zFar + zNear) / (zFar - zNear);
+        //    float d = -(2.0f * zFar * zNear) / (zFar - zNear);
 
-            var matrix = new Matrix4x4(x, 0, 0, 0,
-                                       0, y, 0, 0,
-                                       0, 0, c, -1,
-                                       0, 0, d, 0);
+        //    var matrix = new Matrix4x4(x, 0, 0, 0,
+        //                               0, y, 0, 0,
+        //                               0, 0, c, -1,
+        //                               0, 0, d, 0);
 
-            return matrix;
-        }
+        //    return matrix;
+        //}
 
         public static Matrix4x4 Identity
         {
@@ -133,9 +133,9 @@ namespace ModelEditor
             float d = -(2.0f * zFar * zNear) / (zFar - zNear);
 
             var result = new Matrix4x4(x, 0, 0, 0,
-                                 0, y, 0, 0,
-                                 a, b, c, -1,
-                                 0, 0, d, 0);
+                                       0, y, 0, 0,
+                                       a, b, c, -1,
+                                       0, 0, d, 0);
 
             return result;
         }

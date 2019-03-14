@@ -109,6 +109,52 @@ namespace ModelEditor
         {
             return v / v.Length();
         }
+
+        private static Vector3 ToEuler(Quaternion rotation)
+        {
+            float sqw = rotation.W * rotation.W;
+            float sqx = rotation.X * rotation.X;
+            float sqy = rotation.Y * rotation.Y;
+            float sqz = rotation.Z * rotation.Z;
+            float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+            float test = rotation.X * rotation.W - rotation.Y * rotation.Z;
+            Vector3 v;
+
+            if (test > 0.4995f * unit)
+            { // singularity at north pole
+                v.Y = (float)(2f * Math.Atan2(rotation.Y, rotation.X));
+                v.X = (float)(Math.PI / 2);
+                v.Z = 0;
+                return NormalizeAngles(v);
+            }
+            if (test < -0.4995f * unit)
+            { // singularity at south pole
+                v.Y = (float)(-2f * Math.Atan2(rotation.Y, rotation.X));
+                v.X = (float)(-Math.PI / 2);
+                v.Z = 0;
+                return NormalizeAngles(v);
+            }
+            Quaternion q = new Quaternion(rotation.W, rotation.Z, rotation.X, rotation.Y);
+            v.Y = (float)System.Math.Atan2(2f * q.X * q.W + 2f * q.Y * q.Z, 1 - 2f * (q.Z * q.Z + q.W * q.W));      // Yaw
+            v.X = (float)System.Math.Asin(2f * (q.X * q.Z - q.W * q.Y));                                            // Pitch
+            v.Z = (float)System.Math.Atan2(2f * q.X * q.Y + 2f * q.Z * q.W, 1 - 2f * (q.Y * q.Y + q.Z * q.Z));      // Roll
+            return NormalizeAngles(v);
+        }
+        private static Vector3 NormalizeAngles(Vector3 angles)
+        {
+            angles.X = NormalizeAngle(angles.X);
+            angles.Y = NormalizeAngle(angles.Y);
+            angles.Z = NormalizeAngle(angles.Z);
+            return angles;
+        }
+        private static float NormalizeAngle(float angle)
+        {
+            while (angle > 360)
+                angle -= 360;
+            while (angle < 0)
+                angle += 360;
+            return angle;
+        }
     }
 }
 

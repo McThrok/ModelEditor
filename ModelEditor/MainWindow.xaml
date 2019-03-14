@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:ModelEditor"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Width="1800"
-        Height="1000"
+        Width="1400"
+        Height="800"
         x:Name="mainWindow"
         Title="MainWindow">
     <Grid >
