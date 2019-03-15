@@ -21,6 +21,7 @@
             <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
             <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>
             <Button Margin="5" Height="20" Click="Delete_Click">Delete</Button>
+            <Button Margin="5" Height="20" Click="FocuCamera">Focus camera</Button>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                 <TextBlock Text="Anaglyph:  "/>
                 <CheckBox Checked="CbxAnaglyph_Checked" Unchecked="CbxAnaglyph_Unchecked" />
@@ -131,7 +132,7 @@
             </Grid>
 
             <StackPanel Grid.Column="2" Background="White">
-                <TreeView Name="objectList" SelectedItemChanged="SelectedObjectChange"  AllowDrop="True">
+                <TreeView Name="objectList" SelectedItemChanged="SelectedObjectChange"  AllowDrop="True" >
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:SceneObject}" ItemsSource="{Binding Children}" >
                             <TextBlock Text="{Binding Name}"/>

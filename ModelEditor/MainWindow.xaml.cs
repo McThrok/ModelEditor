@@ -97,7 +97,13 @@ namespace ModelEditor
             var item = GetSelectedObj();
             if (item != null && item.Parent != null)
                 item.Parent.Children.Remove(item);
+        }
 
+        private void FocuCamera(object sender, RoutedEventArgs e)
+        {
+            var item = GetSelectedObj();
+            if (item != null)
+                Engine.Scene.Camera.SetTarget(item);
         }
 
         private SceneObject GetSelectedObj()
@@ -136,9 +142,12 @@ namespace ModelEditor
             else
                 objectMenu.Visibility = Visibility.Collapsed;
 
-            var item = GetSelectedObj();
-            TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
+            if (e.NewValue is SceneObject item)
+            {
+                Engine.Scene.Cursor.GlobalMatrix = item.GlobalMatrix;
 
+                TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
 
@@ -256,7 +265,6 @@ namespace ModelEditor
             _targetItem.Children.Add(_sourceItem);
             _sourceItem.GlobalMatrix = global;
         }
-
 
         private SceneObject GetNearestContainer(UIElement element)
         {

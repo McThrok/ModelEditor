@@ -12,33 +12,17 @@ namespace ModelEditor
 {
     public class Scene : SceneObject
     {
-        public SceneObject Camera { get; private set; }
-        public SceneObject Cursor { get; private set; }
+        public Camera Camera { get; private set; }
+        public Cursor Cursor { get; private set; }
         private Random _rd = new Random();
 
         public Scene()
         {
             Name = "Scene";
 
-            InitCamera();
-            InitCursor();
+            Camera = AddObj(new Camera(), this);
+            Cursor = AddObj(new Cursor(), this);
 
-        }
-
-        public void InitCamera()
-        {
-            Camera = new SceneObject();
-            Camera.Name = nameof(Camera);
-            Camera.Move(0, 0, 10);
-            Camera.Parent = this;
-            Children.Add(Camera);
-        }
-
-        public void InitCursor()
-        {
-            Cursor = new Cursor();
-            Cursor.Parent = this;
-            Children.Add(Cursor);
         }
 
         public SceneObject AddCube(SceneObject parent)
@@ -57,7 +41,7 @@ namespace ModelEditor
         {
             return AddObj(new SceneObject() { Name = "Empty Object" }, parent);
         }
-        private SceneObject AddObj(SceneObject obj, SceneObject parent)
+        private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {
             if (parent == null)
                 parent = this;

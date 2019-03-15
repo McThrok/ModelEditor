@@ -57,14 +57,7 @@ namespace ModelEditor
 
         private void Render(Matrix4x4 projMatrix, Color color, bool addColors)
         {
-            var camera = Matrix4x4.Identity;
-            var obj = _scene.Camera;
-            while (obj != null)
-            {
-                camera *= obj.Matrix;
-                obj = obj.Parent;
-            }
-            var view = camera.Inversed();
+            var view = _scene.Camera.GlobalMatrix.Inversed();
 
             using (var context = _wb.GetBitmapContext())
             {
