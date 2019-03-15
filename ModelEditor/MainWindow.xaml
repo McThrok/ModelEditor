@@ -49,11 +49,11 @@
                 <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" >
-                <TextBlock Text="Object list:" />
-                <TreeView Name="objectList" SelectedItemChanged="SelectedObjectChange">
+            <StackPanel Grid.Row="0"  >
+                
+                <TreeView Name="objectList" SelectedItemChanged="SelectedObjectChange"  AllowDrop="True">
                     <TreeView.Resources>
-                        <HierarchicalDataTemplate DataType="{x:Type local:SceneObject}" ItemsSource="{Binding Children}">
+                        <HierarchicalDataTemplate DataType="{x:Type local:SceneObject}" ItemsSource="{Binding Children}" >
                             <TextBlock Text="{Binding Name}"/>
                         </HierarchicalDataTemplate>
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
@@ -63,34 +63,24 @@
                     </TreeView.Resources>
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
-                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <EventSetter Event="TreeViewItem.DragOver" Handler="TreeView_DragOver"/>
+                            <EventSetter Event="TreeViewItem.Drop" Handler="TreeView_Drop"/>
+                            <EventSetter Event="TreeViewItem.MouseMove" Handler="TreeView_MouseMove"/>
                             <Setter Property="Foreground" Value="#555555"/>
                             <Style.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Foreground" Value="#3333ff"/>
                                     <Setter Property="FontWeight" Value="Bold"/>
                                 </Trigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsSelected" Value="True"/>
-                                        <Condition Property="IsSelectionActive" Value="False"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="BorderBrush" Value="LightGray"/>
-                                </MultiTrigger>
                             </Style.Triggers>
+                            <Style.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="Grid.ColumnSpan" Value="2" />
+                                </Style>
+                            </Style.Resources>
                         </Style>
                     </TreeView.ItemContainerStyle>
                 </TreeView>
-
-
-                <!--<ListView Name="objectList" SelectionChanged="SelectedObjectChange" SelectionMode="Single">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-
-                </ListView>-->
             </StackPanel>
 
 

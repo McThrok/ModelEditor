@@ -39,7 +39,7 @@ namespace ModelEditor
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             Engine = new Engine(BitmapContainer);
-            objectList.ItemsSource = Engine.Scene.Children;
+            objectList.ItemsSource = new ObservableCollection<SceneObject>() { Engine.Scene };
             Engine.Run();
 
             ViewportSlider.Value = 1;
@@ -89,7 +89,6 @@ namespace ModelEditor
         //    var item = GetSelectedObj();
         //    TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
         //}
-        
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -121,11 +120,11 @@ namespace ModelEditor
         private void CbxAnaglyph_Unchecked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = false; }
 
         private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.EyeDistance = (float)(0.3f * e.NewValue); }
-        private void Viewport_Changed(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.ViewportDistance = (float)(5+35f * e.NewValue); }
+        private void Viewport_Changed(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.ViewportDistance = (float)(5 + 35f * e.NewValue); }
 
         private void SelectedObjectChange(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (e.NewValue!=null)
+            if (e.NewValue != null)
                 objectMenu.Visibility = Visibility.Visible;
             else
                 objectMenu.Visibility = Visibility.Collapsed;
@@ -134,5 +133,133 @@ namespace ModelEditor
             TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
 
         }
+
+
+        #region dragAndDrop
+        private Point _lastMouseDown;
+        private SceneObject _draggedItem, _target;
+
+        private void TreeView_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                _lastMouseDown = e.GetPosition(objectList);
+
+        }
+        private void TreeView_MouseMove(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    Point currentPosition = e.GetPosition(objectList);
+
+                    if ((Math.Abs(currentPosition.X - _lastMouseDown.X) > 10.0) || (Math.Abs(currentPosition.Y - _lastMouseDown.Y) > 10.0))
+                    {
+                        _draggedItem = objectList.SelectedItem as SceneObject;
+                        if (_draggedItem != null)
+                        {
+                            DragDropEffects finalDropEffect = DragDrop.DoDragDrop(objectList, objectList.SelectedValue, DragDropEffects.Move);
+                            //Checking target is not null and item is dragging(moving)
+                            if ((finalDropEffect == DragDropEffects.Move) && (_target != null))
+                            {
+                                // A Move drop was accepted
+                                if (_draggedItem.Id != _target.Id)
+                                {
+                                    CopyItem(_draggedItem, _target);
+                                    _target = null;
+                                    _draggedItem = null;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+        private void TreeView_DragOver(object sender, DragEventArgs e)
+        {
+            try
+            {
+                Point currentPosition = e.GetPosition(objectList);
+
+                if ((Math.Abs(currentPosition.X - _lastMouseDown.X) > 10.0) || (Math.Abs(currentPosition.Y - _lastMouseDown.Y) > 10.0))
+                {
+                    // Verify that this is a valid drop and then store the drop target
+                    SceneObject item = GetNearestContainer(e.OriginalSource as UIElement);
+                    if (CheckDropTarget(_draggedItem, item))
+                    {
+                        e.Effects = DragDropEffects.Move;
+                    }
+                    else
+                    {
+                        e.Effects = DragDropEffects.None;
+                    }
+                }
+                e.Handled = true;
+            }
+            catch (Exception)
+            {
+            }
+        }
+        private void TreeView_Drop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                e.Effects = DragDropEffects.None;
+                e.Handled = true;
+
+                // Verify that this is a valid drop and then store the drop target
+                SceneObject TargetItem = GetNearestContainer(e.OriginalSource as UIElement);
+                if (TargetItem != null && _draggedItem != null)
+                {
+                    _target = TargetItem;
+                    e.Effects = DragDropEffects.Move;
+
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+        }
+        private bool CheckDropTarget(SceneObject _sourceItem, SceneObject _targetItem)
+        {
+            var node = _targetItem;
+
+            while (node != null)
+            {
+                if (_sourceItem.Id == node.Id)
+                    break;
+
+                node = node.Parent;
+            }
+
+            var result = node == null;
+            return result;
+
+        }
+        private void CopyItem(SceneObject _sourceItem, SceneObject _targetItem)
+        {
+            _sourceItem.Parent.Children.Remove(_sourceItem);
+            _sourceItem.Parent = _targetItem;
+            _targetItem.Children.Add(_sourceItem);
+        }
+        private SceneObject GetNearestContainer(UIElement element)
+        {
+            // Walk up the element tree to the nearest tree view item.
+            TreeViewItem container = element as TreeViewItem;
+            while ((container == null) && (element != null))
+            {
+                element = VisualTreeHelper.GetParent(element) as UIElement;
+                container = element as TreeViewItem;
+            }
+
+            var result = container.Header as SceneObject;
+            return result;
+        }
+        #endregion
     }
 }

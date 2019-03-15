@@ -15,6 +15,7 @@ namespace ModelEditor
         public Matrix4x4 Matrix { get; set; } = Matrix4x4.Identity;
         public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
         public SceneObject Parent { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public virtual string Name { get; set; }
 

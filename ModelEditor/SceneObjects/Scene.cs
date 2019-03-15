@@ -17,6 +17,7 @@ namespace ModelEditor
 
         public Scene()
         {
+            Name = "Scene";
             AddCube();
             InitCamera();
         }
