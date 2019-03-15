@@ -30,7 +30,7 @@ namespace ModelEditor
         {
             Camera = new SceneObject();
             Camera.Name = nameof(Camera);
-            Camera.Move(0, 0, 4);
+            Camera.Move(0, 0, 10);
             Camera.Parent = this;
             Children.Add(Camera);
         }

@@ -84,7 +84,7 @@ namespace ModelEditor
 
         private void RenderRec(SceneObject obj, Matrix4x4 parentMatrix, RenderFrameData frameData)
         {
-            var model = parentMatrix * obj.Matrix;
+            var model = obj.Matrix * parentMatrix;
 
             if (obj is IRenderableObj renderableObj)
             {
