@@ -22,7 +22,7 @@ namespace ModelEditor
         public int SmallDensity { get { return _smallDensity; } set { _dataChanged = true; _smallDensity = value; } }
 
         private bool _dataChanged = true;
-        private RenderData _renderData;
+        private ObjRenderData _renderData;
 
         private List<Vector3> GetVertices()
         {
@@ -68,11 +68,11 @@ namespace ModelEditor
             Name = nameof(Torus);
         }
 
-        public  RenderData GetRenderData()
+        public  ObjRenderData GetRenderData()
         {
             if (_dataChanged)
             {
-                _renderData = new RenderData();
+                _renderData = new ObjRenderData();
                 _renderData.Vertices = GetVertices();
                 _renderData.Edges = GetEdges();
             }

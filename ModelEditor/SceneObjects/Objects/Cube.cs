@@ -16,9 +16,9 @@ namespace ModelEditor
             Name = nameof(Cube);
         }
 
-        public RenderData GetRenderData()
+        public ObjRenderData GetRenderData()
         {
-            var renderData = new RenderData();
+            var renderData = new ObjRenderData();
             renderData.Vertices = GetVertices();
             renderData.Edges = GetEdges();
 

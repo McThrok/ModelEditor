@@ -100,10 +100,43 @@ namespace ModelEditor
                 }
             }
 
+            if (obj is IScreenRenderable screenRenderable)
+            {
+                var data = screenRenderable.GetRenderData();
+                var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+
+                var center = matrix.Multiply(new Vector4(0, 0, 0, 1));
+                if (center.Z > 0 && center.Z > 0)
+                {
+                    foreach (var pix in data.Pixels)
+                    {
+                        var position = center;
+                        position.X += pix.X;
+                        position.Y += pix.Y;
+
+                        DrawOnScren(frameData.Context, position, frameData.Color, frameData.AddColors);
+                    }
+                }
+
+            }
+
             foreach (var child in obj.Children)
             {
                 RenderRec(child, model, frameData);
             }
+        }
+
+        private void DrawOnScren(BitmapContext ctx, Vector4 vert, Color col, bool addColors)
+        {
+            var A = new Point(vert.X / vert.W, vert.Y / vert.W);
+
+            var width = _wb.PixelWidth;
+            var height = _wb.PixelHeight;
+
+            var x = Convert.ToInt32((A.X + 1) / 2 * width);
+            var y = Convert.ToInt32((1 - (A.Y + 1) / 2) * height);
+
+            ctx.MySetPixel(x,y, col, addColors);
         }
 
         private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, Color col, bool addColors)

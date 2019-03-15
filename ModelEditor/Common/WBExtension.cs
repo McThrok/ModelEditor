@@ -18,6 +18,12 @@ namespace ModelEditor
         private const byte BOTTOM = 4; // 0100
         private const byte TOP = 8;    // 1000
 
+        public unsafe static void MySetPixel(this BitmapContext context, int x, int y, Color color, bool addColors)
+        {
+            int col = WriteableBitmapExtensions.ConvertColor(color);
+            int idx = y * context.Width + x;
+            context.Pixels[idx] = addColors ? AddColors(context.Pixels[idx], col) : col;
+        }
         public unsafe static void MyDrawLine(this BitmapContext context, int x1, int y1, int x2, int y2, Color col, bool addColors)
         {
             int color = WriteableBitmapExtensions.ConvertColor(col);
@@ -406,7 +412,7 @@ namespace ModelEditor
             var c1 = GetColor(col1);
             var c2 = GetColor(col2);
 
-            var result = Color.FromArgb((byte)(Math.Min(255,c1.A + c2.A)),
+            var result = Color.FromArgb((byte)(Math.Min(255, c1.A + c2.A)),
                                         (byte)(Math.Min(255, c1.R + c2.R)),
                                         (byte)(Math.Min(255, c1.G + c2.G)),
                                         (byte)(Math.Min(255, c1.B + c2.B)));
@@ -431,21 +437,6 @@ namespace ModelEditor
                                   (byte)((((c >> 8) & 0xFF) * ai) >> 8),
                                   (byte)((((c & 0xFF) * ai) >> 8)));
         }
-
-        public static int ConvertColor(Color color)
-        {
-            var col = 0;
-
-            if (color.A != 0)
-            {
-                var a = color.A + 1;
-                col = (color.A << 24)
-                  | ((byte)((color.R * a) >> 8) << 16)
-                  | ((byte)((color.G * a) >> 8) << 8)
-                  | ((byte)((color.B * a) >> 8));
-            }
-
-            return col;
-        }
+        
     }
 }
