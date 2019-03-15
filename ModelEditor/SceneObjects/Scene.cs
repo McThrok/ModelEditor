@@ -23,8 +23,6 @@ namespace ModelEditor
             InitCamera();
             InitCursor();
 
-            AddVertex(this);
-
         }
 
         public void InitCamera()
@@ -38,8 +36,7 @@ namespace ModelEditor
 
         public void InitCursor()
         {
-            Cursor = new SceneObject();
-            Cursor.Name = nameof(Cursor);
+            Cursor = new Cursor();
             Cursor.Parent = this;
             Children.Add(Cursor);
         }

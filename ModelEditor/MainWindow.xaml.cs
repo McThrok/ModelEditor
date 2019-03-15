@@ -89,6 +89,13 @@ namespace ModelEditor
         {
             SelectItem(Engine.Scene.AddVertex(GetSelectedObj()));
         }
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var item = GetSelectedObj();
+            if (item != null && item.Parent != null)
+                item.Parent.Children.Remove(item);
+
+        }
 
         private SceneObject GetSelectedObj()
         {
@@ -254,6 +261,8 @@ namespace ModelEditor
             _targetItem.Children.Add(_sourceItem);
             _sourceItem.GlobalMatrix = global;
         }
+
+
         private SceneObject GetNearestContainer(UIElement element)
         {
             // Walk up the element tree to the nearest tree view item.
