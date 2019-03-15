@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Numerics;
+using System.Collections.ObjectModel;
 
 namespace ModelEditor
 {
     public class SceneObject
     {
         public Matrix4x4 Matrix { get; set; } = Matrix4x4.Identity;
-        public List<SceneObject> Children { get; private set; } = new List<SceneObject>();
+        public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
+        public SceneObject Parent { get; set; }
 
         public virtual string Name { get; set; }
 

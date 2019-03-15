@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 
 namespace ModelEditor
 {
@@ -38,12 +39,18 @@ namespace ModelEditor
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             Engine = new Engine(BitmapContainer);
-            objectList.ItemsSource = Engine.SceneMnager.Scene.MainpObjects;
+            objectList.ItemsSource = Engine.Scene.Children;
             Engine.Run();
 
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
 
+        }
+
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+            Keyboard.ClearFocus();
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
@@ -69,7 +76,7 @@ namespace ModelEditor
 
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
-            Engine.SceneMnager.AddTorus();
+            Engine.Scene.AddTorus();
         }
 
         private void SelectedObjectChange(object sender, SelectionChangedEventArgs e)
@@ -86,13 +93,11 @@ namespace ModelEditor
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var objs = Engine.SceneMnager.Scene.Objects;
-            objs.RemoveAt(objs.Count - 1);
         }
 
         private SceneObject GetSelectedObj()
         {
-            return objectList.SelectedIndex >= 0 ? Engine.SceneMnager.Scene.MainpObjects[objectList.SelectedIndex] : null;
+            return objectList.SelectedItem as SceneObject;
         }
 
         private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
@@ -117,5 +122,17 @@ namespace ModelEditor
 
         private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.EyeDistance = (float)(0.3f * e.NewValue); }
         private void Viewport_Changed(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.ViewportDistance = (float)(5+35f * e.NewValue); }
+
+        private void TrvFamilies_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue!=null)
+                objectMenu.Visibility = Visibility.Visible;
+            else
+                objectMenu.Visibility = Visibility.Hidden;
+
+            var item = GetSelectedObj();
+            TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
+
+        }
     }
 }

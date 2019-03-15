@@ -77,7 +77,6 @@
     <Compile Include="SceneObjects\Objects\Torus.cs" />
     <Compile Include="SceneObjects\RenderableObj.cs" />
     <Compile Include="Common\Edge.cs" />
-    <Compile Include="Engine\SceneMnager.cs" />
     <Compile Include="SceneObjects\Scene.cs" />
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Common\MyMatrix4x4.cs" />

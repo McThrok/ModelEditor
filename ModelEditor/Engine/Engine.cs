@@ -21,7 +21,7 @@ namespace ModelEditor
         private readonly float _maxFPS = 30;
 
         public InputManager Input { get; private set; }
-        public SceneMnager SceneMnager { get; private set; }
+        public Scene Scene { get; private set; }
         public Renderer Renderer { get; private set; }
 
         private Stopwatch _frameStopWatch = new Stopwatch();
@@ -32,9 +32,9 @@ namespace ModelEditor
             _bitmapConatiner = bitmapConatiner;
             InitBitmap();
 
-            SceneMnager = new SceneMnager();
-            Renderer = new Renderer(_writableBitmap, SceneMnager.Scene);
-            Input = new InputManager(_bitmapConatiner,_writableBitmap, SceneMnager.Scene);
+            Scene = new Scene();
+            Renderer = new Renderer(_writableBitmap, Scene);
+            Input = new InputManager(_bitmapConatiner,_writableBitmap, Scene);
         }
 
         private void InitBitmap()

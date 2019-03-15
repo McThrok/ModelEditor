@@ -13,15 +13,48 @@ namespace ModelEditor
     public class Scene : SceneObject
     {
         public SceneObject Camera { get; private set; }
-        public List<RenderableObj> Objects { get; private set; }
-        public ObservableCollection<SceneObject> MainpObjects { get; private set; }
+        private Random _rd = new Random();
 
         public Scene()
         {
-            Camera = new SceneObject();
-            Objects = new List<RenderableObj>();
-            MainpObjects = new ObservableCollection<SceneObject>();
+            InitCamera();
+            AddCube();
+        }
 
+        public void InitCamera()
+        {
+            Camera = new SceneObject();
+            Camera.Name = nameof(Camera);
+            Camera.Move(0, 0, 4);
+            Camera.Parent = this;
+            Children.Add(Camera);
+        }
+
+        public void AddCube()
+        {
+            var obj = new Cube();
+            obj.Parent = this;
+            Children.Add(obj);
+        }
+        public void AddTorus()
+        {
+            var obj = new Torus();
+            obj.Parent = this;
+            Children.Add(obj);
+        }
+
+
+        private Vector3 GetRandomPosition()
+        {
+            return new Vector3(GetRandomCoordinate(), GetRandomCoordinate(), GetRandomCoordinate());
+        }
+        private float GetRandomCoordinate()
+        {
+            double min = -10;
+            double max = 10;
+            var result = (float)(_rd.NextDouble() * (max - min) + min);
+
+            return result;
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class Cube : RenderableObj
+    public class Cube : SceneObject, IRenderableObj
     {
         private List<Vector3> GetVertices()
         {
@@ -49,7 +49,7 @@ namespace ModelEditor
             Name = nameof(Cube);
         }
 
-        public override RenderData GetRenderData()
+        public RenderData GetRenderData()
         {
             var renderData = new RenderData();
             renderData.Vertices = GetVertices();

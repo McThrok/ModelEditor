@@ -10,6 +10,15 @@ using System.Windows.Media;
 
 namespace ModelEditor
 {
+    public class RenderFrameData
+    {
+        public BitmapContext Context { get; set; }
+        public Matrix4x4 ProjMatrix { get; set; }
+        public Matrix4x4 View { get; set; }
+        public Color Color { get; set; }
+        public bool AddColors { get; set; }
+    }
+
     public class Renderer
     {
         public bool Anaglyphic { get; set; }
@@ -41,8 +50,6 @@ namespace ModelEditor
             }
             else
             {
-                var view = _scene.Camera.Matrix.Inversed();
-
                 var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100);
                 Render(projection, _drawColor, false);
             }
@@ -50,21 +57,50 @@ namespace ModelEditor
 
         private void Render(Matrix4x4 projMatrix, Color color, bool addColors)
         {
-            var view = _scene.Camera.Matrix.Inversed();
+            var camera = Matrix4x4.Identity;
+            var obj = _scene.Camera;
+            while (obj != null)
+            {
+                camera *= obj.Matrix;
+                obj = obj.Parent;
+            }
+            var view = camera.Inversed();
 
             using (var context = _wb.GetBitmapContext())
             {
-                foreach (var obj in _scene.Objects)
+                var frameData = new RenderFrameData()
                 {
-                    var data = obj.GetRenderData();
-                    var matrix = MyMatrix4x4.Compose(projMatrix, view, _scene.Matrix, obj.Matrix);
+                    AddColors = addColors,
+                    Color = color,
+                    ProjMatrix = projMatrix,
+                    View = view,
+                    Context = context
+                };
+
+                RenderRec(_scene, Matrix4x4.Identity, frameData);
+            }
+        }
+
+
+        private void RenderRec(SceneObject obj, Matrix4x4 parentMatrix, RenderFrameData frameData)
+        {
+            var model = parentMatrix * obj.Matrix;
+
+            foreach (var child in obj.Children)
+            {
+                RenderRec(child, model, frameData);
+
+                if (child is IRenderableObj renderableObj)
+                {
+                    var data = renderableObj.GetRenderData();
+                    var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
                     foreach (var edge in data.Edges)
                     {
                         var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
                         var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
 
                         if (vertA.Z > 0 && vertB.Z > 0)
-                            DrawLine(context, vertA, vertB, color, addColors);
+                            DrawLine(frameData.Context, vertA, vertB, frameData.Color, frameData.AddColors);
                     }
                 }
             }

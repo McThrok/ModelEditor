@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class Torus : RenderableObj
+    public class Torus : SceneObject, IRenderableObj
     {
         private double _largeRadius = 5;
         private double _smallRadius = 1;
@@ -68,7 +68,7 @@ namespace ModelEditor
             Name = nameof(Torus);
         }
 
-        public override RenderData GetRenderData()
+        public  RenderData GetRenderData()
         {
             if (_dataChanged)
             {

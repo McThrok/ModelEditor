@@ -9,16 +9,16 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public abstract class RenderableObj : SceneObject
+    public interface IRenderableObj
     {
-        public abstract RenderData GetRenderData();
+        RenderData GetRenderData();
     }
 
     public class RenderData
     {
+        public Matrix4x4 Matrix { get; set; }
         public List<Vector3> Vertices { get; set; }
         public List<Edge> Edges { get; set; }
-
     }
-    
+
 }
