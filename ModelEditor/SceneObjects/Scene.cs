@@ -18,7 +18,10 @@ namespace ModelEditor
         public Scene()
         {
             Name = "Scene";
-            AddCube(this);
+
+            //AddCube(this);
+            AddVertex(this);
+
             InitCamera();
         }
 
@@ -38,6 +41,10 @@ namespace ModelEditor
         public SceneObject AddTorus(SceneObject parent)
         {
             return AddObj(new Torus(), parent);
+        }
+        public SceneObject AddVertex(SceneObject parent)
+        {
+            return AddObj(new Vertex(), parent);
         }
         public SceneObject AddEmptyObject(SceneObject parent)
         {

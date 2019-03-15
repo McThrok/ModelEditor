@@ -85,6 +85,10 @@ namespace ModelEditor
         {
             SelectItem(Engine.Scene.AddEmptyObject(GetSelectedObj()));
         }
+        private void Vertex_Click(object sender, RoutedEventArgs e)
+        {
+            SelectItem(Engine.Scene.AddVertex(GetSelectedObj()));
+        }
 
         private SceneObject GetSelectedObj()
         {

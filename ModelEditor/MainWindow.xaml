@@ -18,6 +18,7 @@
 
         <StackPanel Orientation="Horizontal" >
             <Button Margin="5" Height="20" Click="Torus_Click">Add Torus</Button>
+            <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
             <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                 <TextBlock Text="Anaglyph:  "/>

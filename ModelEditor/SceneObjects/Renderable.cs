@@ -28,7 +28,19 @@ namespace ModelEditor
 
     public class ScreenRenderData
     {
-        public List<Vector2> Pixels { get; set; }
+        public List<Vector2Int> Pixels { get; set; }
+    }
+
+    public struct Vector2Int
+    {
+        public int X;
+        public int Y;
+
+        public Vector2Int(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
     }
 
 }

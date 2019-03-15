@@ -110,11 +110,7 @@ namespace ModelEditor
                 {
                     foreach (var pix in data.Pixels)
                     {
-                        var position = center;
-                        position.X += pix.X;
-                        position.Y += pix.Y;
-
-                        DrawOnScren(frameData.Context, position, frameData.Color, frameData.AddColors);
+                        DrawOnScren(frameData.Context, center, pix, frameData.Color, frameData.AddColors);
                     }
                 }
 
@@ -126,17 +122,18 @@ namespace ModelEditor
             }
         }
 
-        private void DrawOnScren(BitmapContext ctx, Vector4 vert, Color col, bool addColors)
+        private void DrawOnScren(BitmapContext ctx, Vector4 center, Vector2Int pix, Color col, bool addColors)
         {
-            var A = new Point(vert.X / vert.W, vert.Y / vert.W);
+            var V = new Point(center.X / center.W, center.Y / center.W);
 
             var width = _wb.PixelWidth;
             var height = _wb.PixelHeight;
 
-            var x = Convert.ToInt32((A.X + 1) / 2 * width);
-            var y = Convert.ToInt32((1 - (A.Y + 1) / 2) * height);
+            var x = Convert.ToInt32((V.X + 1) / 2 * width) + pix.X;
+            var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height) + pix.Y;
 
-            ctx.MySetPixel(x,y, col, addColors);
+            if (x > 0 && x < width && y > 0 && y < height)
+                ctx.MySetPixel(x, y, col, addColors);
         }
 
         private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, Color col, bool addColors)

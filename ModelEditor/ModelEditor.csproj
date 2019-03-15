@@ -73,7 +73,7 @@
     <Compile Include="Common\WBExtension.cs" />
     <Compile Include="Engine\InputManager.cs" />
     <Compile Include="Engine\Engine.cs" />
-    <Compile Include="SceneObjects\Objects\Point.cs" />
+    <Compile Include="SceneObjects\Objects\Vertex.cs" />
     <Compile Include="SceneObjects\Objects\Cube.cs" />
     <Compile Include="SceneObjects\Objects\Torus.cs" />
     <Compile Include="SceneObjects\Renderable.cs" />
