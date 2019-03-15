@@ -51,9 +51,9 @@ namespace ModelEditor
 
         private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            bitmapImage.Focus();         // Set Logical Focus
-            Keyboard.Focus(bitmapImage); // Set Keyboard Focus
-            FocusManager.SetIsFocusScope(bitmapImage, true);
+            //bitmapImage.Focus();         // Set Logical Focus
+            //Keyboard.Focus(bitmapImage); // Set Keyboard Focus
+            //FocusManager.SetIsFocusScope(bitmapImage, true);
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
