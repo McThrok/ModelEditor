@@ -18,7 +18,7 @@ namespace ModelEditor
         public Scene()
         {
             Name = "Scene";
-            AddCube();
+            AddCube(this);
             InitCamera();
         }
 
@@ -31,19 +31,25 @@ namespace ModelEditor
             Children.Add(Camera);
         }
 
-        public void AddCube()
+        public SceneObject AddCube(SceneObject parent)
         {
-            var obj = new Cube();
-            obj.Parent = this;
-            Children.Add(obj);
+            return AddObj(new Cube(), parent);
         }
-        public void AddTorus()
+        public SceneObject AddTorus(SceneObject parent)
         {
-            var obj = new Torus();
-            obj.Parent = this;
-            Children.Add(obj);
+            return AddObj(new Torus(), parent);
         }
+        public SceneObject AddEmptyObject(SceneObject parent)
+        {
+            return AddObj(new SceneObject() { Name = "Empty Object" }, parent);
+        }
+        private SceneObject AddObj(SceneObject obj, SceneObject parent)
+        {
+            obj.Parent = parent ?? this;
+            Children.Add(obj);
 
+            return obj;
+        }
 
         private Vector3 GetRandomPosition()
         {

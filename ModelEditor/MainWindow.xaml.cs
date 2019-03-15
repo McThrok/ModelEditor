@@ -44,7 +44,6 @@ namespace ModelEditor
 
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
-
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
@@ -76,19 +75,12 @@ namespace ModelEditor
 
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.AddTorus();
+            SelectItem(Engine.Scene.AddTorus(GetSelectedObj()));
         }
-
-        //private void SelectedObjectChange(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (e.AddedItems.Count - e.RemovedItems.Count >= 0)
-        //        objectMenu.Visibility = Visibility.Visible;
-        //    else
-        //        objectMenu.Visibility = Visibility.Hidden;
-
-        //    var item = GetSelectedObj();
-        //    TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
-        //}
+        private void Empty_Click(object sender, RoutedEventArgs e)
+        {
+            SelectItem(Engine.Scene.AddEmptyObject(GetSelectedObj()));
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -97,6 +89,15 @@ namespace ModelEditor
         private SceneObject GetSelectedObj()
         {
             return objectList.SelectedItem as SceneObject;
+        }
+        private void SelectItem(SceneObject item)
+        {
+            //TODO: select item in tree view
+            //if (item == null)
+            //    return;
+
+            //var tvi = objectList.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+            //tvi.IsSelected = true;
         }
 
         private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }

@@ -29,12 +29,12 @@ namespace ModelEditor
             var vertices = new List<Vector3>();
             vertices.Add(new Vector3(-1, -1, 1));
             vertices.Add(new Vector3(1, -1, 1));
-            vertices.Add(new Vector3(1, -1, -50));
-            vertices.Add(new Vector3(-1, -1, -50));
+            vertices.Add(new Vector3(1, -1, -1));
+            vertices.Add(new Vector3(-1, -1, -1));
             vertices.Add(new Vector3(-1, 1, 1));
             vertices.Add(new Vector3(1, 1, 1));
-            vertices.Add(new Vector3(1, 1, -50));
-            vertices.Add(new Vector3(-1, 1, -50));
+            vertices.Add(new Vector3(1, 1, -1));
+            vertices.Add(new Vector3(-1, 1, -1));
 
             return vertices;
         }
