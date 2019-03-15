@@ -24,6 +24,7 @@ namespace ModelEditor
             InitCursor();
 
             AddVertex(this);
+
         }
 
         public void InitCamera()

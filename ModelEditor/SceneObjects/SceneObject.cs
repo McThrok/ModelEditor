@@ -38,7 +38,7 @@ namespace ModelEditor
 
         public virtual void Rotate(Vector3 CreateRotation)
         {
-            Matrix = MyMatrix4x4.Compose(Matrix4x4.CreateRotationX(CreateRotation.X), Matrix4x4.CreateRotationY(CreateRotation.Y), Matrix4x4.CreateRotationZ(CreateRotation.Z), Matrix);
+            Matrix *= MyMatrix4x4.CreateRotation(CreateRotation);
         }
         public virtual void Rotate(double x, double y, double z)
         {
@@ -46,7 +46,7 @@ namespace ModelEditor
         }
         public virtual void RotateLoc(Vector3 CreateRotation)
         {
-            Matrix = MyMatrix4x4.Compose(Matrix, Matrix4x4.CreateRotationX(CreateRotation.X), Matrix4x4.CreateRotationY(CreateRotation.Y), Matrix4x4.CreateRotationZ(CreateRotation.Z));
+            Matrix = MyMatrix4x4.CreateRotation(CreateRotation) * Matrix;
         }
         public virtual void RotateLoc(double x, double y, double z)
         {
@@ -75,6 +75,18 @@ namespace ModelEditor
             set
             {
                 Matrix = MyMatrix4x4.Transform(value.Position, value.Rotation, value.Scale);
+            }
+        }
+
+        public Matrix4x4 GlobalMatrix
+        {
+            get
+            {
+                return Matrix * (Parent != null ? Parent.GlobalMatrix : Matrix4x4.Identity);
+            }
+            set
+            {
+                Matrix = value * Parent.GlobalMatrix.Inversed();
             }
         }
     }

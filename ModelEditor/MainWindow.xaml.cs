@@ -248,9 +248,11 @@ namespace ModelEditor
         }
         private void CopyItem(SceneObject _sourceItem, SceneObject _targetItem)
         {
+            var global = _sourceItem.GlobalMatrix;
             _sourceItem.Parent.Children.Remove(_sourceItem);
             _sourceItem.Parent = _targetItem;
             _targetItem.Children.Add(_sourceItem);
+            _sourceItem.GlobalMatrix = global;
         }
         private SceneObject GetNearestContainer(UIElement element)
         {
