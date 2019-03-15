@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 
 namespace ModelEditor
 {
@@ -44,12 +45,15 @@ namespace ModelEditor
 
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
+
+            BitmapContainer.MouseDown += BitmapContainer_MouseDown;
         }
 
-        protected override void OnMouseDown(MouseButtonEventArgs e)
+        private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            base.OnMouseDown(e);
-            BitmapContainer.Focus();
+            bitmapImage.Focus();         // Set Logical Focus
+            Keyboard.Focus(bitmapImage); // Set Keyboard Focus
+            FocusManager.SetIsFocusScope(bitmapImage, true);
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
@@ -80,10 +84,6 @@ namespace ModelEditor
         private void Empty_Click(object sender, RoutedEventArgs e)
         {
             SelectItem(Engine.Scene.AddEmptyObject(GetSelectedObj()));
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
         }
 
         private SceneObject GetSelectedObj()
