@@ -11,6 +11,19 @@ namespace ModelEditor
 {
     public class Cube : SceneObject, IRenderableObj
     {
+        public Cube()
+        {
+            Name = nameof(Cube);
+        }
+
+        public RenderData GetRenderData()
+        {
+            var renderData = new RenderData();
+            renderData.Vertices = GetVertices();
+            renderData.Edges = GetEdges();
+
+            return renderData;
+        }
         private List<Vector3> GetVertices()
         {
             var vertices = new List<Vector3>();
@@ -42,20 +55,6 @@ namespace ModelEditor
             edges.Add(new Edge(7, 4));
 
             return edges;
-        }
-
-        public Cube()
-        {
-            Name = nameof(Cube);
-        }
-
-        public RenderData GetRenderData()
-        {
-            var renderData = new RenderData();
-            renderData.Vertices = GetVertices();
-            renderData.Edges = GetEdges();
-
-            return renderData;
         }
     }
 }

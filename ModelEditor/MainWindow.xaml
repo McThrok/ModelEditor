@@ -51,7 +51,7 @@
 
             <StackPanel Grid.Row="0" >
                 <TextBlock Text="Object list:" />
-                <TreeView Name="objectList" SelectedItemChanged="TrvFamilies_SelectedItemChanged">
+                <TreeView Name="objectList" SelectedItemChanged="SelectedObjectChange">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:SceneObject}" ItemsSource="{Binding Children}">
                             <TextBlock Text="{Binding Name}"/>
@@ -83,7 +83,6 @@
                 </TreeView>
 
 
-                <TextBlock Text="Object list:" />
                 <!--<ListView Name="objectList" SelectionChanged="SelectedObjectChange" SelectionMode="Single">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -96,7 +95,7 @@
 
 
 
-            <StackPanel Grid.Row="1" Name="objectMenu" Visibility="Hidden">
+            <StackPanel Grid.Row="1" Name="objectMenu" Visibility="Collapsed">
                 <Grid Margin="5" Name="TorusMenu">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"/>

@@ -86,23 +86,23 @@ namespace ModelEditor
         {
             var model = parentMatrix * obj.Matrix;
 
+            if (obj is IRenderableObj renderableObj)
+            {
+                var data = renderableObj.GetRenderData();
+                var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+                foreach (var edge in data.Edges)
+                {
+                    var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
+                    var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
+
+                    if (vertA.Z > 0 && vertB.Z > 0)
+                        DrawLine(frameData.Context, vertA, vertB, frameData.Color, frameData.AddColors);
+                }
+            }
+
             foreach (var child in obj.Children)
             {
                 RenderRec(child, model, frameData);
-
-                if (child is IRenderableObj renderableObj)
-                {
-                    var data = renderableObj.GetRenderData();
-                    var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
-                    foreach (var edge in data.Edges)
-                    {
-                        var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
-                        var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
-
-                        if (vertA.Z > 0 && vertB.Z > 0)
-                            DrawLine(frameData.Context, vertA, vertB, frameData.Color, frameData.AddColors);
-                    }
-                }
             }
         }
 

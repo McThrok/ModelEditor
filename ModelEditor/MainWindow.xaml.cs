@@ -50,7 +50,7 @@ namespace ModelEditor
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);
-            Keyboard.ClearFocus();
+            BitmapContainer.Focus();
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
@@ -79,16 +79,16 @@ namespace ModelEditor
             Engine.Scene.AddTorus();
         }
 
-        private void SelectedObjectChange(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count - e.RemovedItems.Count >= 0)
-                objectMenu.Visibility = Visibility.Visible;
-            else
-                objectMenu.Visibility = Visibility.Hidden;
+        //private void SelectedObjectChange(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (e.AddedItems.Count - e.RemovedItems.Count >= 0)
+        //        objectMenu.Visibility = Visibility.Visible;
+        //    else
+        //        objectMenu.Visibility = Visibility.Hidden;
 
-            var item = GetSelectedObj();
-            TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
-        }
+        //    var item = GetSelectedObj();
+        //    TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
+        //}
         
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -123,12 +123,12 @@ namespace ModelEditor
         private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.EyeDistance = (float)(0.3f * e.NewValue); }
         private void Viewport_Changed(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.ViewportDistance = (float)(5+35f * e.NewValue); }
 
-        private void TrvFamilies_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void SelectedObjectChange(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (e.NewValue!=null)
                 objectMenu.Visibility = Visibility.Visible;
             else
-                objectMenu.Visibility = Visibility.Hidden;
+                objectMenu.Visibility = Visibility.Collapsed;
 
             var item = GetSelectedObj();
             TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
