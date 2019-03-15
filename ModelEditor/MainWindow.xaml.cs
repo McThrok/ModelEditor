@@ -46,6 +46,9 @@ namespace ModelEditor
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
 
+            var sceneNode = objectList.ItemContainerGenerator.ContainerFromItem(objectList.Items[0]) as TreeViewItem;
+            sceneNode.IsExpanded = true;
+
             BitmapContainer.MouseDown += BitmapContainer_MouseDown;
         }
 
@@ -79,15 +82,15 @@ namespace ModelEditor
 
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddTorus(GetSelectedObj()));
+            Engine.Scene.AddTorus(GetSelectedObj());
         }
         private void Empty_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddEmptyObject(GetSelectedObj()));
+            Engine.Scene.AddEmptyObject(GetSelectedObj());
         }
         private void Vertex_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddVertex(GetSelectedObj()));
+            Engine.Scene.AddVertex(GetSelectedObj());
         }
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
@@ -101,15 +104,7 @@ namespace ModelEditor
         {
             return objectList.SelectedItem as SceneObject;
         }
-        private void SelectItem(SceneObject item)
-        {
-            //TODO: select item in tree view
-            //if (item == null)
-            //    return;
 
-            //var tvi = objectList.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
-            //tvi.IsSelected = true;
-        }
 
         private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
         private void PositionXDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(-_positionChangeSpeed, 0, 0); }
