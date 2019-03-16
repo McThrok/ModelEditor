@@ -20,6 +20,17 @@ namespace ModelEditor
             GlobalMatrixChange += MoveHeldObjects;
         }
 
+        public void SetTarget(Vector3 position)
+        {
+            var pos = GlobalMatrix.Inversed().Multiply(position.ToVector4());
+            MoveLoc(pos.ToVector3());
+        }
+        public void SetTarget(SceneObject obj)
+        {
+            var pos = obj.GlobalMatrix.Multiply(Vector3.Zero.ToVector4());
+            SetTarget(pos.ToVector3());
+        }
+
         private void MoveHeldObjects(object sender, ChangeMatrixEventArgs e)
         {
             if (HeldObjects.Count == 0)
@@ -30,7 +41,6 @@ namespace ModelEditor
             foreach (var obj in HeldObjects)
                 obj.GlobalMatrix *= change;
         }
-
         public void HoldObject(IEnumerable<SceneObject> objs)
         {
             ReleaseObjects();
@@ -56,7 +66,6 @@ namespace ModelEditor
             if (toHeld != null)
                 HeldObjects.Add(toHeld);
         }
-
         public void HoldAllObjects(IEnumerable<SceneObject> objs)
         {
             ReleaseObjects();
@@ -69,7 +78,6 @@ namespace ModelEditor
                     HoldAllObjects(obj.Children);
             }
         }
-
         private bool CanBeHeld(SceneObject obj, out float distance)
         {
             distance = 0;
@@ -82,7 +90,6 @@ namespace ModelEditor
             distance = Vector3.Distance(cursorPos, objPos);
             return distance <= Tolerance;
         }
-
         public void ReleaseObjects()
         {
             HeldObjects.Clear();

@@ -171,7 +171,7 @@ namespace ModelEditor
 
             if (e.NewValue is SceneObject item)
             {
-                Engine.Scene.Cursor.GlobalMatrix = item.GlobalMatrix;
+                Engine.Scene.Cursor.SetTarget(item);
 
                 TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
             }
