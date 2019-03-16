@@ -241,19 +241,8 @@ namespace ModelEditor
         }
         private bool CheckDropTarget(SceneObject _sourceItem, SceneObject _targetItem)
         {
-            var node = _targetItem;
-
-            while (node != null)
-            {
-                if (_sourceItem.Id == node.Id)
-                    break;
-
-                node = node.Parent;
-            }
-
-            var result = node == null;
-            return result;
-
+           return !_targetItem.IsEqualOrDescendantOf(_sourceItem);
+          
         }
         private void CopyItem(SceneObject _sourceItem, SceneObject _targetItem)
         {

@@ -12,12 +12,13 @@ namespace ModelEditor
 {
     public class SceneObject
     {
-        public Matrix4x4 Matrix { get; set; } = Matrix4x4.Identity;
-        public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
-        public SceneObject Parent { get; set; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Name { get; set; }
 
-        public virtual string Name { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public SceneObject Parent { get; set; }
+        public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
+
+        public delegate void MatrixDelegate(object sender, ChangeMatrixEventArgs e);
 
         public virtual void Move(Vector3 CreateTranslation)
         {
@@ -62,6 +63,60 @@ namespace ModelEditor
             Matrix = Matrix.Multiply(Matrix4x4.CreateScale(Vector3.One * (float)scale));
         }
 
+        public bool IsEqualOrDescendantOf(SceneObject obj)
+        {
+            var node = this;
+
+            while (node != null)
+            {
+                if (node.Id == obj.Id)
+                    break;
+
+                node = node.Parent;
+            }
+
+            var result = node != null;
+
+            return result;
+        }
+
+        private Matrix4x4 _matrix = Matrix4x4.Identity;
+        public event MatrixDelegate MatrixChange;
+        public Matrix4x4 Matrix
+        {
+            get
+            {
+                return _matrix;
+            }
+            set
+            {
+                if (_matrix != value)
+                {
+                    var old = _matrix;
+                    _matrix = value;
+                    MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, value));
+                }
+            }
+        }
+
+        public event MatrixDelegate GlobalMatrixChange;
+        public Matrix4x4 GlobalMatrix
+        {
+            get
+            {
+                return Matrix * (Parent != null ? Parent.GlobalMatrix : Matrix4x4.Identity);
+            }
+            set
+            {
+                if (GlobalMatrix != value)
+                {
+                    var old = GlobalMatrix;
+                    Matrix = value * Parent.GlobalMatrix.Inversed();
+                    GlobalMatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, value));
+                }
+            }
+        }
+
         public Transform Transform
         {
             get
@@ -75,18 +130,6 @@ namespace ModelEditor
             set
             {
                 Matrix = MyMatrix4x4.Transform(value.Position, value.Rotation, value.Scale);
-            }
-        }
-
-        public Matrix4x4 GlobalMatrix
-        {
-            get
-            {
-                return Matrix * (Parent != null ? Parent.GlobalMatrix : Matrix4x4.Identity);
-            }
-            set
-            {
-                Matrix = value * Parent.GlobalMatrix.Inversed();
             }
         }
     }
@@ -109,4 +152,16 @@ namespace ModelEditor
         public Vector3 Scale { get; set; }
     }
 
+    public class ChangeMatrixEventArgs : EventArgs
+    {
+        public Matrix4x4 OldMatrix { get; set; }
+        public Matrix4x4 NewMatrix { get; set; }
+
+        public ChangeMatrixEventArgs(Matrix4x4 oldMatrix, Matrix4x4 newMatrix)
+        {
+            OldMatrix = oldMatrix;
+            NewMatrix = newMatrix;
+        }
+
+    }
 }
