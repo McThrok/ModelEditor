@@ -13,9 +13,11 @@ namespace ModelEditor
     {
         private ScreenRenderData _screenRenderData;
         private int _range = 5;
+
         public Vertex()
         {
             Name = nameof(Vertex);
+            Holdable = true;
         }
 
         public ScreenRenderData GetRenderData()

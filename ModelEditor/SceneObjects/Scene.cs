@@ -39,7 +39,7 @@ namespace ModelEditor
         }
         public SceneObject AddEmptyObject(SceneObject parent)
         {
-            return AddObj(new SceneObject() { Name = "Empty Object" }, parent);
+            return AddObj(new SceneObject() { Name = "Empty Object", Holdable = true }, parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {

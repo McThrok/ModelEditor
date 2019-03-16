@@ -22,6 +22,9 @@
             <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>
             <Button Margin="5" Height="20" Click="Delete_Click">Delete</Button>
             <Button Margin="5" Height="20" Click="FocuCamera">Focus camera</Button>
+            <Button Margin="5" Height="20" Click="Hold_click">Hold</Button>
+            <Button Margin="5" Height="20" Click="HoldAll_click">HoldAll</Button>
+            <Button Margin="5" Height="20" Click="Release_Click">RElease</Button>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                 <TextBlock Text="Anaglyph:  "/>
                 <CheckBox Checked="CbxAnaglyph_Checked" Unchecked="CbxAnaglyph_Unchecked" />

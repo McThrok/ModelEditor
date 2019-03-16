@@ -66,6 +66,7 @@ namespace ModelEditor
         public Torus()
         {
             Name = nameof(Torus);
+            Holdable = true;
         }
 
         public  ObjRenderData GetRenderData()

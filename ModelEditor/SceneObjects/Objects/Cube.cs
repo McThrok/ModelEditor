@@ -14,6 +14,7 @@ namespace ModelEditor
         public Cube()
         {
             Name = nameof(Cube);
+            Holdable = true;
         }
 
         public ObjRenderData GetRenderData()

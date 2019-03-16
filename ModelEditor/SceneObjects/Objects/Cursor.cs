@@ -17,6 +17,18 @@ namespace ModelEditor
         public Cursor()
         {
             Name = nameof(Cursor);
+            GlobalMatrixChange += MoveHeldObjects;
+        }
+
+        private void MoveHeldObjects(object sender, ChangeMatrixEventArgs e)
+        {
+            if (HeldObjects.Count == 0)
+                return;
+
+            var change = e.NewMatrix * e.OldMatrix.Inversed();
+
+            foreach (var obj in HeldObjects)
+                obj.GlobalMatrix *= change;
         }
 
         public void HoldObject(IEnumerable<SceneObject> objs)
