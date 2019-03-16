@@ -27,7 +27,7 @@ namespace ModelEditor
     public class InputManager
     {
         private readonly Scene _scene;
-        private readonly WriteableBitmap _writeableBitmap;
+        private readonly WriteableBitmap _wb;
         private readonly Panel _bitmapConatiner;
 
         private Dictionary<Move, bool> _moveActions;
@@ -38,7 +38,7 @@ namespace ModelEditor
         public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene)
         {
             _bitmapConatiner = bitmapConatiner;
-            _writeableBitmap = writeableBitmap;
+            _wb = writeableBitmap;
             _scene = scene;
 
             InitMoveActions();
@@ -106,13 +106,60 @@ namespace ModelEditor
             _scene.Camera.Matrix = MyMatrix4x4.Compose(move, rotationY, rotationX);
         }
 
-        public void OnMouseLeftButtonDown(Point position)
+        public SceneObject OnMouseLeftButtonDown(Point pos)
+        {
+            //TODO: refactor
+
+            if (pos.X >= 0 && pos.Y >= 0 && pos.X < _wb.PixelWidth && pos.Y < _wb.PixelHeight)
+            {
+                var position = new Vector2((float)(pos.X / _wb.PixelWidth * 2 - 1), (float)((1 - pos.X / _wb.PixelWidth) * 2 - 1));
+                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100);
+
+                Stack<SceneObject> toCheck = new Stack<SceneObject>(_scene.Children);
+                float best = float.MaxValue;
+                SceneObject toSelect = null;
+
+                var matrix = _scene.Camera.GlobalMatrix.Inversed() * projection;
+
+                while (toCheck.Count > 0)
+                {
+                    var obj = toCheck.Pop();
+
+                    if (obj.Holdable)
+                    {
+                        var objPos = (obj.GlobalMatrix * matrix).Multiply(Vector3.Zero.ToVector4());
+
+                        if (objPos.Z > 0)
+                        {
+                            objPos /= objPos.W;
+                            var x = objPos.X - position.X;
+                            var y = objPos.Y - position.Y;
+                            var dist = (float)Math.Sqrt(x * x + y * y);
+                            if (dist < best)
+                            {
+                                best = dist;
+                                toSelect = obj;
+                            }
+                        }
+
+                    }
+
+                    foreach (var child in obj.Children)
+                        toCheck.Push(child);
+                }
+
+                return toSelect;
+            }
+
+            return null;
+        }
+        public void OnMouseRightButtonDown(Point position)
         {
             var pos = position;
-            if (pos.X >= 0 && pos.Y >= 0 && pos.X < _writeableBitmap.PixelWidth && pos.Y < _writeableBitmap.PixelHeight)
+            if (pos.X >= 0 && pos.Y >= 0 && pos.X < _wb.PixelWidth && pos.Y < _wb.PixelHeight)
                 _lastMousePosition = pos;
         }
-        public void OnMouseLeftButtonUp()
+        public void OnMouseRightButtonUp()
         {
             _lastMousePosition = null;
         }

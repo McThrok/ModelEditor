@@ -44,7 +44,10 @@ namespace ModelEditor
                 var obj = toCheck.Pop();
 
                 if (CanBeHeld(obj, out float dist) && dist < best)
+                {
+                    best = dist;
                     toHeld = obj;
+                }
 
                 foreach (var child in obj.Children)
                     toCheck.Push(child);

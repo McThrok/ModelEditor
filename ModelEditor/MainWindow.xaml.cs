@@ -62,12 +62,18 @@ namespace ModelEditor
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            Engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapContainer));
+            var obj = Engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapContainer));
+            SelectItem(obj);
         }
-        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
-            base.OnMouseLeftButtonUp(e);
-            Engine?.Input.OnMouseLeftButtonUp();
+            base.OnMouseRightButtonDown(e);
+            Engine?.Input.OnMouseRightButtonDown(e.GetPosition(BitmapContainer));
+        }
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseRightButtonUp(e);
+            Engine?.Input.OnMouseRightButtonUp();
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -104,11 +110,34 @@ namespace ModelEditor
                 Engine.Scene.Camera.SetTarget(item);
         }
 
+        private void SelectItem(SceneObject obj)
+        {
+            var tvi = ContainerFromItemRecursive(objectList.ItemContainerGenerator, obj);
+            if (tvi != null)
+                tvi.IsSelected = true;
+        }
         private SceneObject GetSelectedObj()
         {
             return objectList.SelectedItem as SceneObject;
         }
 
+        public TreeViewItem ContainerFromItemRecursive(ItemContainerGenerator root, object item)
+        {
+            var treeViewItem = root.ContainerFromItem(item) as TreeViewItem;
+            if (treeViewItem != null)
+                return treeViewItem;
+            foreach (var subItem in root.Items)
+            {
+                treeViewItem = root.ContainerFromItem(subItem) as TreeViewItem;
+                if (treeViewItem != null)
+                {
+                    var search = ContainerFromItemRecursive(treeViewItem.ItemContainerGenerator, item);
+                    if (search != null)
+                        return search;
+                }
+            }
+            return null;
+        }
 
         private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
         private void PositionXDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(-_positionChangeSpeed, 0, 0); }
@@ -241,8 +270,8 @@ namespace ModelEditor
         }
         private bool CheckDropTarget(SceneObject _sourceItem, SceneObject _targetItem)
         {
-           return !_targetItem.IsEqualOrDescendantOf(_sourceItem);
-          
+            return !_targetItem.IsEqualOrDescendantOf(_sourceItem);
+
         }
         private void CopyItem(SceneObject _sourceItem, SceneObject _targetItem)
         {
@@ -261,7 +290,6 @@ namespace ModelEditor
         private void HoldAll_click(object sender, RoutedEventArgs e)
         {
             Engine.Scene.Cursor.HoldAllObjects(Engine.Scene.Children);
-
         }
 
         private void Release_Click(object sender, RoutedEventArgs e)

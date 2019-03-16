@@ -94,8 +94,12 @@ namespace ModelEditor
                 if (_matrix != value)
                 {
                     var old = _matrix;
+                    var oldGlobal = GlobalMatrix;
+
                     _matrix = value;
-                    MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, value));
+
+                    MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, Matrix));
+                    GlobalMatrixChange?.Invoke(this, new ChangeMatrixEventArgs(oldGlobal, GlobalMatrix));
                 }
             }
         }
@@ -111,9 +115,13 @@ namespace ModelEditor
             {
                 if (GlobalMatrix != value)
                 {
-                    var old = GlobalMatrix;
+                    var old = _matrix;
+                    var oldGlobal = GlobalMatrix;
+
                     Matrix = value * Parent.GlobalMatrix.Inversed();
-                    GlobalMatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, value));
+
+                    MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, Matrix));
+                    GlobalMatrixChange?.Invoke(this, new ChangeMatrixEventArgs(oldGlobal, GlobalMatrix));
                 }
             }
         }
