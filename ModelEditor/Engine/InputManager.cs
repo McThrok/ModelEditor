@@ -29,9 +29,11 @@ namespace ModelEditor
         private readonly Scene _scene;
         private readonly WriteableBitmap _writeableBitmap;
         private readonly Panel _bitmapConatiner;
+
         private Dictionary<Move, bool> _moveActions;
         private Vector3 _cameraRotation = Vector3.Zero;
         private Point? _lastMousePosition;
+        private bool _ctrlPressed = false;
 
         public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene)
         {
@@ -68,9 +70,13 @@ namespace ModelEditor
             if (_moveActions[Move.Up]) moveDir.Y++;
             if (_moveActions[Move.Down]) moveDir.Y--;
 
-            var cameraSpeed = 0.1f;
-            var translateMatrix =  Matrix4x4.CreateTranslation(cameraSpeed * moveDir);
-            _scene.Camera.Matrix = _scene.Camera.Matrix.Multiply(translateMatrix);
+            var speed = 0.3f;
+            var translateMatrix = Matrix4x4.CreateTranslation(speed * moveDir);
+
+            if (_ctrlPressed)
+                _scene.Cursor.Matrix = _scene.Cursor.Matrix.Multiply(translateMatrix);
+            else
+                _scene.Camera.Matrix = _scene.Camera.Matrix.Multiply(translateMatrix);
         }
 
         private void UpdateRotations()
@@ -95,7 +101,7 @@ namespace ModelEditor
 
             var rotationX = Matrix4x4.CreateRotationX(_cameraRotation.X);
             var rotationY = Matrix4x4.CreateRotationY(_cameraRotation.Y);
-            var move =  Matrix4x4.CreateTranslation(translation);
+            var move = Matrix4x4.CreateTranslation(translation);
 
             _scene.Camera.Matrix = MyMatrix4x4.Compose(move, rotationY, rotationX);
         }
@@ -128,6 +134,7 @@ namespace ModelEditor
                 case Key.D: _moveActions[Move.Right] = down; break;
                 case Key.Q: _moveActions[Move.Up] = down; break;
                 case Key.E: _moveActions[Move.Down] = down; break;
+                case Key.LeftCtrl: _ctrlPressed = down; break;
             }
 
         }

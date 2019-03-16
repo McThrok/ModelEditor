@@ -11,6 +11,9 @@ namespace ModelEditor
 {
     public class Cursor : SceneObject, IRenderableObj
     {
+
+        public float Tolerance { get; set; } = 10;
+
         public Cursor()
         {
             Name = nameof(Cursor);
