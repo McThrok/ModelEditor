@@ -13,6 +13,7 @@ namespace ModelEditor
     public class SceneObject
     {
         public string Name { get; set; }
+        public bool Holdable { get; set; }
 
         public Guid Id { get; set; } = Guid.NewGuid();
         public SceneObject Parent { get; set; }

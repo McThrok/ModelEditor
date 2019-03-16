@@ -23,26 +23,6 @@ namespace ModelEditor
         public static Matrix4x4 Multiply(this Matrix4x4 m1, Matrix4x4 m2)
         {
             return m2 * m1;
-            return new Matrix4x4(
-                Vector4.Dot(m1.GetRow1(), m2.GetCol1()),
-                Vector4.Dot(m1.GetRow2(), m2.GetCol1()),
-                Vector4.Dot(m1.GetRow3(), m2.GetCol1()),
-                Vector4.Dot(m1.GetRow4(), m2.GetCol1()),
-
-                Vector4.Dot(m1.GetRow1(), m2.GetCol2()),
-                Vector4.Dot(m1.GetRow2(), m2.GetCol2()),
-                Vector4.Dot(m1.GetRow3(), m2.GetCol2()),
-                Vector4.Dot(m1.GetRow4(), m2.GetCol2()),
-
-                Vector4.Dot(m1.GetRow1(), m2.GetCol3()),
-                Vector4.Dot(m1.GetRow2(), m2.GetCol3()),
-                Vector4.Dot(m1.GetRow3(), m2.GetCol3()),
-                Vector4.Dot(m1.GetRow4(), m2.GetCol3()),
-
-                Vector4.Dot(m1.GetRow1(), m2.GetCol4()),
-                Vector4.Dot(m1.GetRow2(), m2.GetCol4()),
-                Vector4.Dot(m1.GetRow3(), m2.GetCol4()),
-                Vector4.Dot(m1.GetRow4(), m2.GetCol4()));
         }
         public static Vector4 Multiply(this Matrix4x4 matrix, Vector4 vector)
         {
