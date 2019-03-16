@@ -94,9 +94,7 @@ namespace ModelEditor
         }
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var item = GetSelectedObj();
-            if (item != null && item.Parent != null)
-                item.Parent.Children.Remove(item);
+            Engine.Scene.Delete(GetSelectedObj());
         }
 
         private void FocuCamera(object sender, RoutedEventArgs e)

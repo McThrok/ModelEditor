@@ -64,6 +64,17 @@ namespace ModelEditor
 
             return result;
         }
+
+        public void Delete(SceneObject obj)
+        {
+            if (obj == null && obj.Parent != null)
+                return;
+
+            if (obj.Id == Camera.Id || obj.Id == Cursor.Id)
+                return;
+
+            obj.Parent.Children.Remove(obj);
+        }
     }
 }
 
