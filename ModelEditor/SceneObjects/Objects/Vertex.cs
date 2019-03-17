@@ -11,12 +11,13 @@ namespace ModelEditor
 {
     public class Vertex : SceneObject, IScreenRenderable
     {
+        private static int _count = 0;
         private ScreenRenderData _screenRenderData;
         private int _range = 5;
 
         public Vertex()
         {
-            Name = nameof(Vertex);
+            Name = nameof(Vertex) + _count++.ToString();
             Holdable = true;
         }
 

@@ -11,6 +11,7 @@ namespace ModelEditor
 {
     public class Torus : SceneObject, IRenderableObj
     {
+        private static int _count = 0;
         private double _largeRadius = 5;
         private double _smallRadius = 1;
         private int _largeDensity = 10;
@@ -65,7 +66,7 @@ namespace ModelEditor
 
         public Torus()
         {
-            Name = nameof(Torus);
+            Name = nameof(Torus) + _count++.ToString(); 
             Holdable = true;
         }
 
