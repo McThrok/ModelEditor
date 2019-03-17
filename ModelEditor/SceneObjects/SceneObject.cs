@@ -158,11 +158,11 @@ namespace ModelEditor
         #region UIBinding
         public float PositionX
         {
-            get => Transform.Position.Y;
+            get => Transform.Position.X;
             set
             {
                 var t = Transform;
-                t.Position = new Vector3(t.Position.X, value, t.Position.Z);
+                t.Position = new Vector3(value, t.Position.Y, t.Position.Z);
                 Transform = t;
             }
         }
@@ -257,7 +257,7 @@ namespace ModelEditor
                                 nameof(ScaleX), nameof(ScaleY), nameof(ScaleZ),};
 
             foreach (var prop in props)
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(props)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
         #endregion
 

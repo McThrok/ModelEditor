@@ -31,18 +31,18 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                 <TextBlock Text="Eye distance:  "/>
-                <Slider Name="EyeSlider" Maximum="1" Width="300" VerticalAlignment="Center" ValueChanged="Anaglyph_Change"/>
+                <Slider Name="EyeSlider" Maximum="1" Width="100" VerticalAlignment="Center" ValueChanged="Anaglyph_Change" LargeChange="0.05" SmallChange="0.01"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                 <TextBlock Text="Viewport distance:  "/>
-                <Slider Name="ViewportSlider" Maximum="1" Width="300" VerticalAlignment="Center" ValueChanged="Viewport_Changed"/>
+                <Slider Name="ViewportSlider" Maximum="1" Width="100" VerticalAlignment="Center" ValueChanged="Viewport_Changed" LargeChange="0.05" SmallChange="0.01"/>
             </StackPanel>
         </StackPanel>
 
         <Grid Grid.Row="1" Background="#aaaaaa">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="240" />
                 <ColumnDefinition Width="180" />
             </Grid.ColumnDefinitions>
 
@@ -76,25 +76,21 @@
 
                     <Grid Margin="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="70" />
-                            <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="50" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="20" />
                             <RowDefinition Height="30" />
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="70"/>
+                            <RowDefinition Height="70"/>
+                            <RowDefinition Height="70"/>
                         </Grid.RowDefinitions>
 
-
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Name :" VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.PositionX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        
-                        <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="Name :" VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.Name, ElementName=objectList}" />-->
+                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.Name, ElementName=objectList}" />
 
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="X" VerticalAlignment="Center" TextAlignment="Center"/>
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="Y" VerticalAlignment="Center" TextAlignment="Center"/>
@@ -103,42 +99,51 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Position" VerticalAlignment="Center" TextAlignment="Center"/>
                         <StackPanel Grid.Row="2" Grid.Column="1" >
                             <Button Height="20" Click="PositionXUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.PositionX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="PositionXDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="2" Grid.Column="2" >
                             <Button Height="20" Click="PositionYUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.PositionY, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="PositionYDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="2" Grid.Column="3" >
                             <Button Height="20" Click="PositionZUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.PositionZ, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="PositionZDown">-</Button>
                         </StackPanel>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Rotation" VerticalAlignment="Center" TextAlignment="Center"/>
                         <StackPanel Grid.Row="3" Grid.Column="1" >
                             <Button Height="20" Click="RotationXUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.RotationX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="RotationXDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="3" Grid.Column="2" >
                             <Button Height="20" Click="RotationYUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.RotationY, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="RotationYDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="3" Grid.Column="3" >
                             <Button Height="20" Click="RotationZUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.RotationZ, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="RotationZDown">-</Button>
                         </StackPanel>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Scale" VerticalAlignment="Center" TextAlignment="Center"/>
                         <StackPanel Grid.Row="4" Grid.Column="1" >
                             <Button Height="20" Click="ScaleXUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.ScaleX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="ScaleXDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="4" Grid.Column="2" >
                             <Button Height="20" Click="ScaleYUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.ScaleY, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="ScaleYDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="4" Grid.Column="3" >
                             <Button Height="20" Click="ScaleZUp">+</Button>
+                            <TextBox Text="{Binding SelectedItem.ScaleZ, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Height="20" Click="ScaleZDown">-</Button>
                         </StackPanel>
 
