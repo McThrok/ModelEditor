@@ -135,27 +135,8 @@ namespace ModelEditor
                 angle += 360;
             return angle;
         }
+
+
     }
 }
 
-//if (false)//xyz
-//           {
-
-//              y = Math.Asin(clamp(m13, -1, 1));
-
-//               if (Math.Abs(m13) < 0.99999)
-//               {
-
-//                  x = Math.Atan2(-m23, m33);
-//                  z = Math.Atan2(-m12, m11);
-
-//               }
-//               else
-//               {
-
-//                  x = Math.Atan2(m32, m22);
-//                  z = 0;
-
-//               }
-
-//           }

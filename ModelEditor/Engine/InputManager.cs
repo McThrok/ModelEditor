@@ -23,7 +23,6 @@ namespace ModelEditor
         Down
     }
 
-
     public class InputManager
     {
         private readonly Scene _scene;

@@ -99,7 +99,7 @@ namespace ModelEditor
                 var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
 
                 var center = matrix.Multiply(new Vector4(0, 0, 0, 1));
-                if (center.Z > 0 && center.Z > 0)
+                if (center.Z > 0)
                 {
                     foreach (var pix in data.Pixels)
                     {

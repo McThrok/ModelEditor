@@ -7,10 +7,11 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Numerics;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace ModelEditor
 {
-    public class SceneObject
+    public class SceneObject : INotifyPropertyChanged
     {
         public string Name { get; set; }
         public bool Holdable { get; set; }
@@ -55,13 +56,13 @@ namespace ModelEditor
             RotateLoc(new Vector3((float)x, (float)y, (float)z));
         }
 
-        public virtual void Scale(double scale)
+        public virtual void Scale(double x, double y, double z)
         {
-            Matrix = Matrix4x4.CreateScale(Vector3.One * (float)scale).Multiply(Matrix);
+            Matrix = Matrix4x4.CreateScale((float)x, (float)y, (float)z).Multiply(Matrix);
         }
-        public virtual void ScaleLoc(double scale)
+        public virtual void ScaleLoc(double x, double y, double z)
         {
-            Matrix = Matrix.Multiply(Matrix4x4.CreateScale(Vector3.One * (float)scale));
+            Matrix = Matrix.Multiply(Matrix4x4.CreateScale((float)x, (float)y, (float)z));
         }
 
         public bool IsEqualOrDescendantOf(SceneObject obj)
@@ -97,9 +98,11 @@ namespace ModelEditor
                     var oldGlobal = GlobalMatrix;
 
                     _matrix = value;
+                    _recalculateTransform = true;
 
                     MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, Matrix));
                     GlobalMatrixChange?.Invoke(this, new ChangeMatrixEventArgs(oldGlobal, GlobalMatrix));
+                    NotifyAllChanges();
                 }
             }
         }
@@ -119,28 +122,145 @@ namespace ModelEditor
                     var oldGlobal = GlobalMatrix;
 
                     Matrix = value * Parent.GlobalMatrix.Inversed();
+                    _recalculateTransform = true;
 
                     MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, Matrix));
                     GlobalMatrixChange?.Invoke(this, new ChangeMatrixEventArgs(oldGlobal, GlobalMatrix));
+                    NotifyAllChanges();
                 }
             }
         }
 
+        private bool _recalculateTransform = true;
+        private Transform _transform;
         public Transform Transform
         {
             get
             {
-                if (!Matrix4x4.Decompose(Matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation))
+                if (_recalculateTransform)
                 {
-                    throw new InvalidOperationException("Cannot decompose matrix");
+                    _recalculateTransform = false;
+                    if (!Matrix4x4.Decompose(Matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation))
+                    {
+                        throw new InvalidOperationException("Cannot decompose matrix");
+                    }
+                    _transform = new Transform(translation, rotation.ToEuler(), scale);
                 }
-                return new Transform(translation, rotation.ToEuler(), scale);
+
+                return _transform;
             }
             set
             {
                 Matrix = MyMatrix4x4.Transform(value.Position, value.Rotation, value.Scale);
             }
         }
+
+        #region UIBinding
+        public float PositionX
+        {
+            get => Transform.Position.Y;
+            set
+            {
+                var t = Transform;
+                t.Position = new Vector3(t.Position.X, value, t.Position.Z);
+                Transform = t;
+            }
+        }
+        public float PositionY
+        {
+            get => Transform.Position.Y;
+            set
+            {
+                var t = Transform;
+                t.Position = new Vector3(t.Position.X, value, t.Position.Z);
+                Transform = t;
+            }
+        }
+        public float PositionZ
+        {
+            get => Transform.Position.Z;
+            set
+            {
+                var t = Transform;
+                t.Position = new Vector3(t.Position.X, t.Position.Y, value);
+                Transform = t;
+            }
+        }
+
+        public float RotationX
+        {
+            get => Transform.Rotation.X;
+            set
+            {
+                var t = Transform;
+                t.Rotation = new Vector3(value, t.Rotation.Y, t.Rotation.Z);
+                Transform = t;
+            }
+        }
+        public float RotationY
+        {
+            get => Transform.Rotation.Y;
+            set
+            {
+                var t = Transform;
+                t.Rotation = new Vector3(t.Rotation.X, value, t.Rotation.Z);
+                Transform = t;
+            }
+        }
+        public float RotationZ
+        {
+            get => Transform.Rotation.Z;
+            set
+            {
+                var t = Transform;
+                t.Rotation = new Vector3(t.Rotation.X, t.Rotation.Y, value);
+                Transform = t;
+            }
+        }
+
+        public float ScaleX
+        {
+            get => Transform.Scale.X;
+            set
+            {
+                var t = Transform;
+                t.Scale = new Vector3(value, t.Scale.Y, t.Scale.Z);
+                Transform = t;
+            }
+        }
+        public float ScaleY
+        {
+            get => Transform.Scale.Y;
+            set
+            {
+                var t = Transform;
+                t.Scale = new Vector3(t.Scale.X, value, t.Scale.Z);
+                Transform = t;
+            }
+        }
+        public float ScaleZ
+        {
+            get => Transform.Scale.Z;
+            set
+            {
+                var t = Transform;
+                t.Scale = new Vector3(t.Scale.X, t.Scale.Y, value);
+                Transform = t;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyAllChanges()
+        {
+            string[] props = { nameof(PositionX), nameof(PositionY), nameof(PositionZ),
+                                nameof(RotationX), nameof(RotationY), nameof(RotationZ),
+                                nameof(ScaleX), nameof(ScaleY), nameof(ScaleZ),};
+
+            foreach (var prop in props)
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(props)));
+        }
+        #endregion
+
     }
 
     public struct Transform
@@ -171,6 +291,5 @@ namespace ModelEditor
             OldMatrix = oldMatrix;
             NewMatrix = newMatrix;
         }
-
     }
 }

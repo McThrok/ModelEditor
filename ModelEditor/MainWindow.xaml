@@ -89,8 +89,12 @@
                             <RowDefinition Height="50"/>
                         </Grid.RowDefinitions>
 
+
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Name :" VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.Name, ElementName=objectList}" />
+                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.PositionX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        
+                        <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="Name :" VerticalAlignment="Center" TextAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.Name, ElementName=objectList}" />-->
 
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="X" VerticalAlignment="Center" TextAlignment="Center"/>
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="Y" VerticalAlignment="Center" TextAlignment="Center"/>
@@ -125,9 +129,17 @@
                         </StackPanel>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Scale" VerticalAlignment="Center" TextAlignment="Center"/>
-                        <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" >
-                            <Button Height="20" Click="ScaleUp">+</Button>
-                            <Button Height="20" Click="ScaleDown">-</Button>
+                        <StackPanel Grid.Row="4" Grid.Column="1" >
+                            <Button Height="20" Click="ScaleXUp">+</Button>
+                            <Button Height="20" Click="ScaleXDown">-</Button>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Grid.Column="2" >
+                            <Button Height="20" Click="ScaleYUp">+</Button>
+                            <Button Height="20" Click="ScaleYDown">-</Button>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Grid.Column="3" >
+                            <Button Height="20" Click="ScaleZUp">+</Button>
+                            <Button Height="20" Click="ScaleZDown">-</Button>
                         </StackPanel>
 
                     </Grid>

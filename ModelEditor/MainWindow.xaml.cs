@@ -153,8 +153,12 @@ namespace ModelEditor
         private void RotationZUp(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, 0, _rotationChangeSpeed); }
         private void RotationZDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, 0, -_rotationChangeSpeed); }
 
-        private void ScaleUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(_scaleChangeSpeed); }
-        private void ScaleDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1 / _scaleChangeSpeed); }
+        private void ScaleXUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(_scaleChangeSpeed, 1, 1); }
+        private void ScaleXDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1 / _scaleChangeSpeed, 1, 1); }
+        private void ScaleYUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, _scaleChangeSpeed, 1); }
+        private void ScaleYDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1 / _scaleChangeSpeed, 1); }
+        private void ScaleZUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1, _scaleChangeSpeed); }
+        private void ScaleZDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1, 1 / _scaleChangeSpeed); }
 
         private void CbxAnaglyph_Checked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = true; }
         private void CbxAnaglyph_Unchecked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = false; }
