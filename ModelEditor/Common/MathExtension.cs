@@ -129,14 +129,23 @@ namespace ModelEditor
         }
         private static float NormalizeAngle(float angle)
         {
-            while (angle > 360)
-                angle -= 360;
-            while (angle < 0)
-                angle += 360;
+            var pi = (float)Math.PI;
+            while (angle > pi)
+                angle -= pi;
+            while (angle < -pi)
+                angle += pi;
             return angle;
         }
 
 
+        public static float ToRadains(this float v)
+        {
+            return (float)(Math.PI * v / 180);
+        }
+        public static float ToAngles(this float v)
+        {
+            return (float)(180 * v / Math.PI);
+        }
     }
 }
 

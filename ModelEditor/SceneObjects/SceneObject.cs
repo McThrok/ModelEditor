@@ -137,7 +137,7 @@ namespace ModelEditor
         {
             get
             {
-                if (_recalculateTransform)
+                 if (_recalculateTransform)
                 {
                     _recalculateTransform = false;
                     if (!Matrix4x4.Decompose(Matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation))
@@ -158,69 +158,69 @@ namespace ModelEditor
         #region UIBinding
         public float PositionX
         {
-            get => Transform.Position.X;
+            get => Round(Transform.Position.X.ToAngles());
             set
             {
                 var t = Transform;
-                t.Position = new Vector3(value, t.Position.Y, t.Position.Z);
+                t.Position = new Vector3(value.ToRadains(), t.Position.Y, t.Position.Z);
                 Transform = t;
             }
         }
         public float PositionY
         {
-            get => Transform.Position.Y;
+            get => Round(Transform.Position.Y.ToAngles());
             set
             {
                 var t = Transform;
-                t.Position = new Vector3(t.Position.X, value, t.Position.Z);
+                t.Position = new Vector3(t.Position.X, value.ToRadains(), t.Position.Z);
                 Transform = t;
             }
         }
         public float PositionZ
         {
-            get => Transform.Position.Z;
+            get => Round(Transform.Position.Z.ToAngles());
             set
             {
                 var t = Transform;
-                t.Position = new Vector3(t.Position.X, t.Position.Y, value);
+                t.Position = new Vector3(t.Position.X, t.Position.Y, value.ToRadains());
                 Transform = t;
             }
         }
 
         public float RotationX
         {
-            get => Transform.Rotation.X;
+            get => Round(Transform.Rotation.X.ToAngles());
             set
             {
                 var t = Transform;
-                t.Rotation = new Vector3(value, t.Rotation.Y, t.Rotation.Z);
+                t.Rotation = new Vector3(value.ToRadains(), t.Rotation.Y, t.Rotation.Z);
                 Transform = t;
             }
         }
         public float RotationY
         {
-            get => Transform.Rotation.Y;
+            get => Round(Transform.Rotation.Y.ToAngles());
             set
             {
                 var t = Transform;
-                t.Rotation = new Vector3(t.Rotation.X, value, t.Rotation.Z);
+                t.Rotation = new Vector3(t.Rotation.X, value.ToRadains(), t.Rotation.Z);
                 Transform = t;
             }
         }
         public float RotationZ
         {
-            get => Transform.Rotation.Z;
+            get => Round(Transform.Rotation.Z.ToAngles());
             set
             {
                 var t = Transform;
-                t.Rotation = new Vector3(t.Rotation.X, t.Rotation.Y, value);
+                t.Rotation = new Vector3(t.Rotation.X, t.Rotation.Y, value.ToRadains());
                 Transform = t;
             }
         }
 
         public float ScaleX
         {
-            get => Transform.Scale.X;
+            get => Round(Transform.Scale.X);
             set
             {
                 var t = Transform;
@@ -230,7 +230,7 @@ namespace ModelEditor
         }
         public float ScaleY
         {
-            get => Transform.Scale.Y;
+            get => Round(Transform.Scale.Y);
             set
             {
                 var t = Transform;
@@ -240,7 +240,7 @@ namespace ModelEditor
         }
         public float ScaleZ
         {
-            get => Transform.Scale.Z;
+            get => Round(Transform.Scale.Z);
             set
             {
                 var t = Transform;
@@ -258,6 +258,11 @@ namespace ModelEditor
 
             foreach (var prop in props)
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        private float Round(float v)
+        {
+            return (float)Math.Round(v, 2);
         }
         #endregion
 
