@@ -106,6 +106,10 @@ namespace ModelEditor
                 }
             }
         }
+        public void InkovePropertyChanged(string prop)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
 
         public event MatrixDelegate GlobalMatrixChange;
         public Matrix4x4 GlobalMatrix
@@ -158,31 +162,31 @@ namespace ModelEditor
         #region UIBinding
         public float PositionX
         {
-            get => Round(Transform.Position.X.ToAngles());
+            get => Round(Transform.Position.X);
             set
             {
                 var t = Transform;
-                t.Position = new Vector3(value.ToRadains(), t.Position.Y, t.Position.Z);
+                t.Position = new Vector3(value, t.Position.Y, t.Position.Z);
                 Transform = t;
             }
         }
         public float PositionY
         {
-            get => Round(Transform.Position.Y.ToAngles());
+            get => Round(Transform.Position.Y);
             set
             {
                 var t = Transform;
-                t.Position = new Vector3(t.Position.X, value.ToRadains(), t.Position.Z);
+                t.Position = new Vector3(t.Position.X, value, t.Position.Z);
                 Transform = t;
             }
         }
         public float PositionZ
         {
-            get => Round(Transform.Position.Z.ToAngles());
+            get => Round(Transform.Position.Z);
             set
             {
                 var t = Transform;
-                t.Position = new Vector3(t.Position.X, t.Position.Y, value.ToRadains());
+                t.Position = new Vector3(t.Position.X, t.Position.Y, value);
                 Transform = t;
             }
         }
@@ -193,7 +197,7 @@ namespace ModelEditor
             set
             {
                 var t = Transform;
-                t.Rotation = new Vector3(value.ToRadains(), t.Rotation.Y, t.Rotation.Z);
+                t.Rotation = new Vector3(value.ToRadians(), t.Rotation.Y, t.Rotation.Z);
                 Transform = t;
             }
         }
@@ -203,7 +207,7 @@ namespace ModelEditor
             set
             {
                 var t = Transform;
-                t.Rotation = new Vector3(t.Rotation.X, value.ToRadains(), t.Rotation.Z);
+                t.Rotation = new Vector3(t.Rotation.X, value.ToRadians(), t.Rotation.Z);
                 Transform = t;
             }
         }
@@ -213,7 +217,7 @@ namespace ModelEditor
             set
             {
                 var t = Transform;
-                t.Rotation = new Vector3(t.Rotation.X, t.Rotation.Y, value.ToRadains());
+                t.Rotation = new Vector3(t.Rotation.X, t.Rotation.Y, value.ToRadians());
                 Transform = t;
             }
         }

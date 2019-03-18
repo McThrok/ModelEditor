@@ -138,7 +138,7 @@ namespace ModelEditor
         }
 
 
-        public static float ToRadains(this float v)
+        public static float ToRadians(this float v)
         {
             return (float)(Math.PI * v / 180);
         }

@@ -16,6 +16,7 @@ namespace ModelEditor
 {
     public class Engine
     {
+        public float qwe { get; set; } = 10;
         private Panel _bitmapConatiner;
         private WriteableBitmap _writableBitmap;
         private readonly float _maxFPS = 30;

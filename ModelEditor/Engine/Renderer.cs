@@ -19,6 +19,7 @@ namespace ModelEditor
         public bool AddColors { get; set; }
     }
 
+
     public class Renderer
     {
         public bool Anaglyphic { get; set; }
@@ -30,11 +31,14 @@ namespace ModelEditor
         private Color _drawColor = Colors.Green;
         private Color _drawLeftColor = Colors.Red;
         private Color _drawRightColor = Colors.Cyan;
+        private float _aspect;
 
         public Renderer(WriteableBitmap wb, Scene scene)
         {
             _wb = wb;
             _scene = scene;
+            _aspect = _wb.PixelWidth / _wb.PixelHeight;
+            _scene.Cursor.GlobalMatrixChange += UpdateCursorScreenPosition;
         }
 
         public void RenderFrame()
@@ -42,17 +46,47 @@ namespace ModelEditor
             _wb.Clear(Colors.Black);
             if (Anaglyphic)
             {
-                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100.0f, EyeDistance / 2, ViewportDistance);
+                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, EyeDistance / 2, ViewportDistance);
                 Render(projLeft, _drawLeftColor, false);
 
-                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100.0f, -EyeDistance / 2, ViewportDistance);
+                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, -EyeDistance / 2, ViewportDistance);
                 Render(projRight, _drawRightColor, true);
             }
             else
             {
-                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100);
+                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100);
                 Render(projection, _drawColor, false);
             }
+        }
+
+
+        private void UpdateCursorScreenPosition(object sender, ChangeMatrixEventArgs e)
+        {
+            var cursor = _scene.Cursor;
+            var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100);
+            var view = _scene.Camera.GlobalMatrix.Inversed();
+
+            var matrix = MyMatrix4x4.Compose(projection, view, cursor.GlobalMatrix);
+
+            var center = matrix.Multiply(new Vector4(0, 0, 0, 1));
+            if (center.Z < 0)
+            {
+                cursor.ScreenPosition = new Vector2Int(-1, -1);
+                return;
+            }
+
+            var V = new Point(center.X / center.W, center.Y / center.W);
+
+            var width = _wb.PixelWidth;
+            var height = _wb.PixelHeight;
+
+            var x = Convert.ToInt32((V.X + 1) / 2 * width);
+            var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height);
+
+            if (x > 0 && x < width && y > 0 && y < height)
+                cursor.ScreenPosition = new Vector2Int(x, y);
+            else
+                cursor.ScreenPosition = new Vector2Int(-1, -1);
         }
 
         private void Render(Matrix4x4 projMatrix, Color color, bool addColors)

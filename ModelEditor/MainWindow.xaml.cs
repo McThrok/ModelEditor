@@ -35,6 +35,7 @@ namespace ModelEditor
         {
             InitializeComponent();
             Loaded += OnLoad;
+            
         }
 
         private async void OnLoad(object sender, RoutedEventArgs e)
@@ -43,13 +44,27 @@ namespace ModelEditor
             objectList.ItemsSource = new ObservableCollection<SceneObject>() { Engine.Scene };
             Engine.Run();
 
+            //init sliders
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
 
+
+            //expand scene list
             var sceneNode = objectList.ItemContainerGenerator.ContainerFromItem(objectList.Items[0]) as TreeViewItem;
             sceneNode.IsExpanded = true;
 
-            BitmapContainer.MouseDown += BitmapContainer_MouseDown;
+            //TODO: clear focus
+           // BitmapContainer.MouseDown += BitmapContainer_MouseDown;
+
+            //cursor
+            Engine.Scene.Cursor.PropertyChanged += Cursor_PropertyChanged;
+            cursorPosition.Text = Engine.Scene.Cursor.ScreenPosition.ToString();
+        }
+
+        private void Cursor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(Engine.Scene.Cursor.ScreenPosition))
+                cursorPosition.Text = Engine.Scene.Cursor.ScreenPosition.ToString();
         }
 
         private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
@@ -181,10 +196,10 @@ namespace ModelEditor
             }
         }
 
-
         #region dragAndDrop
         private Point _lastMouseDown;
         private SceneObject _draggedItem, _target;
+
 
         private void TreeView_MouseDown(object sender, MouseButtonEventArgs e)
         {

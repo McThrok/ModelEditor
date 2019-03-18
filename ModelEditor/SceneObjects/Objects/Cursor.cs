@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Numerics;
+using System.ComponentModel;
 
 namespace ModelEditor
 {
@@ -93,6 +94,25 @@ namespace ModelEditor
         public void ReleaseObjects()
         {
             HeldObjects.Clear();
+        }
+
+
+        //public new event PropertyChangedEventHandler PropertyChanged;
+
+        public float Qwe { get; set; } = 10;
+        private Vector2Int _screenPosition;
+        public Vector2Int ScreenPosition
+        {
+            get => _screenPosition;
+            set
+            {
+                if (_screenPosition != value)
+                {
+                    _screenPosition = value;
+                    this.InkovePropertyChanged(nameof(ScreenPosition));
+                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScreenPosition)));
+                }
+            }
         }
 
         public ObjRenderData GetRenderData()

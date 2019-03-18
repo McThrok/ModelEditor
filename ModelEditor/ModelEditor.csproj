@@ -69,6 +69,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Common\Vector2Int.cs" />
     <Compile Include="Common\MathExtension.cs" />
     <Compile Include="Common\WBExtension.cs" />
     <Compile Include="Engine\InputManager.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="SceneObjects\Objects\Vertex.cs" />
     <Compile Include="SceneObjects\Objects\Cube.cs" />
     <Compile Include="SceneObjects\Objects\Torus.cs" />
-    <Compile Include="SceneObjects\Renderable.cs" />
+    <Compile Include="Common\Common.cs" />
     <Compile Include="Common\Edge.cs" />
     <Compile Include="SceneObjects\Scene.cs" />
     <Compile Include="Engine\Renderer.cs" />
