@@ -69,13 +69,19 @@ namespace ModelEditor
             if (_moveActions[Move.Up]) moveDir.Y++;
             if (_moveActions[Move.Down]) moveDir.Y--;
 
-            var speed = 0.3f;
-            var translateMatrix = Matrix4x4.CreateTranslation(speed * moveDir);
 
             if (_ctrlPressed)
+            {
+                var speed = 0.1f;
+                var translateMatrix = Matrix4x4.CreateTranslation(speed * moveDir);
                 _scene.Cursor.Matrix = _scene.Cursor.Matrix.Multiply(translateMatrix);
+            }
             else
+            {
+                var speed = 0.3f;
+                var translateMatrix = Matrix4x4.CreateTranslation(speed * moveDir);
                 _scene.Camera.Matrix = _scene.Camera.Matrix.Multiply(translateMatrix);
+            }
         }
 
         private void UpdateRotations()
@@ -111,7 +117,7 @@ namespace ModelEditor
 
             if (pos.X >= 0 && pos.Y >= 0 && pos.X < _wb.PixelWidth && pos.Y < _wb.PixelHeight)
             {
-                var position = new Vector2((float)(1.0f* pos.X / _wb.PixelWidth * 2 - 1), (float)((1 - 1.0f * pos.Y / _wb.PixelHeight) * 2 - 1));
+                var position = new Vector2((float)(1.0f * pos.X / _wb.PixelWidth * 2 - 1), (float)((1 - 1.0f * pos.Y / _wb.PixelHeight) * 2 - 1));
                 var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100);
 
                 Stack<SceneObject> toCheck = new Stack<SceneObject>(_scene.Children);

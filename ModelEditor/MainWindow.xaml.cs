@@ -58,7 +58,7 @@ namespace ModelEditor
 
             //cursor
             Engine.Scene.Cursor.PropertyChanged += Cursor_PropertyChanged;
-            cursorPosition.Text = Engine.Scene.Cursor.ScreenPosition.ToString();
+            Cursor_PropertyChanged(this, new PropertyChangedEventArgs(nameof(Engine.Scene.Cursor.ScreenPosition)));
         }
 
         private void Cursor_PropertyChanged(object sender, PropertyChangedEventArgs e)

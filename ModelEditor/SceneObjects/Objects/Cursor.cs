@@ -97,9 +97,6 @@ namespace ModelEditor
         }
 
 
-        //public new event PropertyChangedEventHandler PropertyChanged;
-
-        public float Qwe { get; set; } = 10;
         private Vector2Int _screenPosition;
         public Vector2Int ScreenPosition
         {
@@ -110,7 +107,6 @@ namespace ModelEditor
                 {
                     _screenPosition = value;
                     this.InkovePropertyChanged(nameof(ScreenPosition));
-                    //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScreenPosition)));
                 }
             }
         }
@@ -127,9 +123,9 @@ namespace ModelEditor
         {
             var vertices = new List<Vector3>();
             vertices.Add(new Vector3(0, 0, 0));
-            vertices.Add(new Vector3(3, 0, 0));
-            vertices.Add(new Vector3(0, 2, 0));
-            vertices.Add(new Vector3(0, 0, 1));
+            vertices.Add(new Vector3(0.3f, 0, 0));
+            vertices.Add(new Vector3(0, 0.2f, 0));
+            vertices.Add(new Vector3(0, 0, 0.1f));
 
             return vertices;
         }
