@@ -61,6 +61,8 @@ namespace ModelEditor
             Cursor_PropertyChanged(this, new PropertyChangedEventArgs(nameof(Engine.Scene.Cursor.ScreenPosition)));
         }
 
+
+
         private void Cursor_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == nameof(Engine.Scene.Cursor.ScreenPosition))

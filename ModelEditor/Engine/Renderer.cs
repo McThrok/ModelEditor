@@ -39,6 +39,8 @@ namespace ModelEditor
             _scene = scene;
             _aspect = _wb.PixelWidth / _wb.PixelHeight;
             _scene.Cursor.GlobalMatrixChange += UpdateCursorScreenPosition;
+            _scene.Camera.GlobalMatrixChange += UpdateCursorScreenPosition;
+
             UpdateCursorScreenPosition(this, new ChangeMatrixEventArgs(_scene.Cursor.GlobalMatrix, _scene.Cursor.GlobalMatrix));
         }
 

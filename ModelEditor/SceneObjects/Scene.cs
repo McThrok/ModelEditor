@@ -66,7 +66,7 @@ namespace ModelEditor
 
         public void Delete(SceneObject obj)
         {
-            if (obj == null && obj.Parent != null)
+            if (obj == null || obj.Parent == null)
                 return;
 
             if (obj.Id == Camera.Id || obj.Id == Cursor.Id)

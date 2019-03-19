@@ -13,7 +13,16 @@ namespace ModelEditor
 {
     public class SceneObject : INotifyPropertyChanged
     {
-        public string Name { get; set; }
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+            }
+        }
         public bool Holdable { get; set; }
 
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -141,7 +150,7 @@ namespace ModelEditor
         {
             get
             {
-                 if (_recalculateTransform)
+                if (_recalculateTransform)
                 {
                     _recalculateTransform = false;
                     if (!Matrix4x4.Decompose(Matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation))
