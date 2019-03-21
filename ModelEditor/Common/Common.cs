@@ -16,7 +16,7 @@ namespace ModelEditor
 
     public class ObjRenderData
     {
-        public Matrix4x4 Matrix { get; set; }
+        //public Matrix4x4 Matrix { get; set; }
         public List<Vector3> Vertices { get; set; }
         public List<Edge> Edges { get; set; }
     }

@@ -9,12 +9,12 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BernsteinCurve : SceneObject
+    public class BezierCurve : SceneObject, IRenderableObj
     {
         private static int _count = 0;
-        public BernsteinCurve()
+        public BezierCurve()
         {
-            Name = nameof(BernsteinCurve) + " " + _count++.ToString();
+            Name = nameof(BezierCurve) + " " + _count++.ToString();
             Holdable = true;
 
             GlobalMatrixChange += OnMatrixChange;
@@ -39,10 +39,24 @@ namespace ModelEditor
 
         public void Recalculate()
         {
-            var vertices = Children.Select(x => x.GlobalMatrix.Multiply(Vector3.Zero.ToVector4())).ToList();
         }
 
+        private List<Vector3> GetVertices()
+        {
+            return Children.Select(x => x.GlobalMatrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
+        }
 
+        public ObjRenderData GetRenderData()
+        {
+            //polygon
+            var vertices = GetVertices();
+            var data = new ObjRenderData
+            {
+                Vertices = Children.Select(x => x.GlobalMatrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList(),
+                Edges = vertices.Count < 2 ? new List<Edge>() : Enumerable.Range(0, vertices.Count - 1).Select(x => new Edge(x, x + 1)).ToList()
+            };
 
+            return data;
+        }
     }
 }

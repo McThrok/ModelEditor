@@ -103,6 +103,10 @@ namespace ModelEditor
             Engine?.Input.OnKeyUp(e.Key);
         }
 
+        private void Bezier_Click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.AddBezierCurve(GetSelectedObj());
+        }
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
             Engine.Scene.AddTorus(GetSelectedObj());
@@ -135,10 +139,6 @@ namespace ModelEditor
             Engine.Scene.Cursor.ReleaseObjects();
         }
 
-        private void Bernstein_Click(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.AddBernsteinCurve(GetSelectedObj());
-        }
 
         private void FocuCamera(object sender, RoutedEventArgs e)
         {
