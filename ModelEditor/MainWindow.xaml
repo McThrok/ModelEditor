@@ -26,8 +26,14 @@
             <Button Margin="5" Height="20" Click="Hold_click">Hold</Button>
             <Button Margin="5" Height="20" Click="HoldAll_click">Hold All</Button>
             <Button Margin="5" Height="20" Click="Release_Click">Release</Button>
-            <TextBlock Text="Cursor:" VerticalAlignment="Center" TextAlignment="Center" />
-            <TextBlock Name="cursorPosition" VerticalAlignment="Center" TextAlignment="Center" Width="70" />
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
+                <TextBlock Text="Assign to parent:  "/>
+                <CheckBox Checked="CbxParentAsgn_Checked" Unchecked="CbxParentAsgn_Unchecked" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
+                <TextBlock Text="Cursor:" VerticalAlignment="Center" TextAlignment="Center" />
+                <TextBlock Name="cursorPosition" VerticalAlignment="Center" TextAlignment="Center" Width="70" />
+            </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                 <TextBlock Text="Anaglyph:  "/>
                 <CheckBox Checked="CbxAnaglyph_Checked" Unchecked="CbxAnaglyph_Unchecked" />

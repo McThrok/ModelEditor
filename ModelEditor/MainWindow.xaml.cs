@@ -35,7 +35,7 @@ namespace ModelEditor
         {
             InitializeComponent();
             Loaded += OnLoad;
-            
+
         }
 
         private async void OnLoad(object sender, RoutedEventArgs e)
@@ -48,27 +48,31 @@ namespace ModelEditor
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
 
-
             //expand scene list
             var sceneNode = objectList.ItemContainerGenerator.ContainerFromItem(objectList.Items[0]) as TreeViewItem;
             sceneNode.IsExpanded = true;
 
             //TODO: clear focus
-           // BitmapContainer.MouseDown += BitmapContainer_MouseDown;
+            // BitmapContainer.MouseDown += BitmapContainer_MouseDown;
 
             //cursor
             Engine.Scene.Cursor.PropertyChanged += Cursor_PropertyChanged;
             Cursor_PropertyChanged(this, new PropertyChangedEventArgs(nameof(Engine.Scene.Cursor.ScreenPosition)));
         }
 
-
-
-        private void Cursor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void SelectItem(SceneObject obj)
         {
-            if(e.PropertyName == nameof(Engine.Scene.Cursor.ScreenPosition))
-                cursorPosition.Text = Engine.Scene.Cursor.ScreenPosition.ToString();
+            var tvi = ContainerFromItemRecursive(objectList.ItemContainerGenerator, obj);
+            if (tvi != null)
+                tvi.IsSelected = true;
+        }
+        private SceneObject GetSelectedObj()
+        {
+            return objectList.SelectedItem as SceneObject;
         }
 
+
+        #region handleInput
         private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //bitmapImage.Focus();         // Set Logical Focus
@@ -102,7 +106,9 @@ namespace ModelEditor
             base.OnKeyUp(e);
             Engine?.Input.OnKeyUp(e.Key);
         }
+        #endregion
 
+        #region topMenu
         private void Bezier_Click(object sender, RoutedEventArgs e)
         {
             Engine.Scene.AddBezierCurve(GetSelectedObj());
@@ -123,23 +129,18 @@ namespace ModelEditor
         {
             Engine.Scene.Delete(GetSelectedObj());
         }
-
         private void Hold_click(object sender, RoutedEventArgs e)
         {
             Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
         }
-
         private void HoldAll_click(object sender, RoutedEventArgs e)
         {
             Engine.Scene.Cursor.HoldAllObjects(Engine.Scene.Children);
         }
-
         private void Release_Click(object sender, RoutedEventArgs e)
         {
             Engine.Scene.Cursor.ReleaseObjects();
         }
-
-
         private void FocuCamera(object sender, RoutedEventArgs e)
         {
             var item = GetSelectedObj();
@@ -147,33 +148,53 @@ namespace ModelEditor
                 Engine.Scene.Camera.SetTarget(item);
         }
 
-        private void SelectItem(SceneObject obj)
+        private void CbxAnaglyph_Checked(object sender, RoutedEventArgs e)
         {
-            var tvi = ContainerFromItemRecursive(objectList.ItemContainerGenerator, obj);
-            if (tvi != null)
-                tvi.IsSelected = true;
+            Engine.Renderer.Anaglyphic = true;
         }
-        private SceneObject GetSelectedObj()
+        private void CbxAnaglyph_Unchecked(object sender, RoutedEventArgs e)
         {
-            return objectList.SelectedItem as SceneObject;
+            Engine.Renderer.Anaglyphic = false;
+        }
+        private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Engine.Renderer.EyeDistance = (float)(0.3f * e.NewValue);
+        }
+        private void Viewport_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Engine.Renderer.ViewportDistance = (float)(5 + 35f * e.NewValue);
         }
 
-        public TreeViewItem ContainerFromItemRecursive(ItemContainerGenerator root, object item)
+        private void CbxParentAsgn_Checked(object sender, RoutedEventArgs e)
         {
-            var treeViewItem = root.ContainerFromItem(item) as TreeViewItem;
-            if (treeViewItem != null)
-                return treeViewItem;
-            foreach (var subItem in root.Items)
+            Engine.Scene.AddObjsToPrent = true;
+        }
+        private void CbxParentAsgn_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.AddObjsToPrent = false;
+        }
+
+        private void Cursor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Engine.Scene.Cursor.ScreenPosition))
+                cursorPosition.Text = Engine.Scene.Cursor.ScreenPosition.ToString();
+        }
+        #endregion
+
+        #region objMenu
+        private void SelectedObjectChange(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue != null)
+                objectMenu.Visibility = Visibility.Visible;
+            else
+                objectMenu.Visibility = Visibility.Collapsed;
+
+            if (e.NewValue is SceneObject item)
             {
-                treeViewItem = root.ContainerFromItem(subItem) as TreeViewItem;
-                if (treeViewItem != null)
-                {
-                    var search = ContainerFromItemRecursive(treeViewItem.ItemContainerGenerator, item);
-                    if (search != null)
-                        return search;
-                }
+                Engine.Scene.Cursor.SetTarget(item);
+
+                TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
             }
-            return null;
         }
 
         private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
@@ -196,33 +217,31 @@ namespace ModelEditor
         private void ScaleYDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1 / _scaleChangeSpeed, 1); }
         private void ScaleZUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1, _scaleChangeSpeed); }
         private void ScaleZDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1, 1 / _scaleChangeSpeed); }
+        #endregion
 
-        private void CbxAnaglyph_Checked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = true; }
-        private void CbxAnaglyph_Unchecked(object sender, RoutedEventArgs e) { Engine.Renderer.Anaglyphic = false; }
-
-        private void Anaglyph_Change(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.EyeDistance = (float)(0.3f * e.NewValue); }
-        private void Viewport_Changed(object sender, RoutedPropertyChangedEventArgs<double> e) { Engine.Renderer.ViewportDistance = (float)(5 + 35f * e.NewValue); }
-
-        private void SelectedObjectChange(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (e.NewValue != null)
-                objectMenu.Visibility = Visibility.Visible;
-            else
-                objectMenu.Visibility = Visibility.Collapsed;
-
-            if (e.NewValue is SceneObject item)
-            {
-                Engine.Scene.Cursor.SetTarget(item);
-
-                TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
 
         #region dragAndDrop
         private Point _lastMouseDown;
         private SceneObject _draggedItem, _target;
 
 
+        public TreeViewItem ContainerFromItemRecursive(ItemContainerGenerator root, object item)
+        {
+            var treeViewItem = root.ContainerFromItem(item) as TreeViewItem;
+            if (treeViewItem != null)
+                return treeViewItem;
+            foreach (var subItem in root.Items)
+            {
+                treeViewItem = root.ContainerFromItem(subItem) as TreeViewItem;
+                if (treeViewItem != null)
+                {
+                    var search = ContainerFromItemRecursive(treeViewItem.ItemContainerGenerator, item);
+                    if (search != null)
+                        return search;
+                }
+            }
+            return null;
+        }
         private void TreeView_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)

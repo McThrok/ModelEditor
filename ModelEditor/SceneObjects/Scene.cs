@@ -12,8 +12,10 @@ namespace ModelEditor
 {
     public class Scene : SceneObject
     {
+        public bool AddObjsToPrent { get; set; } 
         public Camera Camera { get; private set; }
         public Cursor Cursor { get; private set; }
+
         private Random _rd = new Random();
 
         public Scene()
@@ -21,6 +23,7 @@ namespace ModelEditor
             Name = "Scene";
 
             Camera = AddObj(new Camera(), this);
+            Camera.SetTarget(Vector3.Zero);
             Cursor = AddObj(new Cursor(), this);
         }
 
@@ -49,8 +52,17 @@ namespace ModelEditor
             if (parent == null)
                 parent = this;
 
-            obj.Parent = parent;
-            parent.Children.Add(obj);
+            if (AddObjsToPrent)
+            {
+                obj.Parent = parent;
+                parent.Children.Add(obj);
+            }
+            else
+            {
+                obj.GlobalMatrix = parent.GlobalMatrix;
+                obj.Parent = this;
+                this.Children.Add(obj);
+            }
 
             return obj;
         }
@@ -78,6 +90,7 @@ namespace ModelEditor
 
             obj.Parent.Children.Remove(obj);
         }
+
     }
 }
 

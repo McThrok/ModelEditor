@@ -134,7 +134,8 @@ namespace ModelEditor
                     var old = _matrix;
                     var oldGlobal = GlobalMatrix;
 
-                    Matrix = value * Parent.GlobalMatrix.Inversed();
+                    var parentGlobalMatrix = Parent != null ? Parent.GlobalMatrix : Matrix4x4.Identity;
+                    Matrix = value * parentGlobalMatrix.Inversed();
                     _recalculateTransform = true;
 
                     MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(old, Matrix));
