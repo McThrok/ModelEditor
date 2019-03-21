@@ -17,6 +17,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" >
+            <Button Margin="5" Height="20" Click="Bernstein_Click">Add Bernstein Curve</Button>
             <Button Margin="5" Height="20" Click="Torus_Click">Add Torus</Button>
             <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
             <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>

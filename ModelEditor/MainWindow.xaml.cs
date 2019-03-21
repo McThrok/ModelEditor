@@ -120,6 +120,26 @@ namespace ModelEditor
             Engine.Scene.Delete(GetSelectedObj());
         }
 
+        private void Hold_click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
+        }
+
+        private void HoldAll_click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.Cursor.HoldAllObjects(Engine.Scene.Children);
+        }
+
+        private void Release_Click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.Cursor.ReleaseObjects();
+        }
+
+        private void Bernstein_Click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.AddBernsteinCurve(GetSelectedObj());
+        }
+
         private void FocuCamera(object sender, RoutedEventArgs e)
         {
             var item = GetSelectedObj();
@@ -302,22 +322,6 @@ namespace ModelEditor
             _targetItem.Children.Add(_sourceItem);
             _sourceItem.GlobalMatrix = global;
         }
-
-        private void Hold_click(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
-        }
-
-        private void HoldAll_click(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.Cursor.HoldAllObjects(Engine.Scene.Children);
-        }
-
-        private void Release_Click(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.Cursor.ReleaseObjects();
-        }
-
         private SceneObject GetNearestContainer(UIElement element)
         {
             // Walk up the element tree to the nearest tree view item.

@@ -40,6 +40,10 @@ namespace ModelEditor
         {
             return AddObj(new EmptyObject(), parent);
         }
+        public SceneObject AddBernsteinCurve(SceneObject parent)
+        {
+            return AddObj(new BernsteinCurve(), parent);
+        }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {
             if (parent == null)
