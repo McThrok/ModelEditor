@@ -12,7 +12,6 @@ namespace ModelEditor
 {
     public class Scene : SceneObject
     {
-        public bool AddObjsToPrent { get; set; } 
         public Camera Camera { get; private set; }
         public Cursor Cursor { get; private set; }
 
@@ -52,17 +51,8 @@ namespace ModelEditor
             if (parent == null)
                 parent = this;
 
-            if (AddObjsToPrent)
-            {
-                obj.Parent = parent;
-                parent.Children.Add(obj);
-            }
-            else
-            {
-                obj.GlobalMatrix = parent.GlobalMatrix;
-                obj.Parent = this;
-                this.Children.Add(obj);
-            }
+            obj.Parent = parent;
+            parent.Children.Add(obj);
 
             return obj;
         }

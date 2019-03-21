@@ -165,15 +165,6 @@ namespace ModelEditor
             Engine.Renderer.ViewportDistance = (float)(5 + 35f * e.NewValue);
         }
 
-        private void CbxParentAsgn_Checked(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.AddObjsToPrent = true;
-        }
-        private void CbxParentAsgn_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.AddObjsToPrent = false;
-        }
-
         private void Cursor_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Engine.Scene.Cursor.ScreenPosition))

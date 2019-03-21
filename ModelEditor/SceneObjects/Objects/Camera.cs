@@ -16,7 +16,6 @@ namespace ModelEditor
         public Camera()
         {
             Name = nameof(Camera);
-            SetTarget(Vector3.Zero);
         }
 
         public void SetTarget(Vector3 position)
