@@ -23,7 +23,7 @@ namespace ModelEditor
 
     public interface IScreenRenderable
     {
-        ScreenRenderData GetRenderData();
+        ScreenRenderData GetScreenRenderData();
     }
 
     public class ScreenRenderData

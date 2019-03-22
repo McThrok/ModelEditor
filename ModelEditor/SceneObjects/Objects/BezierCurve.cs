@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BezierCurve : SceneObject, IRenderableObj
+    public class BezierCurve : SceneObject, IRenderableObj, IScreenRenderable
     {
         private static int _count = 0;
         public BezierCurve()
@@ -31,12 +31,10 @@ namespace ModelEditor
                 foreach (SceneObject child in e.OldItems)
                     child.GlobalMatrixChange -= OnMatrixChange;
         }
-
         private void OnMatrixChange(object sender, ChangeMatrixEventArgs e)
         {
             Recalculate();
         }
-
         public void Recalculate()
         {
         }
@@ -44,6 +42,24 @@ namespace ModelEditor
         private List<Vector3> GetVertices()
         {
             return Children.Select(x => x.GlobalMatrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
+        }
+
+        public ScreenRenderData GetScreenRenderData()
+        {
+            var data = new ScreenRenderData();
+            data.Pixels = GetVertices()
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / 4)
+                .SelectMany(seg => GetSegmentPixels(seg.Select(v => v.Value).ToList()))
+                .ToList();
+
+            return data;
+        }
+        private List<Vector2Int> GetSegmentPixels(List<Vector3> vertices)
+        {
+            var result = new List<Vector2Int>();
+
+            return result;
         }
 
         public ObjRenderData GetRenderData()
@@ -58,7 +74,6 @@ namespace ModelEditor
 
             return data;
         }
-
         private bool _showPolygon;
         public bool ShowPolygon
         {

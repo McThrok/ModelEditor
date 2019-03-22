@@ -132,7 +132,7 @@ namespace ModelEditor
 
             if (obj is IScreenRenderable screenRenderable)
             {
-                var data = screenRenderable.GetRenderData();
+                var data = screenRenderable.GetScreenRenderData();
                 var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
 
                 var center = matrix.Multiply(new Vector4(0, 0, 0, 1));

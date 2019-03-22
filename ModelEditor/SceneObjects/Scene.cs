@@ -59,7 +59,6 @@ namespace ModelEditor
             return obj;
         }
 
-
         private Vector3 GetRandomPosition()
         {
             return new Vector3(GetRandomCoordinate(), GetRandomCoordinate(), GetRandomCoordinate());

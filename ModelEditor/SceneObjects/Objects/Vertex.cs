@@ -21,7 +21,7 @@ namespace ModelEditor
             Holdable = true;
         }
 
-        public ScreenRenderData GetRenderData()
+        public ScreenRenderData GetScreenRenderData()
         {
             if (_screenRenderData == null)
             {
