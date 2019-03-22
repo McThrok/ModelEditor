@@ -68,16 +68,12 @@ namespace ModelEditor
             _wb.Clear(Colors.Black);
             if (Anaglyphic)
             {
-                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, EyeDistance / 2, ViewportDistance);
-                Render(projLeft, _drawLeftColor, false);
-
-                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, -EyeDistance / 2, ViewportDistance);
-                Render(projRight, _drawRightColor, true);
+                Render(GetLeftAnaglyphProjectionMatrix(), _drawLeftColor, false);
+                Render(GetRightAnaglyphProjectionMatrix(), _drawRightColor, true);
             }
             else
             {
-                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100);
-                Render(projection, _drawColor, false);
+                Render(GetProjectionMatrix(), _drawColor, false);
             }
         }
         private void Render(Matrix4x4 projMatrix, Color color, bool addColors)

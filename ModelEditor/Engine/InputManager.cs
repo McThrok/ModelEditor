@@ -125,50 +125,39 @@ namespace ModelEditor
 
         public SceneObject OnMouseLeftButtonDown(Point pos)
         {
-            //TODO: refactor
+            if (pos.X < 0 || pos.Y < 0 || pos.X >= _wb.PixelWidth || pos.Y >= _wb.PixelHeight)
+                return null;
 
-            if (pos.X >= 0 && pos.Y >= 0 && pos.X < _wb.PixelWidth && pos.Y < _wb.PixelHeight)
+            Stack<SceneObject> toCheck = new Stack<SceneObject>(_scene.Children);
+            float best = float.MaxValue;
+            SceneObject toSelect = null;
+
+            while (toCheck.Count > 0)
             {
-                var position = new Vector2((float)(1.0f * pos.X / _wb.PixelWidth * 2 - 1), (float)((1 - 1.0f * pos.Y / _wb.PixelHeight) * 2 - 1));
-                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _wb.PixelWidth / _wb.PixelHeight, 0.1f, 100);
+                var obj = toCheck.Pop();
 
-                Stack<SceneObject> toCheck = new Stack<SceneObject>(_scene.Children);
-                float best = float.MaxValue;
-                SceneObject toSelect = null;
-
-                var matrix = _scene.Camera.GlobalMatrix.Inversed() * projection;
-
-                while (toCheck.Count > 0)
+                if (obj.Holdable)
                 {
-                    var obj = toCheck.Pop();
-
-                    if (obj.Holdable)
+                    var objPos = _rayCaster.GetScreenPositionOf(obj);
+                    if (objPos != Vector2Int.Empty)
                     {
-                        var objPos = (obj.GlobalMatrix * matrix).Multiply(Vector3.Zero.ToVector4());
-
-                        if (objPos.Z > 0)
+                        var x = objPos.X - pos.X;
+                        var y = objPos.Y - pos.Y;
+                        var dist = (float)Math.Sqrt(x * x + y * y);
+                        if (dist < best)
                         {
-                            objPos /= objPos.W;
-                            var x = objPos.X - position.X;
-                            var y = objPos.Y - position.Y;
-                            var dist = (float)Math.Sqrt(x * x + y * y);
-                            if (dist < best)
-                            {
-                                best = dist;
-                                toSelect = obj;
-                            }
+                            best = dist;
+                            toSelect = obj;
                         }
-
                     }
 
-                    foreach (var child in obj.Children)
-                        toCheck.Push(child);
                 }
 
-                return toSelect;
+                foreach (var child in obj.Children)
+                    toCheck.Push(child);
             }
 
-            return null;
+            return toSelect;
         }
         public void OnMouseRightButtonDown(Point position)
         {

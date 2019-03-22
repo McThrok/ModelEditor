@@ -24,7 +24,6 @@ namespace ModelEditor
             Camera = AddObj(new Camera(), this);
             Camera.SetTarget(Vector3.Zero);
             Cursor = AddObj(new Cursor(), this);
-
         }
 
         public SceneObject AddCube(SceneObject parent)

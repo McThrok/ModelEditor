@@ -11,6 +11,8 @@ namespace ModelEditor
 {
     public struct Vector2Int : IEquatable<Vector2Int>
     {
+        public static Vector2Int Empty => new Vector2Int(-1, -1);
+
         public int X;
         public int Y;
 
