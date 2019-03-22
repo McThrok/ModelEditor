@@ -19,6 +19,25 @@ namespace ModelEditor
         public bool AddColors { get; set; }
     }
 
+    public class RenderAccessor
+    {
+        private readonly Renderer _renderer;
+        public RenderAccessor(Renderer renderer)
+        {
+            _renderer = renderer;
+        }
+
+        public Matrix4x4 GetViewMatrix()
+        {
+            return _renderer.GetViewMatrix();
+        }
+        public Matrix4x4 GetProjectionMatrix()
+        {
+            return _renderer.GetProjectionMatrix();
+        }
+        public int BitmapWidth => _renderer.BitmapWidth;
+        public int BitmapHeight => _renderer.BitmapHeight;
+    }
 
     public class Renderer
     {
@@ -32,36 +51,21 @@ namespace ModelEditor
         private Color _drawLeftColor = Colors.Red;
         private Color _drawRightColor = Colors.Cyan;
         private float _aspect;
+        private float _fov = 0.8f;
+        private float _near = 0.1f;
+        private float _far = 100f;
 
         public Renderer(WriteableBitmap wb, Scene scene)
         {
             _wb = wb;
             _scene = scene;
             _aspect = _wb.PixelWidth / _wb.PixelHeight;
+
             _scene.Cursor.GlobalMatrixChange += UpdateCursorScreenPosition;
             _scene.Camera.GlobalMatrixChange += UpdateCursorScreenPosition;
 
             UpdateCursorScreenPosition(this, new ChangeMatrixEventArgs(_scene.Cursor.GlobalMatrix, _scene.Cursor.GlobalMatrix));
         }
-
-        public void RenderFrame()
-        {
-            _wb.Clear(Colors.Black);
-            if (Anaglyphic)
-            {
-                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, EyeDistance / 2, ViewportDistance);
-                Render(projLeft, _drawLeftColor, false);
-
-                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, -EyeDistance / 2, ViewportDistance);
-                Render(projRight, _drawRightColor, true);
-            }
-            else
-            {
-                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100);
-                Render(projection, _drawColor, false);
-            }
-        }
-
 
         private void UpdateCursorScreenPosition(object sender, ChangeMatrixEventArgs e)
         {
@@ -92,9 +96,26 @@ namespace ModelEditor
                 cursor.ScreenPosition = new Vector2Int(-1, -1);
         }
 
+        public void RenderFrame()
+        {
+            _wb.Clear(Colors.Black);
+            if (Anaglyphic)
+            {
+                var projLeft = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, EyeDistance / 2, ViewportDistance);
+                Render(projLeft, _drawLeftColor, false);
+
+                var projRight = MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100.0f, -EyeDistance / 2, ViewportDistance);
+                Render(projRight, _drawRightColor, true);
+            }
+            else
+            {
+                var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100);
+                Render(projection, _drawColor, false);
+            }
+        }
         private void Render(Matrix4x4 projMatrix, Color color, bool addColors)
         {
-            var view = _scene.Camera.GlobalMatrix.Inversed();
+            var view = GetViewMatrix();
 
             using (var context = _wb.GetBitmapContext())
             {
@@ -110,31 +131,45 @@ namespace ModelEditor
                 RenderRec(_scene, Matrix4x4.Identity, frameData);
             }
         }
-
-
         private void RenderRec(SceneObject obj, Matrix4x4 parentMatrix, RenderFrameData frameData)
         {
             var model = obj.Matrix * parentMatrix;
 
             if (obj is IRenderableObj renderableObj)
             {
-                var data = renderableObj.GetRenderData();
-                var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
-                foreach (var edge in data.Edges)
-                {
-                    var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
-                    var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
-
-                    if (vertA.Z > 0 && vertB.Z > 0)
-                        DrawLine(frameData.Context, vertA, vertB, frameData.Color, frameData.AddColors);
-                }
+                Render(renderableObj, model, frameData);
             }
 
             if (obj is IScreenRenderable screenRenderable)
             {
-                var data = screenRenderable.GetScreenRenderData();
-                var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+                Render(screenRenderable, model, frameData);
+            }
 
+            foreach (var child in obj.Children)
+            {
+                RenderRec(child, model, frameData);
+            }
+        }
+        private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData)
+        {
+            var data = obj.GetRenderData();
+            var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+            foreach (var edge in data.Edges)
+            {
+                var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
+                var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
+
+                if (vertA.Z > 0 && vertB.Z > 0)
+                    DrawLine(frameData.Context, vertA, vertB, frameData.Color, frameData.AddColors);
+            }
+        }
+        private void Render(IScreenRenderable obj, Matrix4x4 model, RenderFrameData frameData)
+        {
+            var data = obj.GetScreenRenderData();
+            var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+
+            if (!data.UsePositionOffsets)
+            {
                 var center = matrix.Multiply(new Vector4(0, 0, 0, 1));
                 if (center.Z > 0)
                 {
@@ -143,12 +178,20 @@ namespace ModelEditor
                         DrawOnScren(frameData.Context, center, pix, frameData.Color, frameData.AddColors);
                     }
                 }
-
             }
-
-            foreach (var child in obj.Children)
+            else
             {
-                RenderRec(child, model, frameData);
+                for (int i = 0; i < data.Pixels.Count; i++)
+                {
+                    var pix = data.Pixels[i];
+                    var offset = data.PositionOffsets[i];
+                    var position = matrix.Multiply(offset.ToVector4());
+                    if (position.Z > 0)
+                    {
+                        DrawOnScren(frameData.Context, position, pix, frameData.Color, frameData.AddColors);
+                    }
+                }
+
             }
         }
 
@@ -165,7 +208,6 @@ namespace ModelEditor
             if (x > 0 && x < width && y > 0 && y < height)
                 ctx.MySetPixel(x, y, col, addColors);
         }
-
         private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, Color col, bool addColors)
         {
             var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
@@ -181,6 +223,30 @@ namespace ModelEditor
             var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
 
             ctx.MyDrawLine(x1, y1, x2, y2, col, addColors);
+        }
+
+        public Matrix4x4 GetViewMatrix()
+        {
+            return _scene.Camera.GlobalMatrix.Inversed();
+        }
+        public Matrix4x4 GetProjectionMatrix()
+        {
+            return MyMatrix4x4.CreatePerspectiveFieldOfView(_fov, _aspect, _near, _far);
+        }
+        public Matrix4x4 GetLeftAnaglyphProjectionMatrix()
+        {
+            return MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(_fov, _aspect, _near, _far, EyeDistance / 2, ViewportDistance);
+        }
+        public Matrix4x4 GetRightAnaglyphProjectionMatrix()
+        {
+            return MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(_fov, _aspect, _near, _far, -EyeDistance / 2, ViewportDistance);
+        }
+        public int BitmapWidth => _wb.PixelWidth;
+        public int BitmapHeight => _wb.PixelHeight;
+
+        public RenderAccessor GetRenderAccessor()
+        {
+            return new RenderAccessor(this);
         }
     }
 }

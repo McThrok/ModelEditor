@@ -74,6 +74,7 @@
     <Compile Include="Common\WBExtension.cs" />
     <Compile Include="Engine\InputManager.cs" />
     <Compile Include="Engine\Engine.cs" />
+    <Compile Include="Engine\RayCaster.cs" />
     <Compile Include="SceneObjects\Objects\Camera.cs" />
     <Compile Include="SceneObjects\Objects\Cursor.cs" />
     <Compile Include="SceneObjects\Objects\BezierCurve.cs" />

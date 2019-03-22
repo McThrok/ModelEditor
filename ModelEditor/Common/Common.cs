@@ -16,7 +16,6 @@ namespace ModelEditor
 
     public class ObjRenderData
     {
-        //public Matrix4x4 Matrix { get; set; }
         public List<Vector3> Vertices { get; set; }
         public List<Edge> Edges { get; set; }
     }
@@ -28,7 +27,9 @@ namespace ModelEditor
 
     public class ScreenRenderData
     {
+        public bool UsePositionOffsets { get; set; }
         public List<Vector2Int> Pixels { get; set; }
+        public List<Vector3> PositionOffsets { get; set; }
     }
 
 
