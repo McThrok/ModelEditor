@@ -19,7 +19,25 @@ namespace ModelEditor
         public bool AddColors { get; set; }
     }
 
+    public class RenderAccessor
+    {
+        private readonly Renderer _renderer;
+        public RenderAccessor(Renderer renderer)
+        {
+            _renderer = renderer;
+        }
 
+        public Matrix4x4 GetViewMatrix()
+        {
+            return _renderer.GetViewMatrix();
+        }
+        public Matrix4x4 GetProjectionMatrix()
+        {
+            return _renderer.GetProjectionMatrix();
+        }
+        public int BitmapWidth => _renderer.BitmapWidth;
+        public int BitmapHeight => _renderer.BitmapHeight;
+    }
 
     public class Renderer
     {
@@ -29,6 +47,7 @@ namespace ModelEditor
 
         private WriteableBitmap _wb;
         private Scene _scene;
+
         private Color _drawColor = Colors.Green;
         private Color _drawLeftColor = Colors.Red;
         private Color _drawRightColor = Colors.Cyan;
@@ -42,40 +61,6 @@ namespace ModelEditor
             _wb = wb;
             _scene = scene;
             _aspect = _wb.PixelWidth / _wb.PixelHeight;
-
-            _scene.Cursor.GlobalMatrixChange += UpdateCursorScreenPosition;
-            _scene.Camera.GlobalMatrixChange += UpdateCursorScreenPosition;
-
-            UpdateCursorScreenPosition(this, new ChangeMatrixEventArgs(_scene.Cursor.GlobalMatrix, _scene.Cursor.GlobalMatrix));
-        }
-
-        private void UpdateCursorScreenPosition(object sender, ChangeMatrixEventArgs e)
-        {
-            var cursor = _scene.Cursor;
-            var projection = MyMatrix4x4.CreatePerspectiveFieldOfView(0.8f, 1.0f * _aspect, 0.1f, 100);
-            var view = _scene.Camera.GlobalMatrix.Inversed();
-
-            var matrix = MyMatrix4x4.Compose(projection, view, cursor.GlobalMatrix);
-
-            var center = matrix.Multiply(new Vector4(0, 0, 0, 1));
-            if (center.Z < 0)
-            {
-                cursor.ScreenPosition = new Vector2Int(-1, -1);
-                return;
-            }
-
-            var V = new Point(center.X / center.W, center.Y / center.W);
-
-            var width = _wb.PixelWidth;
-            var height = _wb.PixelHeight;
-
-            var x = Convert.ToInt32((V.X + 1) / 2 * width);
-            var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height);
-
-            if (x > 0 && x < width && y > 0 && y < height)
-                cursor.ScreenPosition = new Vector2Int(x, y);
-            else
-                cursor.ScreenPosition = new Vector2Int(-1, -1);
         }
 
         public void RenderFrame()
@@ -226,9 +211,9 @@ namespace ModelEditor
         public int BitmapWidth => _wb.PixelWidth;
         public int BitmapHeight => _wb.PixelHeight;
 
-        public RayCaster GetRayCaster()
+        public RenderAccessor GetRenderAccessor()
         {
-            return new RayCaster(this);
+            return new RenderAccessor(this);
         }
     }
 }

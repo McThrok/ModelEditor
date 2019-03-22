@@ -28,19 +28,31 @@ namespace ModelEditor
         private readonly Scene _scene;
         private readonly WriteableBitmap _wb;
         private readonly Panel _bitmapConatiner;
+        private readonly RayCaster _rayCaster;
 
         private Dictionary<Move, bool> _moveActions;
         private Vector3 _cameraRotation = Vector3.Zero;
         private Point? _lastMousePosition;
         private bool _ctrlPressed = false;
 
-        public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene)
+        public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene, RayCaster rayCaster)
         {
             _bitmapConatiner = bitmapConatiner;
             _wb = writeableBitmap;
             _scene = scene;
+            _rayCaster = rayCaster;
 
             InitMoveActions();
+
+            _scene.Cursor.GlobalMatrixChange += UpdateCursorScreenPosition;
+            _scene.Camera.GlobalMatrixChange += UpdateCursorScreenPosition;
+
+            UpdateCursorScreenPosition(this, new ChangeMatrixEventArgs(_scene.Cursor.GlobalMatrix, _scene.Cursor.GlobalMatrix));
+        }
+
+        private void UpdateCursorScreenPosition(object sender, ChangeMatrixEventArgs e)
+        {
+            _scene.Cursor.ScreenPosition = _rayCaster.GetScreenPositionOf(_scene.Cursor);
         }
 
         private void InitMoveActions()
