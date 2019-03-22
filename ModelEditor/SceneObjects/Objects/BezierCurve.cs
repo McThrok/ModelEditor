@@ -34,7 +34,7 @@ namespace ModelEditor
                 foreach (SceneObject child in e.OldItems)
                     child.GlobalMatrixChange -= OnMatrixChange;
         }
-        private void OnMatrixChange(object sender, ChangeMatrixEventArgs e)
+        public void OnMatrixChange(object sender, ChangeMatrixEventArgs e)
         {
             Recalculate();
         }
@@ -56,7 +56,7 @@ namespace ModelEditor
             for (i = 0; i + 3 < verts.Count; i += 3)
                 data.PixelPositions.AddRange(GetCubicSegment(verts, i));
 
-            var left = verts.Count - i; 
+            var left = verts.Count - i;
             if (left == 3) data.PixelPositions.AddRange(GetQuadratic(verts, verts.Count - 3));
             if (left == 2) data.PixelPositions.AddRange(GetLinear(verts, verts.Count - 2));
             if (left == 1) data.PixelPositions.AddRange(GetPoint(verts, verts.Count - 1));
@@ -67,7 +67,15 @@ namespace ModelEditor
         {
             var result = new List<PixelPosition>();
 
-            var n = 500;
+            var v0 = _rayCaster.GetScreenPositionOf(vertices[idx]);
+            var v1 = _rayCaster.GetScreenPositionOf(vertices[idx + 1]);
+            var v2 = _rayCaster.GetScreenPositionOf(vertices[idx + 2]);
+            var v3 = _rayCaster.GetScreenPositionOf(vertices[idx + 3]);
+
+            if (v0 == Vector2Int.Empty || v1 == Vector2Int.Empty || v2 == Vector2Int.Empty || v3 == Vector2Int.Empty)
+                return result;
+
+            var n = GetDivisionCount(v0, v1, v2, v3);
 
             for (int i = 0; i < n; i++)
             {
@@ -90,7 +98,14 @@ namespace ModelEditor
         {
             var result = new List<PixelPosition>();
 
-            var n = 500;
+            var v0 = _rayCaster.GetScreenPositionOf(vertices[idx]);
+            var v1 = _rayCaster.GetScreenPositionOf(vertices[idx + 1]);
+            var v2 = _rayCaster.GetScreenPositionOf(vertices[idx + 2]);
+
+            if (v0 == Vector2Int.Empty || v1 == Vector2Int.Empty || v2 == Vector2Int.Empty)
+                return result;
+
+            var n = GetDivisionCount(v0, v1, v2);
 
             for (int i = 0; i < n; i++)
             {
@@ -113,7 +128,13 @@ namespace ModelEditor
         {
             var result = new List<PixelPosition>();
 
-            var n = 500;
+            var v0 = _rayCaster.GetScreenPositionOf(vertices[idx]);
+            var v1 = _rayCaster.GetScreenPositionOf(vertices[idx + 1]);
+
+            if (v0 == Vector2Int.Empty || v1 == Vector2Int.Empty)
+                return result;
+
+            var n = GetDivisionCount(v0, v1);
 
             for (int i = 0; i < n; i++)
             {
@@ -133,6 +154,17 @@ namespace ModelEditor
         private List<PixelPosition> GetPoint(List<Vector3> vertices, int idx)
         {
             return new List<PixelPosition>() { new PixelPosition(vertices[idx]) };
+        }
+        private int GetDivisionCount(params Vector2Int[] verts)
+        {
+            var sum = 0;
+            for (int i = 0; i < verts.Length; i++)
+            {
+                var diff = verts[i] - verts[(i + 1) % verts.Length];
+                sum += Math.Max(Math.Abs(diff.X), Math.Abs(diff.Y));
+            }
+
+            return 2*sum;
         }
 
 

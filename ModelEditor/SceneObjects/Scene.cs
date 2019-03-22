@@ -45,7 +45,9 @@ namespace ModelEditor
         }
         public SceneObject AddBezierCurve(SceneObject parent)
         {
-            return AddObj(new BezierCurve(RayCaster), parent);
+            var bezier = new BezierCurve(RayCaster);
+            Camera.GlobalMatrixChange += bezier.OnMatrixChange;
+            return AddObj(bezier, parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {
