@@ -12,7 +12,6 @@ namespace ModelEditor
     public struct Vector2Int : IEquatable<Vector2Int>
     {
         public static Vector2Int Empty => new Vector2Int(-1, -1);
-
         public int X;
         public int Y;
 
@@ -43,7 +42,7 @@ namespace ModelEditor
 
         public override string ToString()
         {
-            return  "(" + X.ToString() + ", " + Y.ToString() + ")";
+            return "(" + X.ToString() + ", " + Y.ToString() + ")";
         }
 
         public static bool operator ==(Vector2Int left, Vector2Int right)
@@ -53,6 +52,14 @@ namespace ModelEditor
         public static bool operator !=(Vector2Int left, Vector2Int right)
         {
             return !(left == right);
+        }
+        public static Vector2Int operator +(Vector2Int left, Vector2Int right)
+        {
+            return new Vector2Int(left.X + right.X, left.Y + right.Y);
+        }
+        public static Vector2Int operator -(Vector2Int left, Vector2Int right)
+        {
+            return new Vector2Int(left.X - right.X, left.Y - right.Y);
         }
 
     }

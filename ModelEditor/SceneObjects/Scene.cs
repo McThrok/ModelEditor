@@ -14,6 +14,7 @@ namespace ModelEditor
     {
         public Camera Camera { get; private set; }
         public Cursor Cursor { get; private set; }
+        public RayCaster RayCaster { get; set; }
 
         private Random _rd = new Random();
 
@@ -44,7 +45,7 @@ namespace ModelEditor
         }
         public SceneObject AddBezierCurve(SceneObject parent)
         {
-            return AddObj(new BezierCurve(), parent);
+            return AddObj(new BezierCurve(RayCaster), parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {
