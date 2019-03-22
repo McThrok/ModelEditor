@@ -111,7 +111,7 @@ namespace ModelEditor
         #region topMenu
         private void Bezier_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.AddBezierCurve(GetSelectedObj());
+            SelectItem(Engine.Scene.AddBezierCurve(GetSelectedObj()));
         }
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
@@ -227,9 +227,17 @@ namespace ModelEditor
                 treeViewItem = root.ContainerFromItem(subItem) as TreeViewItem;
                 if (treeViewItem != null)
                 {
+
+                    //TODO: update expanded
+                    //var isExp = treeViewItem.IsExpanded;
+                    treeViewItem.IsExpanded = true;
                     var search = ContainerFromItemRecursive(treeViewItem.ItemContainerGenerator, item);
                     if (search != null)
                         return search;
+                    //else
+                    //    if (subItem is Camera)
+                    //    treeViewItem.IsExpanded = isExp;
+
                 }
             }
             return null;

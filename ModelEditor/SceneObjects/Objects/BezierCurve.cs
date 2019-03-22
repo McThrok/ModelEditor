@@ -16,7 +16,7 @@ namespace ModelEditor
         public BezierCurve(RayCaster rayCaster)
         {
             Name = nameof(BezierCurve) + " " + _count++.ToString();
-            Holdable = true;
+            Holdable = false;
 
             _rayCaster = rayCaster;
 
