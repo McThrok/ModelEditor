@@ -19,25 +19,7 @@ namespace ModelEditor
         public bool AddColors { get; set; }
     }
 
-    public class RenderAccessor
-    {
-        private readonly Renderer _renderer;
-        public RenderAccessor(Renderer renderer)
-        {
-            _renderer = renderer;
-        }
 
-        public Matrix4x4 GetViewMatrix()
-        {
-            return _renderer.GetViewMatrix();
-        }
-        public Matrix4x4 GetProjectionMatrix()
-        {
-            return _renderer.GetProjectionMatrix();
-        }
-        public int BitmapWidth => _renderer.BitmapWidth;
-        public int BitmapHeight => _renderer.BitmapHeight;
-    }
 
     public class Renderer
     {
@@ -244,9 +226,9 @@ namespace ModelEditor
         public int BitmapWidth => _wb.PixelWidth;
         public int BitmapHeight => _wb.PixelHeight;
 
-        public RenderAccessor GetRenderAccessor()
+        public RayCaster GetRayCaster()
         {
-            return new RenderAccessor(this);
+            return new RayCaster(this);
         }
     }
 }
