@@ -52,89 +52,88 @@ namespace ModelEditor
             var data = new ScreenRenderData();
             var verts = GetVertices();
 
-            for (int i = 0; i < verts.Count; i += 4)
+            int i;
+            for (i = 0; i + 3 < verts.Count; i += 3)
                 data.PixelPositions.AddRange(GetCubicSegment(verts, i));
 
-            var left = verts.Count - data.PixelPositions.Count;
+            var left = verts.Count - i; 
             if (left == 3) data.PixelPositions.AddRange(GetQuadratic(verts, verts.Count - 3));
             if (left == 2) data.PixelPositions.AddRange(GetLinear(verts, verts.Count - 2));
-            if (left == 1) data.PixelPositions.Add(GetPoint(verts, verts.Count - 1));
+            if (left == 1) data.PixelPositions.AddRange(GetPoint(verts, verts.Count - 1));
 
             return data;
         }
         private List<PixelPosition> GetCubicSegment(List<Vector3> vertices, int idx)
         {
-            return null;
+            var result = new List<PixelPosition>();
+
+            var n = 500;
+
+            for (int i = 0; i < n; i++)
+            {
+                float t = 1f * i / n;
+                float c = 1.0f - t;
+
+                float b0 = c * c * c;
+                float b1 = 3 * t * c * c;
+                float b2 = 3 * t * t * c;
+                float b3 = t * t * t;
+
+                var point = vertices[idx] * b0 + vertices[idx + 1] * b1 + vertices[idx + 2] * b2 + vertices[idx + 3] * b3;
+
+                result.Add(new PixelPosition(point));
+            }
+
+            return result;
         }
         private List<PixelPosition> GetQuadratic(List<Vector3> vertices, int idx)
         {
-            return null;
+            var result = new List<PixelPosition>();
+
+            var n = 500;
+
+            for (int i = 0; i < n; i++)
+            {
+                float t = 1f * i / n;
+                float c = 1.0f - t;
+
+                float b0 = c * c;
+                float b1 = 2 * t * c;
+                float b2 = t * t;
+
+                var point = vertices[idx] * b0 + vertices[idx + 1] * b1 + vertices[idx + 2] * b2;
+
+                result.Add(new PixelPosition(point));
+            }
+
+            return result;
 
         }
         private List<PixelPosition> GetLinear(List<Vector3> vertices, int idx)
         {
-            return null;
+            var result = new List<PixelPosition>();
 
-        }
-        private PixelPosition GetPoint(List<Vector3> vertices, int idx)
-        {
-            return new PixelPosition();
-        }
+            var n = 500;
 
-        private List<Vector2Int> GetSegmentPixels(List<Vector3> vertices)
-        {
-            var result = new List<Vector2Int>();
-            if (vertices.Count > 3)
+            for (int i = 0; i < n; i++)
             {
-                var center = _rayCaster.GetScreenPositionOf(this);
-                var n = 500;
-                for (int i = 0; i < n; i++)
-                {
-                    var point = GetPoint(1f * i / n, vertices);
-                    result.Add(_rayCaster.GetScreenPositionOf(point) - center);
-                }
-            }
-            return result;
-        }
+                float t = 1f * i / n;
+                float c = 1.0f - t;
 
+                float b0 = c;
+                float b1 = t;
 
-        public Vector3 GetPoint(float t, List<Vector3> verts)                            // t E [0, 1].
-        {
-            float c = 1.0f - t;
+                var point = vertices[idx] * b0 + vertices[idx + 1] * b1; ;
 
-            float bb0 = c * c * c;
-            float bb1 = 3 * t * c * c;
-            float bb2 = 3 * t * t * c;
-            float bb3 = t * t * t;
-
-            Vector3 point = verts[0] * bb0 + verts[1] * bb1 + verts[2] * bb2 + verts[3] * bb3;
-            return point;
-        }
-        private List<Vector2Int> GetLinePixels(Vector2Int a, Vector2Int b)
-        {
-            var center = _rayCaster.GetScreenPositionOf(this);
-            var result = new List<Vector2Int>();
-            if (a != Vector2Int.Empty && b != Vector2Int.Empty)
-            {
-                a -= center;
-                b -= center;
-                var xDiff = a.X - b.X;
-                var yDiff = a.Y - b.Y;
-
-                var count = Math.Max(Math.Abs(xDiff), Math.Abs(yDiff));
-
-                for (int i = 0; i < count; i++)
-                {
-                    result.Add(new Vector2Int(
-                        Convert.ToInt32(b.X + i * xDiff / count),
-                        Convert.ToInt32(b.Y + i * yDiff / count)
-                        ));
-                }
+                result.Add(new PixelPosition(point));
             }
 
             return result;
         }
-
+        private List<PixelPosition> GetPoint(List<Vector3> vertices, int idx)
+        {
+            return new List<PixelPosition>() { new PixelPosition(vertices[idx]) };
+        }
 
 
         public ObjRenderData GetRenderData()

@@ -30,7 +30,17 @@ namespace ModelEditor
         public List<Vector2Int> Pixels { get; set; } = new List<Vector2Int>();
         public List<PixelPosition> PixelPositions { get; set; } = new List<PixelPosition>();
     }
-    public struct PixelPosition {
+    public struct PixelPosition
+    {
+        public PixelPosition(Vector2Int pixel, Vector3 position)
+        {
+            Pixel = pixel;
+            Position = position;
+        }
+        public PixelPosition(Vector3 position) : this(Vector2Int.Zero, position)
+        {
+        }
+
         public Vector2Int Pixel { get; set; }
         public Vector3 Position { get; set; }
     }
