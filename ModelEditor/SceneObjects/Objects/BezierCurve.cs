@@ -53,10 +53,25 @@ namespace ModelEditor
             var data = new ObjRenderData
             {
                 Vertices = Children.Select(x => x.GlobalMatrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList(),
-                Edges = vertices.Count < 2 ? new List<Edge>() : Enumerable.Range(0, vertices.Count - 1).Select(x => new Edge(x, x + 1)).ToList()
+                Edges = vertices.Count < 2 || !_showPolygon ? new List<Edge>() : Enumerable.Range(0, vertices.Count - 1).Select(x => new Edge(x, x + 1)).ToList()
             };
 
             return data;
         }
+
+        private bool _showPolygon;
+        public bool ShowPolygon
+        {
+            get => _showPolygon;
+            set
+            {
+                if (_showPolygon != value)
+                {
+                    _showPolygon = value;
+                    InvokePropertyChanged(nameof(ShowPolygon));
+                }
+            }
+        }
+
     }
 }

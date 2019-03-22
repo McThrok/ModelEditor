@@ -106,7 +106,7 @@ namespace ModelEditor
                 if (_screenPosition != value)
                 {
                     _screenPosition = value;
-                    this.InkovePropertyChanged(nameof(ScreenPosition));
+                    this.InvokePropertyChanged(nameof(ScreenPosition));
                 }
             }
         }

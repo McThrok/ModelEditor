@@ -76,6 +76,9 @@ namespace ModelEditor
 
         public bool IsEqualOrDescendantOf(SceneObject obj)
         {
+            if (obj == null)
+                return false;
+
             var node = this;
 
             while (node != null)
@@ -115,10 +118,27 @@ namespace ModelEditor
                 }
             }
         }
-        public void InkovePropertyChanged(string prop)
+        public void InvokePropertyChanged(string prop)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+
+
+        public void SetParent(SceneObject parent)
+        {
+            var global = GlobalMatrix;
+            if (Parent != null)
+            {
+                Parent.Children.Remove(this);
+            }
+            if (parent != null && !parent.IsEqualOrDescendantOf(this))
+            {
+                Parent = parent;
+                parent.Children.Add(this);
+            }
+            GlobalMatrix = global;
+        }
+
 
         public event MatrixDelegate GlobalMatrixChange;
         public Matrix4x4 GlobalMatrix

@@ -26,7 +26,7 @@
             <Button Margin="5" Height="20" Click="Hold_click">Hold</Button>
             <Button Margin="5" Height="20" Click="HoldAll_click">Hold All</Button>
             <Button Margin="5" Height="20" Click="Release_Click">Release</Button>
-        
+
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">
                 <TextBlock Text="Cursor:" VerticalAlignment="Center" TextAlignment="Center" />
                 <TextBlock Name="cursorPosition" VerticalAlignment="Center" TextAlignment="Center" Width="70" />
@@ -78,6 +78,17 @@
                         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedItem.LargeRadius, ElementName=objectList}" />
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Small radius:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedItem.SmallRadius, ElementName=objectList}" />
+                    </Grid>
+
+
+                    <Grid Margin="5" Name="BezierMenu">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Show polygon:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <CheckBox Grid.Column="1" IsChecked="{Binding SelectedItem.ShowPolygon, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
 
                     <Grid Margin="5">

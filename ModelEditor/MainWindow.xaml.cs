@@ -184,7 +184,8 @@ namespace ModelEditor
             {
                 Engine.Scene.Cursor.SetTarget(item);
 
-                TorusMenu.Visibility = item.Name == nameof(Torus) ? Visibility.Visible : Visibility.Collapsed;
+                TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
+                BezierMenu.Visibility = item is BezierCurve ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -259,7 +260,7 @@ namespace ModelEditor
                                 // A Move drop was accepted
                                 if (_draggedItem.Id != _target.Id)
                                 {
-                                    CopyItem(_draggedItem, _target);
+                                    _draggedItem.SetParent(_target);
                                     _target = null;
                                     _draggedItem = null;
                                 }
@@ -324,14 +325,7 @@ namespace ModelEditor
             return !_targetItem.IsEqualOrDescendantOf(_sourceItem);
 
         }
-        private void CopyItem(SceneObject _sourceItem, SceneObject _targetItem)
-        {
-            var global = _sourceItem.GlobalMatrix;
-            _sourceItem.Parent.Children.Remove(_sourceItem);
-            _sourceItem.Parent = _targetItem;
-            _targetItem.Children.Add(_sourceItem);
-            _sourceItem.GlobalMatrix = global;
-        }
+
         private SceneObject GetNearestContainer(UIElement element)
         {
             // Walk up the element tree to the nearest tree view item.

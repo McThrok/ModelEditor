@@ -51,11 +51,14 @@ namespace ModelEditor
             if (parent == null)
                 parent = this;
 
-            obj.Parent = parent;
-            parent.Children.Add(obj);
+            obj.SetParent(parent);
+
+            if (Cursor != null)
+                obj.GlobalMatrix = Cursor.GlobalMatrix;
 
             return obj;
         }
+
 
         private Vector3 GetRandomPosition()
         {
@@ -80,7 +83,6 @@ namespace ModelEditor
 
             obj.Parent.Children.Remove(obj);
         }
-
     }
 }
 
