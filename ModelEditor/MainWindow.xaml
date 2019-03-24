@@ -24,8 +24,9 @@
             <Button Margin="5" Height="20" Click="Delete_Click">Delete</Button>
             <Button Margin="5" Height="20" Click="DeleteFlat_Click">Flat delete</Button>
             <Button Margin="5" Height="20" Click="FocuCamera">Focus camera</Button>
+            <Button Margin="5" Height="20" Click="ResetCamera">Reset camera</Button>
             <Button Margin="5" Height="20" Click="Hold_click">Hold</Button>
-            <Button Margin="5" Height="20" Click="HoldAll_click">Hold All</Button>
+            <Button Margin="5" Height="20" Click="HoldAll_click">Hold all</Button>
             <Button Margin="5" Height="20" Click="Release_Click">Release</Button>
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5">

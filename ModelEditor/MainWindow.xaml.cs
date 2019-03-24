@@ -147,6 +147,16 @@ namespace ModelEditor
             if (item != null)
                 Engine.Scene.Camera.SetTarget(item);
         }
+        private void DeleteFlat_Click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.FlatDelete(GetSelectedObj());
+        }
+        private void ResetCamera(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.ResetCamera();
+        }
+
+
 
         private void CbxAnaglyph_Checked(object sender, RoutedEventArgs e)
         {
@@ -333,12 +343,6 @@ namespace ModelEditor
             return !_targetItem.IsEqualOrDescendantOf(_sourceItem);
 
         }
-
-        private void DeleteFlat_Click(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.FlatDelete(GetSelectedObj());
-        }
-
         private SceneObject GetNearestContainer(UIElement element)
         {
             // Walk up the element tree to the nearest tree view item.

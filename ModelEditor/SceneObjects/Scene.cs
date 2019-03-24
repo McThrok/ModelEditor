@@ -23,7 +23,7 @@ namespace ModelEditor
             Name = "Scene";
 
             Camera = AddObj(new Camera(), this);
-            Camera.SetTarget(Vector3.Zero);
+            ResetCamera();
             Cursor = AddObj(new Cursor(), this);
         }
 
@@ -97,6 +97,12 @@ namespace ModelEditor
                 return;
 
             obj.Parent.Children.Remove(obj);
+        }
+        public void ResetCamera()
+        {
+            Camera.Matrix = Matrix4x4.Identity;
+            Camera.SetTarget(Vector3.Zero);
+
         }
     }
 }
