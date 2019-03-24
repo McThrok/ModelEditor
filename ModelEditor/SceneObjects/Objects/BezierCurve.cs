@@ -120,7 +120,7 @@ namespace ModelEditor
         private List<PixelPosition> GetLinear(List<Vector3> verts, int idx)
         {
             var result = new List<PixelPosition>();
-            var n = GetDivisionCount(verts, idx, 1);
+            var n = GetDivisionCount(verts, idx, 2);
 
             if (n == -1)
                 return result;
@@ -146,19 +146,23 @@ namespace ModelEditor
         }
         private int GetDivisionCount(List<Vector3> verts, int idx, int length)
         {
-            var parentMtx = Parent.GlobalMatrix;
-            var sum = 0;
+            var mtx = GlobalMatrix;
+            double max = -1;
             for (int i = 0; i < length - 1; i++)
             {
-                var a = _rayCaster.GetScreenPositionOf(parentMtx.Multiply(verts[idx + i].ToVector4()).ToVector3());
-                var b = _rayCaster.GetScreenPositionOf(parentMtx.Multiply(verts[idx + i + 1].ToVector4()).ToVector3());
+                var a = _rayCaster.GetScreenPositionOf(mtx.Multiply(verts[idx + i].ToVector4()).ToVector3());
+                var b = _rayCaster.GetScreenPositionOf(mtx.Multiply(verts[idx + i + 1].ToVector4()).ToVector3());
                 if (a == Vector2Int.Empty || b == Vector2Int.Empty)
                     return -1;
+
                 var diff = a - b;
-                sum += Math.Max(Math.Abs(diff.X), Math.Abs(diff.Y));
+                var x = Math.Abs(diff.X);
+                var y = Math.Abs(diff.Y);
+                var dist = Math.Sqrt(x * x + y * y);
+                max = dist > max ? dist : max;
             }
 
-            return 2*sum;
+            return (int)Math.Ceiling((length - 1) * max);
         }
 
 
