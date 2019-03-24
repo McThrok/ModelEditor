@@ -141,6 +141,13 @@ namespace ModelEditor
             var verts = GetVerts();
             var data = new ObjRenderData();
 
+            //polygon
+            if (ShowPolygon && verts.Count > 1)
+            {
+                data.Vertices.AddRange(verts);
+                data.Edges.AddRange(Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
+            }
+
             //curve
             int i;
             for (i = 0; i + 3 < verts.Count; i += 3)
@@ -148,18 +155,6 @@ namespace ModelEditor
 
             var left = verts.Count - i;
             data.Vertices.AddRange(GetSegment(verts, i, left));
-
-            //if (verts.Count > 1)
-            //    data.Edges.AddRange(Enumerable.Range(0, data.Vertices.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
-
-
-            //polygon
-            if (ShowPolygon && verts.Count > 1)
-            {
-                var count = data.Vertices.Count;
-                data.Vertices.AddRange(verts);
-                data.Edges.AddRange(Enumerable.Range(count, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
-            }
 
             return data;
         }

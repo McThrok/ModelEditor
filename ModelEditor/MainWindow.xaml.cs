@@ -175,18 +175,18 @@ namespace ModelEditor
         #region objMenu
         private void SelectedObjectChange(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            //if (e.NewValue != null)
-            //    objectMenu.Visibility = Visibility.Visible;
-            //else
-            //    objectMenu.Visibility = Visibility.Collapsed;
+            if (e.NewValue != null)
+                objectMenu.Visibility = Visibility.Visible;
+            else
+                objectMenu.Visibility = Visibility.Collapsed;
 
-            //if (e.NewValue is SceneObject item)
-            //{
-            //    Engine.Scene.Cursor.SetTarget(item);
+            if (e.NewValue is SceneObject item)
+            {
+                Engine.Scene.Cursor.SetTarget(item);
 
-            //    TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
-            //    BezierMenu.Visibility = item is BezierCurve ? Visibility.Visible : Visibility.Collapsed;
-            //}
+                TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
+                BezierMenu.Visibility = item is BezierCurve ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
