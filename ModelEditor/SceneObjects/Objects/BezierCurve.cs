@@ -67,7 +67,7 @@ namespace ModelEditor
                     return new List<Vector3>();
                 }
 
-                if (t == 0 || Dist(prev, pos) == 1)
+                if (t == 0 || Dist(prev, pos) <= 1)
                 {
                     result.Add(point);
 
