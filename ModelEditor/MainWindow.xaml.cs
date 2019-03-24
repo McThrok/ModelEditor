@@ -334,6 +334,11 @@ namespace ModelEditor
 
         }
 
+        private void DeleteFlat_Click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.FlatDelete(GetSelectedObj());
+        }
+
         private SceneObject GetNearestContainer(UIElement element)
         {
             // Walk up the element tree to the nearest tree view item.

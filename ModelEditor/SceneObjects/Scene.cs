@@ -75,6 +75,19 @@ namespace ModelEditor
             return result;
         }
 
+        public void FlatDelete(SceneObject obj)
+        {
+            if (obj == null || obj.Parent == null)
+                return;
+
+            if (obj.Id == Camera.Id || obj.Id == Cursor.Id)
+                return;
+
+            foreach (var child in obj.Children.ToList())
+                child.SetParent(obj.Parent);
+
+            obj.Parent.Children.Remove(obj);
+        }
         public void Delete(SceneObject obj)
         {
             if (obj == null || obj.Parent == null)

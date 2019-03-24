@@ -18,10 +18,11 @@
 
         <StackPanel Orientation="Horizontal" >
             <Button Margin="5" Height="20" Click="Bezier_Click">Add Bezier Curve</Button>
-            <Button Margin="5" Height="20" Click="Torus_Click">Add Torus</Button>
             <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
+            <Button Margin="5" Height="20" Click="Torus_Click">Add Torus</Button>
             <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>
             <Button Margin="5" Height="20" Click="Delete_Click">Delete</Button>
+            <Button Margin="5" Height="20" Click="DeleteFlat_Click">Flat delete</Button>
             <Button Margin="5" Height="20" Click="FocuCamera">Focus camera</Button>
             <Button Margin="5" Height="20" Click="Hold_click">Hold</Button>
             <Button Margin="5" Height="20" Click="HoldAll_click">Hold All</Button>
