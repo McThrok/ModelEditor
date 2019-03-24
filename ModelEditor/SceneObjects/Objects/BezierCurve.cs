@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BezierCurve : SceneObject, IRenderableObj, IScreenRenderable
+    public class BezierCurve : SceneObject, IRenderableObj
     {
         private readonly RayCaster _rayCaster;
         private static int _count = 0;
@@ -42,139 +42,124 @@ namespace ModelEditor
         {
         }
 
-        private List<Vector3> Getverts()
-        {
-            return Children.Select(x => x.GlobalMatrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
-        }
-        private List<Vector3> GetvertsLocal()
+        private List<Vector3> GetVerts()
         {
             return Children.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
         }
-
-        public ScreenRenderData GetScreenRenderData()
+        private List<Vector3> GetSegment(List<Vector3> verts, int idx, int length)
         {
-            var data = new ScreenRenderData();
-            var verts = GetvertsLocal();
+            var result = new List<Vector3>();
+            if (length == 0) return new List<Vector3>() { };
+            if (length == 1) return new List<Vector3>() { verts[idx] };
 
-            int i;
-            for (i = 0; i + 3 < verts.Count; i += 3)
-                data.PixelPositions.AddRange(GetCubicSegment(verts, i));
+            float step = 1;
+            Vector2Int prev = Vector2Int.Empty;
+            float prevt = 0;
+            float t = 0;
 
-            var left = verts.Count - i;
-            if (left == 3) data.PixelPositions.AddRange(GetQuadratic(verts, verts.Count - 3));
-            if (left == 2) data.PixelPositions.AddRange(GetLinear(verts, verts.Count - 2));
-            if (left == 1) data.PixelPositions.AddRange(GetPoint(verts, verts.Count - 1));
-
-            return data;
-        }
-        private List<PixelPosition> GetCubicSegment(List<Vector3> verts, int idx)
-        {
-            var result = new List<PixelPosition>();
-            var n = GetDivisionCount(verts, idx, 4);
-
-            if (n == -1)
-                return result;
-
-            for (int i = 0; i < n; i++)
+            while (t <= 1)
             {
-                float t = 1f * i / n;
-                float c = 1.0f - t;
+                var point = GetSegmentValue(verts, idx, length, t);
+                var pos = _rayCaster.GetScreenPositionOf(point);
 
-                float b0 = c * c * c;
-                float b1 = 3 * t * c * c;
-                float b2 = 3 * t * t * c;
-                float b3 = t * t * t;
+                if (pos == Vector2Int.Empty)
+                {
+                    return new List<Vector3>();
+                }
 
-                var point = verts[idx] * b0 + verts[idx + 1] * b1 + verts[idx + 2] * b2 + verts[idx + 3] * b3;
+                if (t == 0 || Dist(prev, pos) == 1)
+                {
+                    result.Add(point);
 
-                result.Add(new PixelPosition(point));
+                    prevt = t;
+                    prev = pos;
+
+                    t += step;
+                    step *= 2;
+                }
+                else
+                {
+                    step /= 2;
+                    t = prevt + step;
+                }
             }
 
             return result;
         }
-        private List<PixelPosition> GetQuadratic(List<Vector3> verts, int idx)
+        private Vector3 GetSegmentValue(List<Vector3> verts, int idx, int length, float t)
         {
-            var result = new List<PixelPosition>();
-            var n = GetDivisionCount(verts, idx, 3);
+            if (length == 2)
+                return GetLinear(verts, idx, t);
 
-            if (n == -1)
-                return result;
+            if (length == 3)
+                return GetQuadratic(verts, idx, t);
 
-            for (int i = 0; i < n; i++)
-            {
-                float t = 1f * i / n;
-                float c = 1.0f - t;
-
-                float b0 = c * c;
-                float b1 = 2 * t * c;
-                float b2 = t * t;
-
-                var point = verts[idx] * b0 + verts[idx + 1] * b1 + verts[idx + 2] * b2;
-
-                result.Add(new PixelPosition(point));
-            }
-
-            return result;
-
+            return GetCubic(verts, idx, t);
         }
-        private List<PixelPosition> GetLinear(List<Vector3> verts, int idx)
+        private Vector3 GetCubic(List<Vector3> verts, int idx, float t)
         {
-            var result = new List<PixelPosition>();
-            var n = GetDivisionCount(verts, idx, 2);
+            float c = 1.0f - t;
 
-            if (n == -1)
-                return result;
+            float b0 = c * c * c;
+            float b1 = 3 * t * c * c;
+            float b2 = 3 * t * t * c;
+            float b3 = t * t * t;
 
-            for (int i = 0; i < n; i++)
-            {
-                float t = 1f * i / n;
-                float c = 1.0f - t;
-
-                float b0 = c;
-                float b1 = t;
-
-                var point = verts[idx] * b0 + verts[idx + 1] * b1; ;
-
-                result.Add(new PixelPosition(point));
-            }
-
-            return result;
+            var point = verts[idx] * b0 + verts[idx + 1] * b1 + verts[idx + 2] * b2 + verts[idx + 3] * b3;
+            return point;
         }
-        private List<PixelPosition> GetPoint(List<Vector3> verts, int idx)
+        private Vector3 GetQuadratic(List<Vector3> verts, int idx, float t)
         {
-            return new List<PixelPosition>() { new PixelPosition(verts[idx]) };
+            float c = 1.0f - t;
+
+            float b0 = c * c;
+            float b1 = 2 * t * c;
+            float b2 = t * t;
+
+            var point = verts[idx] * b0 + verts[idx + 1] * b1 + verts[idx + 2] * b2;
+            return point;
         }
-        private int GetDivisionCount(List<Vector3> verts, int idx, int length)
+        private Vector3 GetLinear(List<Vector3> verts, int idx, float t)
         {
-            var mtx = GlobalMatrix;
-            double max = -1;
-            for (int i = 0; i < length - 1; i++)
-            {
-                var a = _rayCaster.GetScreenPositionOf(mtx.Multiply(verts[idx + i].ToVector4()).ToVector3());
-                var b = _rayCaster.GetScreenPositionOf(mtx.Multiply(verts[idx + i + 1].ToVector4()).ToVector3());
-                if (a == Vector2Int.Empty || b == Vector2Int.Empty)
-                    return -1;
+            float c = 1.0f - t;
 
-                var diff = a - b;
-                var x = Math.Abs(diff.X);
-                var y = Math.Abs(diff.Y);
-                var dist = Math.Sqrt(x * x + y * y);
-                max = dist > max ? dist : max;
-            }
+            float b0 = c;
+            float b1 = t;
 
-            return (int)Math.Ceiling((length - 1) * max);
+            var point = verts[idx] * b0 + verts[idx + 1] * b1;
+            return point;
         }
+        private int Dist(Vector2Int a, Vector2Int b)
+        {
 
-
+            var diff = a - b;
+            return Math.Max(Math.Abs(diff.X), Math.Abs(diff.Y));
+        }
+       
         public ObjRenderData GetRenderData()
         {
+            var verts = GetVerts();
+            var data = new ObjRenderData();
+
+            //curve
+            int i;
+            for (i = 0; i + 3 < verts.Count; i += 3)
+                data.Vertices.AddRange(GetSegment(verts, i, 4));
+
+            var left = verts.Count - i;
+            data.Vertices.AddRange(GetSegment(verts, i, left));
+
+            //if (verts.Count > 1)
+            //    data.Edges.AddRange(Enumerable.Range(0, data.Vertices.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
+
+
             //polygon
-            var verts = Getverts();
-            var data = new ObjRenderData
+            if (ShowPolygon && verts.Count > 1)
             {
-                Vertices = Children.Select(x => x.GlobalMatrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList(),
-                Edges = verts.Count < 2 || !_showPolygon ? new List<Edge>() : Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList()
-            };
+                var count = data.Vertices.Count;
+                data.Vertices.AddRange(verts);
+                data.Edges.AddRange(Enumerable.Range(count, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
+            }
 
             return data;
         }
@@ -191,7 +176,6 @@ namespace ModelEditor
                 }
             }
         }
-
     }
 }
 

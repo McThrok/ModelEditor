@@ -11,7 +11,7 @@ namespace ModelEditor
 {
     public struct Vector2Int : IEquatable<Vector2Int>
     {
-        public static Vector2Int Empty => new Vector2Int(-1, -1);
+        public static Vector2Int Empty => new Vector2Int(int.MaxValue, int.MaxValue);
         public static Vector2Int Zero => new Vector2Int(0,0);
         public int X;
         public int Y;
@@ -26,13 +26,11 @@ namespace ModelEditor
         {
             return obj is Vector2Int && Equals((Vector2Int)obj);
         }
-
         public bool Equals(Vector2Int other)
         {
             return X == other.X &&
                    Y == other.Y;
         }
-
         public override int GetHashCode()
         {
             var hashCode = 1861411795;
@@ -62,7 +60,6 @@ namespace ModelEditor
         {
             return new Vector2Int(left.X - right.X, left.Y - right.Y);
         }
-
     }
 
 }

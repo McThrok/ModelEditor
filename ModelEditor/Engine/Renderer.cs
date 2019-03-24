@@ -52,7 +52,7 @@ namespace ModelEditor
         private Color _drawLeftColor = Colors.Red;
         private Color _drawRightColor = Colors.Cyan;
         private float _aspect;
-        private float _fov = 0.8f;
+        private float _fov = 1.4f;
         private float _near = 0.1f;
         private float _far = 100f;
 
@@ -60,7 +60,7 @@ namespace ModelEditor
         {
             _wb = wb;
             _scene = scene;
-            _aspect = _wb.PixelWidth / _wb.PixelHeight;
+            _aspect = 1f*_wb.PixelWidth / _wb.PixelHeight;
         }
 
         public void RenderFrame()
@@ -117,6 +117,13 @@ namespace ModelEditor
         {
             var data = obj.GetRenderData();
             var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+            foreach (var vert in data.Vertices)
+            {
+                var v = matrix.Multiply(vert.ToVector4());
+
+                if (v.Z > 0)
+                    DrawVertex(frameData.Context, v, frameData.Color, frameData.AddColors);
+            }
             foreach (var edge in data.Edges)
             {
                 var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
@@ -139,70 +146,73 @@ namespace ModelEditor
                     DrawOnScren(frameData.Context, center, pix, frameData.Color, frameData.AddColors);
                 }
             }
+        }
 
-            foreach (var pixPos in data.PixelPositions)
-            {
-                var position = matrix.Multiply(pixPos.Position.ToVector4());
-                if (position.Z > 0)
-                {
-                    DrawOnScren(frameData.Context, position, pixPos.Pixel, frameData.Color, frameData.AddColors);
-                }
-            }
+        private void DrawOnScren(BitmapContext ctx, Vector4 center, Vector2Int pix, Color col, bool addColors)
+        {
+            var V = new Point(center.X / center.W, center.Y / center.W);
 
+            var width = _wb.PixelWidth;
+            var height = _wb.PixelHeight;
+
+            var x = Convert.ToInt32((V.X + 1) / 2 * width) + pix.X;
+            var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height) + pix.Y;
+
+            if (x > 0 && x < width && y > 0 && y < height)
+                ctx.MySetPixel(x, y, col, addColors);
+        }
+        private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, Color col, bool addColors)
+        {
+            var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
+            var B = new Point(vertB.X / vertB.W, vertB.Y / vertB.W);
+
+
+            var width = _wb.PixelWidth;
+            var height = _wb.PixelHeight;
+
+            var x1 = Convert.ToInt32((A.X + 1) / 2 * width);
+            var y1 = Convert.ToInt32((1 - (A.Y + 1) / 2) * height);
+            var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
+            var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
+
+            ctx.MyDrawLine(x1, y1, x2, y2, col, addColors);
+        }
+        private void DrawVertex(BitmapContext ctx, Vector4 vert, Color col, bool addColors)
+        {
+            var v = new Point(vert.X / vert.W, vert.Y / vert.W);
+
+            var width = _wb.PixelWidth;
+            var height = _wb.PixelHeight;
+
+            var x = Convert.ToInt32((v.X + 1) / 2 * width);
+            var y = Convert.ToInt32((1 - (v.Y + 1) / 2) * height);
+
+            if (x > 0 && x < width && y > 0 && y < height)
+                ctx.MySetPixel(x, y, col, addColors);
+        }
+
+        public Matrix4x4 GetViewMatrix()
+        {
+            return _scene.Camera.GlobalMatrix.Inversed();
+        }
+        public Matrix4x4 GetProjectionMatrix()
+        {
+            return MyMatrix4x4.CreatePerspectiveFieldOfView(_fov, _aspect, _near, _far);
+        }
+        public Matrix4x4 GetLeftAnaglyphProjectionMatrix()
+        {
+            return MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(_fov, _aspect, _near, _far, EyeDistance / 2, ViewportDistance);
+        }
+        public Matrix4x4 GetRightAnaglyphProjectionMatrix()
+        {
+            return MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(_fov, _aspect, _near, _far, -EyeDistance / 2, ViewportDistance);
+        }
+        public int BitmapWidth => _wb.PixelWidth;
+        public int BitmapHeight => _wb.PixelHeight;
+
+        public RenderAccessor GetRenderAccessor()
+        {
+            return new RenderAccessor(this);
+        }
     }
-
-    private void DrawOnScren(BitmapContext ctx, Vector4 center, Vector2Int pix, Color col, bool addColors)
-    {
-        var V = new Point(center.X / center.W, center.Y / center.W);
-
-        var width = _wb.PixelWidth;
-        var height = _wb.PixelHeight;
-
-        var x = Convert.ToInt32((V.X + 1) / 2 * width) + pix.X;
-        var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height) + pix.Y;
-
-        if (x > 0 && x < width && y > 0 && y < height)
-            ctx.MySetPixel(x, y, col, addColors);
-    }
-    private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, Color col, bool addColors)
-    {
-        var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
-        var B = new Point(vertB.X / vertB.W, vertB.Y / vertB.W);
-
-
-        var width = _wb.PixelWidth;
-        var height = _wb.PixelHeight;
-
-        var x1 = Convert.ToInt32((A.X + 1) / 2 * width);
-        var y1 = Convert.ToInt32((1 - (A.Y + 1) / 2) * height);
-        var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
-        var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
-
-        ctx.MyDrawLine(x1, y1, x2, y2, col, addColors);
-    }
-
-    public Matrix4x4 GetViewMatrix()
-    {
-        return _scene.Camera.GlobalMatrix.Inversed();
-    }
-    public Matrix4x4 GetProjectionMatrix()
-    {
-        return MyMatrix4x4.CreatePerspectiveFieldOfView(_fov, _aspect, _near, _far);
-    }
-    public Matrix4x4 GetLeftAnaglyphProjectionMatrix()
-    {
-        return MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(_fov, _aspect, _near, _far, EyeDistance / 2, ViewportDistance);
-    }
-    public Matrix4x4 GetRightAnaglyphProjectionMatrix()
-    {
-        return MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(_fov, _aspect, _near, _far, -EyeDistance / 2, ViewportDistance);
-    }
-    public int BitmapWidth => _wb.PixelWidth;
-    public int BitmapHeight => _wb.PixelHeight;
-
-    public RenderAccessor GetRenderAccessor()
-    {
-        return new RenderAccessor(this);
-    }
-}
 }

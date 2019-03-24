@@ -48,10 +48,10 @@ namespace ModelEditor
             var x = Convert.ToInt32((v.X + 1) / 2 * width);
             var y = Convert.ToInt32((1 - (v.Y + 1) / 2) * height);
 
-            if (x > 0 && x < width && y > 0 && y < height)
+           // if (x > 0 && x < width && y > 0 && y < height)
                 return new Vector2Int(x, y);
-            else
-                return Vector2Int.Empty;
+           // else
+              //  return Vector2Int.Empty;
         }
         public Vector2Int GetScreenPositionOf(SceneObject obj)
         {

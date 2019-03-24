@@ -16,8 +16,9 @@ namespace ModelEditor
 
     public class ObjRenderData
     {
-        public List<Vector3> Vertices { get; set; }
-        public List<Edge> Edges { get; set; }
+        public List<Vector3> Vertices { get; set; } = new List<Vector3>();
+        public List<Edge> Edges { get; set; } = new List<Edge>();
+
     }
 
     public interface IScreenRenderable
@@ -28,7 +29,6 @@ namespace ModelEditor
     public class ScreenRenderData
     {
         public List<Vector2Int> Pixels { get; set; } = new List<Vector2Int>();
-        public List<PixelPosition> PixelPositions { get; set; } = new List<PixelPosition>();
     }
     public struct PixelPosition
     {
@@ -44,7 +44,5 @@ namespace ModelEditor
         public Vector2Int Pixel { get; set; }
         public Vector3 Position { get; set; }
     }
-
-
 
 }
