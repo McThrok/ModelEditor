@@ -59,6 +59,18 @@ namespace ModelEditor
             //cursor
             Engine.Scene.Cursor.PropertyChanged += Cursor_PropertyChanged;
             Cursor_PropertyChanged(this, new PropertyChangedEventArgs(nameof(Engine.Scene.Cursor.ScreenPosition)));
+
+            //scene
+            objectList.SelectedItemChanged += ObjectList_SelectedItemChanged;
+        }
+
+        private void ObjectList_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.OldValue != null)
+                Engine.Scene.SelectedItem = null;
+
+            if (e.NewValue != null)
+                Engine.Scene.SelectedItem = e.NewValue as SceneObject;
         }
 
         private void SelectItem(SceneObject obj)

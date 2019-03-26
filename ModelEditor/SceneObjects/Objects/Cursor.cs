@@ -12,7 +12,7 @@ namespace ModelEditor
 {
     public class Cursor : SceneObject, IRenderableObj
     {
-        public float Tolerance { get; set; } = 3;
+        public float Tolerance { get; set; } = float.MaxValue;
         public List<SceneObject> HeldObjects { get; set; } = new List<SceneObject>();
 
         public Cursor()

@@ -15,6 +15,7 @@ namespace ModelEditor
         public Camera Camera { get; private set; }
         public Cursor Cursor { get; private set; }
         public RayCaster RayCaster { get; set; }
+        public SceneObject SelectedItem { get; set; }
 
         private Random _rd = new Random();
 

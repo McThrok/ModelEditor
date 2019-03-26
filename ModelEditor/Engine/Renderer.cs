@@ -15,7 +15,7 @@ namespace ModelEditor
         public BitmapContext Context { get; set; }
         public Matrix4x4 ProjMatrix { get; set; }
         public Matrix4x4 View { get; set; }
-        public Color Color { get; set; }
+        public Color DefaultColor { get; set; }
         public bool AddColors { get; set; }
     }
 
@@ -48,9 +48,12 @@ namespace ModelEditor
         private WriteableBitmap _wb;
         private Scene _scene;
 
-        private Color _drawColor = Colors.Green;
+        private Color _drawColor = Colors.White;
         private Color _drawLeftColor = Colors.Red;
         private Color _drawRightColor = Colors.Cyan;
+        private Color _selectedColor = Colors.Yellow;
+        private Color _heldColor = Colors.Blue;
+        private Color _selectedHeldColor = Colors.Green;
         private float _aspect;
         private float _fov = 1.4f;
         private float _near = 0.1f;
@@ -60,7 +63,7 @@ namespace ModelEditor
         {
             _wb = wb;
             _scene = scene;
-            _aspect = 1f*_wb.PixelWidth / _wb.PixelHeight;
+            _aspect = 1f * _wb.PixelWidth / _wb.PixelHeight;
         }
 
         public void RenderFrame()
@@ -85,7 +88,7 @@ namespace ModelEditor
                 var frameData = new RenderFrameData()
                 {
                     AddColors = addColors,
-                    Color = color,
+                    DefaultColor = color,
                     ProjMatrix = projMatrix,
                     View = view,
                     Context = context
@@ -97,15 +100,16 @@ namespace ModelEditor
         private void RenderRec(SceneObject obj, Matrix4x4 parentMatrix, RenderFrameData frameData)
         {
             var model = obj.Matrix * parentMatrix;
+            var color = GetColor(obj, frameData.DefaultColor);
 
             if (obj is IRenderableObj renderableObj)
             {
-                Render(renderableObj, model, frameData);
+                Render(renderableObj, model, frameData, color);
             }
 
             if (obj is IScreenRenderable screenRenderable)
             {
-                Render(screenRenderable, model, frameData);
+                Render(screenRenderable, model, frameData, color);
             }
 
             foreach (var child in obj.Children)
@@ -113,27 +117,29 @@ namespace ModelEditor
                 RenderRec(child, model, frameData);
             }
         }
-        private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData)
+        private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData, Color color)
         {
             var data = obj.GetRenderData();
             var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+
             foreach (var vert in data.Vertices)
             {
                 var v = matrix.Multiply(vert.ToVector4());
 
                 if (v.Z > 0)
-                    DrawVertex(frameData.Context, v, frameData.Color, frameData.AddColors);
+                    DrawVertex(frameData.Context, v, color, frameData.AddColors);
             }
+
             foreach (var edge in data.Edges)
             {
                 var vertA = matrix.Multiply(data.Vertices[edge.IdxA].ToVector4());
                 var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
 
                 if (vertA.Z > 0 && vertB.Z > 0)
-                    DrawLine(frameData.Context, vertA, vertB, frameData.Color, frameData.AddColors);
+                    DrawLine(frameData.Context, vertA, vertB, color, frameData.AddColors);
             }
         }
-        private void Render(IScreenRenderable obj, Matrix4x4 model, RenderFrameData frameData)
+        private void Render(IScreenRenderable obj, Matrix4x4 model, RenderFrameData frameData, Color color)
         {
             var data = obj.GetScreenRenderData();
             var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
@@ -143,9 +149,31 @@ namespace ModelEditor
             {
                 foreach (var pix in data.Pixels)
                 {
-                    DrawOnScren(frameData.Context, center, pix, frameData.Color, frameData.AddColors);
+                    DrawOnScren(frameData.Context, center, pix, color, frameData.AddColors);
                 }
             }
+        }
+
+        private Color GetColor(SceneObject obj, Color defColor)
+        {
+            var col = defColor;
+
+            if (!Anaglyphic)
+            {
+                var selected = _scene.SelectedItem != null && obj.Id == _scene.SelectedItem.Id;
+                var held = _scene.Cursor.HeldObjects.Contains(obj);
+
+                if (selected && !held)
+                    col = _selectedColor;
+
+                if (!selected && held)
+                    col = _heldColor;
+
+                if (selected && held)
+                    col = _selectedHeldColor;
+            }
+
+            return col;
         }
 
         private void DrawOnScren(BitmapContext ctx, Vector4 center, Vector2Int pix, Color col, bool addColors)
