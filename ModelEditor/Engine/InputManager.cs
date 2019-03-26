@@ -85,7 +85,8 @@ namespace ModelEditor
             if (_ctrlPressed)
             {
                 var speed = 0.1f;
-                var translateMatrix = Matrix4x4.CreateTranslation(speed * moveDir);
+                var vec = _scene.Camera.Matrix.Multiply(new Vector4(speed * moveDir, 0));
+                var translateMatrix = Matrix4x4.CreateTranslation(vec.ToVector3());
                 _scene.Cursor.Matrix = _scene.Cursor.Matrix.Multiply(translateMatrix);
             }
             else
