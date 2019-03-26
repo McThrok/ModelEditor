@@ -21,9 +21,7 @@ using System.Windows.Controls.Primitives;
 
 namespace ModelEditor
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
         public Engine Engine { get; set; }
@@ -60,22 +58,21 @@ namespace ModelEditor
             Engine.Scene.Cursor.PropertyChanged += Cursor_PropertyChanged;
             Cursor_PropertyChanged(this, new PropertyChangedEventArgs(nameof(Engine.Scene.Cursor.ScreenPosition)));
 
-            //scene
+            //SelectedItem
             objectList.SelectedItemChanged += ObjectList_SelectedItemChanged;
         }
 
         private void ObjectList_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (e.OldValue != null)
-                Engine.Scene.SelectedItem = null;
+                Engine.Scene.SelectedObject = null;
 
             if (e.NewValue != null)
-                Engine.Scene.SelectedItem = e.NewValue as SceneObject;
+                Engine.Scene.SelectedObject = e.NewValue as SceneObject;
         }
-
         private void SelectItem(SceneObject obj)
         {
-            var a = ExpandAndSelectItem(objectList, obj);
+            ExpandAndSelectItem(objectList, obj);
             //var tvi = ContainerFromItemRecursive(objectList.ItemContainerGenerator, obj);
             //if (tvi != null)
             //    tvi.IsSelected = true;
@@ -143,18 +140,32 @@ namespace ModelEditor
         {
             Engine.Scene.Delete(GetSelectedObj());
         }
-        private void Hold_click(object sender, RoutedEventArgs e)
+        private void HoldRelease_click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
+            if (Engine.Scene.Cursor.HeldObjects.Count > 0)
+            {
+                Engine.Scene.Cursor.ReleaseObjects();
+                holdReleaseBtn.Content = "Hold";
+            }
+            else
+            {
+                Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
+                if (Engine.Scene.Cursor.HeldObjects.Count > 0)
+                    holdReleaseBtn.Content = "Release";
+            }
         }
-        private void HoldAll_click(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.Cursor.HoldAllObjects(Engine.Scene.Children);
-        }
-        private void Release_Click(object sender, RoutedEventArgs e)
-        {
-            Engine.Scene.Cursor.ReleaseObjects();
-        }
+        //private void Hold_click(object sender, RoutedEventArgs e)
+        //{
+        //    Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
+        //}
+        //private void HoldAll_click(object sender, RoutedEventArgs e)
+        //{
+        //    Engine.Scene.Cursor.HoldAllObjects(Engine.Scene.Children);
+        //}
+        //private void Release_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Engine.Scene.Cursor.ReleaseObjects();
+        //}
         private void FocuCamera(object sender, RoutedEventArgs e)
         {
             var item = GetSelectedObj();
@@ -169,8 +180,6 @@ namespace ModelEditor
         {
             Engine.Scene.ResetCamera();
         }
-
-
 
         private void CbxAnaglyph_Checked(object sender, RoutedEventArgs e)
         {
@@ -235,11 +244,9 @@ namespace ModelEditor
         private void ScaleZDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1, 1 / _scaleChangeSpeed); }
         #endregion
 
-
         #region dragAndDrop
         private Point _lastMouseDown;
         private SceneObject _draggedItem, _target;
-
 
         public TreeViewItem ContainerFromItemRecursive(ItemContainerGenerator root, object item)
         {
@@ -370,8 +377,6 @@ namespace ModelEditor
             var result = container.Header as SceneObject;
             return result;
         }
-        #endregion
-
         private bool ExpandAndSelectItem(ItemsControl parentContainer, object itemToSelect)
         {
             //check all items at the current level
@@ -448,5 +453,7 @@ namespace ModelEditor
             //no item was found
             return false;
         }
+        #endregion
+
     }
 }

@@ -12,7 +12,7 @@ namespace ModelEditor
 {
     public class Cursor : SceneObject, IRenderableObj
     {
-        public float Tolerance { get; set; } = float.MaxValue;
+        public float Tolerance { get; set; } = 3;
         public List<SceneObject> HeldObjects { get; set; } = new List<SceneObject>();
 
         public Cursor()
@@ -67,18 +67,18 @@ namespace ModelEditor
             if (toHeld != null)
                 HeldObjects.Add(toHeld);
         }
-        public void HoldAllObjects(IEnumerable<SceneObject> objs)
-        {
-            ReleaseObjects();
+        //public void HoldAllObjects(IEnumerable<SceneObject> objs)
+        //{
+        //    ReleaseObjects();
 
-            foreach (var obj in objs)
-            {
-                if (CanBeHeld(obj, out float dist))
-                    HeldObjects.Add(obj);
-                else
-                    HoldAllObjects(obj.Children);
-            }
-        }
+        //    foreach (var obj in objs)
+        //    {
+        //        if (CanBeHeld(obj, out float dist))
+        //            HeldObjects.Add(obj);
+        //        else
+        //            HoldAllObjects(obj.Children);
+        //    }
+        //}
         private bool CanBeHeld(SceneObject obj, out float distance)
         {
             distance = 0;

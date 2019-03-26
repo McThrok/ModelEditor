@@ -160,7 +160,7 @@ namespace ModelEditor
 
             if (!Anaglyphic)
             {
-                var selected = _scene.SelectedItem != null && obj.Id == _scene.SelectedItem.Id;
+                var selected = _scene.SelectedObject != null && obj.Id == _scene.SelectedObject.Id;
                 var held = _scene.Cursor.HeldObjects.Contains(obj);
 
                 if (selected && !held)
