@@ -20,26 +20,6 @@ namespace ModelEditor
 
             _rayCaster = rayCaster;
 
-            GlobalMatrixChange += OnMatrixChange;
-            Children.CollectionChanged += CollectionChanged;
-        }
-
-        private void CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null)
-                foreach (SceneObject child in e.NewItems)
-                    child.GlobalMatrixChange += OnMatrixChange;
-
-            if (e.OldItems != null)
-                foreach (SceneObject child in e.OldItems)
-                    child.GlobalMatrixChange -= OnMatrixChange;
-        }
-        public void OnMatrixChange(object sender, ChangeMatrixEventArgs e)
-        {
-            Recalculate();
-        }
-        public void Recalculate()
-        {
         }
 
         private List<Vector3> GetVerts()
@@ -48,44 +28,101 @@ namespace ModelEditor
         }
         private List<Vector3> GetSegment(List<Vector3> verts, int idx, int length)
         {
-            var result = new List<Vector3>();
+            //return GetSegmentPrimitive(verts, idx, length);
             if (length == 0) return new List<Vector3>() { };
             if (length == 1) return new List<Vector3>() { verts[idx] };
 
-            float step = 1;
-            Vector2Int prev = Vector2Int.Empty;
-            float prevt = 0;
-            float t = 0;
+            return GetSegmentRec(verts, idx, length, 0, 0, 1);
+        }
+        private List<Vector3> GetSegmentPrimitive(List<Vector3> verts, int idx, int length)
+        {
+            if (length == 0) return new List<Vector3>() { };
+            if (length == 1) return new List<Vector3>() { verts[idx] };
 
-            while (t <= 1)
+            int n = 50;
+            var result = new List<Vector3>();
+            for (int i = 0; i < n; i++)
             {
-                var point = GetSegmentValue(verts, idx, length, t);
-                var pos = _rayCaster.GetScreenPositionOf(point);
 
-                if (pos == Vector2Int.Empty)
-                {
-                    return new List<Vector3>();
-                }
+                var pointA = GetSegmentValue(verts, idx, length, 1f * i / n);
+                var screenPosA = _rayCaster.GetExScreenPositionOf(pointA);
+                result.Add(pointA);
 
-                if (t == 0 || Dist(prev, pos) <= 1)
-                {
-                    result.Add(point);
-
-                    prevt = t;
-                    prev = pos;
-
-                    t += step;
-                    step *= 2;
-                }
-                else
-                {
-                    step /= 2;
-                    t = prevt + step;
-                }
             }
 
             return result;
         }
+        private List<Vector3> GetSegmentRec(List<Vector3> verts, int idx, int length, int level, float start, float end)
+        {
+            var pointA = GetSegmentValue(verts, idx, length, start);
+            var pointB = GetSegmentValue(verts, idx, length, end);
+            var screenPosA = _rayCaster.GetExScreenPositionOf(pointA);
+            var screenPosB = _rayCaster.GetExScreenPositionOf(pointB);
+
+            var result = new List<Vector3>();
+
+            if (Dist(screenPosA, screenPosB) <= 1 || level > 12)
+            {
+                if (screenPosA != Vector2Int.Empty)
+                    result.Add(pointA);
+                if (screenPosB != Vector2Int.Empty)
+                    result.Add(pointB);
+            }
+            else
+            {
+                float mid = (start + end) / 2;
+                var left = GetSegmentRec(verts, idx, length, level + 1, start, mid);
+                var right = GetSegmentRec(verts, idx, length, level + 1, mid, end);
+                result.AddRange(left);
+
+                if (left.Count > 0 && right.Count > 0 && left[left.Count - 1] == right[0])
+                    result.AddRange(right.Skip(1));
+                else
+                    result.AddRange(right);
+            }
+
+            return result;
+        }
+        //private List<Vector3> GetSegmentQ(List<Vector3> verts, int idx, int length)
+        //{
+        //    var result = new List<Vector3>();
+        //    if (length == 0) return new List<Vector3>() { };
+        //    if (length == 1) return new List<Vector3>() { verts[idx] };
+
+        //    float step = 1;
+        //    Vector2Int prev = Vector2Int.Empty;
+        //    float prevt = 0;
+        //    float t = 0;
+
+        //    while (t <= 1)
+        //    {
+        //        var point = GetSegmentValue(verts, idx, length, t);
+        //        var pos = _rayCaster.GetScreenPositionOf(point);
+
+        //        if (pos == Vector2Int.Empty)
+        //        {
+        //            return new List<Vector3>();
+        //        }
+
+        //        if (t == 0 || Dist(prev, pos) <= 1)
+        //        {
+        //            result.Add(point);
+
+        //            prevt = t;
+        //            prev = pos;
+
+        //            t += step;
+        //            step *= 2;
+        //        }
+        //        else
+        //        {
+        //            step /= 2;
+        //            t = prevt + step;
+        //        }
+        //    }
+
+        //    return result;
+        //}
         private Vector3 GetSegmentValue(List<Vector3> verts, int idx, int length, float t)
         {
             if (length == 2)
@@ -135,7 +172,7 @@ namespace ModelEditor
             var diff = a - b;
             return Math.Max(Math.Abs(diff.X), Math.Abs(diff.Y));
         }
-       
+
         public ObjRenderData GetRenderData()
         {
             var verts = GetVerts();

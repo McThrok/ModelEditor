@@ -46,6 +46,7 @@
 
                 <Button Margin="5" Height="20" Click="FocuCamera">Focus camera</Button>
                 <Button Margin="5,5,30,5" Height="20" Click="ResetCamera">Reset camera</Button>
+
                 <Button Name="holdReleaseBtn" Margin="5" Height="20" Click="HoldRelease_click">Hold</Button>
             </StackPanel>
         </StackPanel>

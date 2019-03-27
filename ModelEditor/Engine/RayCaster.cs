@@ -27,6 +27,29 @@ namespace ModelEditor
         public int BitmapWidth => _renderer.BitmapWidth;
         public int BitmapHeight => _renderer.BitmapHeight;
 
+        public Vector2Int GetExScreenPositionOf(Vector3 position)
+        {
+            var projection = GetProjectionMatrix();
+            var view = GetViewMatrix();
+
+            var matrix = view * projection;
+
+            var center = matrix.Multiply(position.ToVector4());
+            //if (center.Z < 0)
+            //{
+            //    return Vector2Int.Empty;
+            //}
+
+            var v = new Point(center.X / center.W, center.Y / center.W);
+
+            var width = BitmapWidth;
+            var height = BitmapHeight;
+
+            var x = Convert.ToInt32((v.X + 1) / 2 * width);
+            var y = Convert.ToInt32((1 - (v.Y + 1) / 2) * height);
+
+            return new Vector2Int(x, y);
+        }
         public Vector2Int GetScreenPositionOf(Vector3 position)
         {
             var projection = GetProjectionMatrix();
@@ -48,10 +71,10 @@ namespace ModelEditor
             var x = Convert.ToInt32((v.X + 1) / 2 * width);
             var y = Convert.ToInt32((1 - (v.Y + 1) / 2) * height);
 
-           // if (x > 0 && x < width && y > 0 && y < height)
+            if (x > 0 && x < width && y > 0 && y < height)
                 return new Vector2Int(x, y);
-           // else
-              //  return Vector2Int.Empty;
+            else
+                return Vector2Int.Empty;
         }
         public Vector2Int GetScreenPositionOf(SceneObject obj)
         {

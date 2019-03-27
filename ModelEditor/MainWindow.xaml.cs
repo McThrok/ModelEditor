@@ -154,18 +154,7 @@ namespace ModelEditor
                     holdReleaseBtn.Content = "Release";
             }
         }
-        //private void Hold_click(object sender, RoutedEventArgs e)
-        //{
-        //    Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
-        //}
-        //private void HoldAll_click(object sender, RoutedEventArgs e)
-        //{
-        //    Engine.Scene.Cursor.HoldAllObjects(Engine.Scene.Children);
-        //}
-        //private void Release_Click(object sender, RoutedEventArgs e)
-        //{
-        //    Engine.Scene.Cursor.ReleaseObjects();
-        //}
+      
         private void FocuCamera(object sender, RoutedEventArgs e)
         {
             var item = GetSelectedObj();
