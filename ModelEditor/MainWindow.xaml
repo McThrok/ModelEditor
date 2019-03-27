@@ -94,7 +94,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="Show polygon:" VerticalAlignment="Center" TextAlignment="Center" />
-                        <CheckBox Grid.Column="1" IsChecked="{Binding SelectedItem.ShowPolygon, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <CheckBox Grid.Column="1" IsChecked="{Binding SelectedItem.ShowPolygon, ElementName=objectList, Mode=TwoWay }" />
                     </Grid>
 
                     <Grid Margin="5">
@@ -113,7 +113,7 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Name :" VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.Name, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3" Text="{Binding SelectedItem.Name, ElementName=objectList, Mode=TwoWay }" />
 
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="X" VerticalAlignment="Center" TextAlignment="Center"/>
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="Y" VerticalAlignment="Center" TextAlignment="Center"/>
@@ -122,51 +122,51 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Position" VerticalAlignment="Center" TextAlignment="Center"/>
                         <StackPanel Grid.Row="2" Grid.Column="1" >
                             <Button Height="20" Click="PositionXUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.PositionX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.PositionX, ElementName=objectList, Mode=TwoWay}" />
                             <Button Height="20" Click="PositionXDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="2" Grid.Column="2" >
                             <Button Height="20" Click="PositionYUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.PositionY, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.PositionY, ElementName=objectList, Mode=TwoWay}" />
                             <Button Height="20" Click="PositionYDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="2" Grid.Column="3" >
                             <Button Height="20" Click="PositionZUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.PositionZ, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.PositionZ, ElementName=objectList, Mode=TwoWay}" />
                             <Button Height="20" Click="PositionZDown">-</Button>
                         </StackPanel>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Rotation" VerticalAlignment="Center" TextAlignment="Center"/>
                         <StackPanel Grid.Row="3" Grid.Column="1" >
                             <Button Height="20" Click="RotationXUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.RotationX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.RotationX, ElementName=objectList, Mode=TwoWay}" />
                             <Button Height="20" Click="RotationXDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="3" Grid.Column="2" >
                             <Button Height="20" Click="RotationYUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.RotationY, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.RotationY, ElementName=objectList, Mode=TwoWay }" />
                             <Button Height="20" Click="RotationYDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="3" Grid.Column="3" >
                             <Button Height="20" Click="RotationZUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.RotationZ, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.RotationZ, ElementName=objectList, Mode=TwoWay }" />
                             <Button Height="20" Click="RotationZDown">-</Button>
                         </StackPanel>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Scale" VerticalAlignment="Center" TextAlignment="Center"/>
                         <StackPanel Grid.Row="4" Grid.Column="1" >
                             <Button Height="20" Click="ScaleXUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.ScaleX, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.ScaleX, ElementName=objectList, Mode=TwoWay }" />
                             <Button Height="20" Click="ScaleXDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="4" Grid.Column="2" >
                             <Button Height="20" Click="ScaleYUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.ScaleY, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.ScaleY, ElementName=objectList, Mode=TwoWay }" />
                             <Button Height="20" Click="ScaleYDown">-</Button>
                         </StackPanel>
                         <StackPanel Grid.Row="4" Grid.Column="3" >
                             <Button Height="20" Click="ScaleZUp">+</Button>
-                            <TextBox Text="{Binding SelectedItem.ScaleZ, ElementName=objectList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedItem.ScaleZ, ElementName=objectList, Mode=TwoWay }" />
                             <Button Height="20" Click="ScaleZDown">-</Button>
                         </StackPanel>
 
