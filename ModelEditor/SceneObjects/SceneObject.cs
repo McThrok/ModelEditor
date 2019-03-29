@@ -23,6 +23,16 @@ namespace ModelEditor
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
+        private bool _isVisible = true;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                _isVisible = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsVisible)));
+            }
+        }
         public bool Holdable { get; set; }
 
         public Guid Id { get; set; } = Guid.NewGuid();
