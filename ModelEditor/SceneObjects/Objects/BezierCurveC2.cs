@@ -27,20 +27,20 @@ namespace ModelEditor
             Name = nameof(BezierCurveC2) + " " + _count++.ToString();
             Children.CollectionChanged += Children_CollectionChanged;
 
-            DerivativeLeft = new Vertex() { Name = "dl" };//{ IsVisible = false };
-            DerivativeRight = new Vertex() { Name = "dr" };// { IsVisible = false };
+            DerivativeLeft = new Vertex() { IsVisible = false };
+            DerivativeRight = new Vertex() { IsVisible = false };
         }
 
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
                 foreach (var item in e.NewItems)
-                    if (item is Vertex vert)
+                    if (item is Vertex vert && vert.IsVisible)
                         AddBernstein(vert);
 
             if (e.OldItems != null)
                 foreach (var item in e.OldItems)
-                    if (item is Vertex vert)
+                    if (item is Vertex vert && vert.IsVisible)
                         DeleteBernstein(vert);
         }
 
@@ -52,36 +52,54 @@ namespace ModelEditor
             {
                 var last = _vertices[_vertices.Count - 1];
 
-                var cv1 = new Vertex();
-                cv1.IsVisible = false;
-                cv1.Parent = this;
-                this.Children.AddItemWithoutNotification(cv1);
+                var cv1 = CreateControlVertex();
                 cv1.GlobalMatrix = vert.GlobalMatrix;
                 cv1.Move(0, 1, 0);
                 bVert.ControlVertex1 = cv1;
 
-                var cv2 = new Vertex();
-                cv2.IsVisible = false;
-                cv2.Parent = this;
-                this.Children.AddItemWithoutNotification(cv2);
+                var cv2 = CreateControlVertex();
                 cv2.GlobalMatrix = vert.GlobalMatrix;
                 cv2.Move(0, 2, 0);
                 bVert.ControlVertex2 = cv2;
 
-                DerivativeRight.SetParent(vert);
+                DerivativeRight.SetParent(this, false);
             }
 
             if (_vertices.Count == 1)
             {
-                DerivativeLeft.SetParent(_vertices[0].Vertex);
+                //DerivativeLeft.SetParent(this, false);
             }
 
             _vertices.Add(bVert);
         }
 
+        private Vertex CreateControlVertex()
+        {
+            var cv = new Vertex();
+            cv.IsVisible = false;
+            cv.SetParent(this, false);
+
+            return cv;
+        }
+
         private void DeleteBernstein(Vertex vert)
         {
+            int idx = _vertices.FindIndex(x => x.Vertex.Id == vert.Id);
+                
+            if (idx != 0 || idx == 0 && _vertices.Count > 1)
+            {
+                var bVert = _vertices[idx != 0 ? idx : 1];
 
+                if (bVert.ControlVertex1 != null)
+                    //this.Children.RemoveWithoutNotification(bVert.ControlVertex1);
+                    this.Children.Remove(bVert.ControlVertex1);
+
+                if (bVert.ControlVertex2 != null)
+                    //this.Children.RemoveWithoutNotification(bVert.ControlVertex2);
+                    this.Children.Remove(bVert.ControlVertex2);
+            }
+
+            _vertices.RemoveAt(idx);
         }
 
         private bool _spline = false;
@@ -100,15 +118,14 @@ namespace ModelEditor
 
         public ObjRenderData GetRenderData()
         {
-            var verts = GetVerts();
             var data = new ObjRenderData();
 
-            //polygon
-            if (ShowPolygon && verts.Count > 1)
-            {
-                data.Vertices.AddRange(verts);
-                data.Edges.AddRange(Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
-            }
+            ////polygon
+            //if (ShowPolygon && verts.Count > 1)
+            //{
+            //    data.Vertices.AddRange(verts);
+            //    data.Edges.AddRange(Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
+            //}
 
             ////curve
             //int i;

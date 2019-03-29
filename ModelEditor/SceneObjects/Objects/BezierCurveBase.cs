@@ -18,10 +18,6 @@ namespace ModelEditor
             _rayCaster = rayCaster;
         }
 
-        protected List<Vector3> GetVerts()
-        {
-            return Children.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
-        }
         protected List<Vector3> GetSegment(List<Vector3> verts, int idx, int length)
         {
             //return GetSegmentPrimitive(verts, idx, length);

@@ -17,6 +17,10 @@ namespace ModelEditor
             Name = nameof(BezierCurveC0) + " " + _count++.ToString();
         }
 
+        protected List<Vector3> GetVerts()
+        {
+            return Children.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
+        }
         public ObjRenderData GetRenderData()
         {
             var verts = GetVerts();
