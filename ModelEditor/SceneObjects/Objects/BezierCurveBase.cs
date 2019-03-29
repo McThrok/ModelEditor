@@ -9,23 +9,20 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BezierCurve : SceneObject, IRenderableObj
+    public class BezierCurveBase : SceneObject
     {
-        private readonly RayCaster _rayCaster;
-        private static int _count = 0;
-        public BezierCurve(RayCaster rayCaster)
+        protected readonly RayCaster _rayCaster;
+        public BezierCurveBase(RayCaster rayCaster)
         {
-            Name = nameof(BezierCurve) + " " + _count++.ToString();
             Holdable = false;
-
             _rayCaster = rayCaster;
         }
 
-        private List<Vector3> GetVerts()
+        protected List<Vector3> GetVerts()
         {
             return Children.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
         }
-        private List<Vector3> GetSegment(List<Vector3> verts, int idx, int length)
+        protected List<Vector3> GetSegment(List<Vector3> verts, int idx, int length)
         {
             //return GetSegmentPrimitive(verts, idx, length);
             if (length == 0) return new List<Vector3>() { };
@@ -130,29 +127,6 @@ namespace ModelEditor
 
             var diff = a - b;
             return Math.Max(Math.Abs(diff.X), Math.Abs(diff.Y));
-        }
-
-        public ObjRenderData GetRenderData()
-        {
-            var verts = GetVerts();
-            var data = new ObjRenderData();
-
-            //polygon
-            if (ShowPolygon && verts.Count > 1)
-            {
-                data.Vertices.AddRange(verts);
-                data.Edges.AddRange(Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList());
-            }
-
-            //curve
-            int i;
-            for (i = 0; i + 3 < verts.Count; i += 3)
-                data.Vertices.AddRange(GetSegment(verts, i, 4));
-
-            var left = verts.Count - i;
-            data.Vertices.AddRange(GetSegment(verts, i, left));
-
-            return data;
         }
 
         private bool _showPolygon;

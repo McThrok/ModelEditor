@@ -46,7 +46,8 @@ namespace ModelEditor
         }
         public SceneObject AddBezierCurve(SceneObject parent)
         {
-            var bezier = new BezierCurve(RayCaster);
+            var bezier = new BezierCurveC2(RayCaster);
+            //var bezier = new BezierCurveC0(RayCaster);
             return AddObj(bezier, parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject

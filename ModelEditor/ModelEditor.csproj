@@ -71,13 +71,16 @@
     </Compile>
     <Compile Include="Common\Vector2Int.cs" />
     <Compile Include="Common\MathExtension.cs" />
+    <Compile Include="Common\ObservableCollcectionEx.cs" />
     <Compile Include="Common\WBExtension.cs" />
     <Compile Include="Engine\InputManager.cs" />
     <Compile Include="Engine\Engine.cs" />
     <Compile Include="Engine\RayCaster.cs" />
+    <Compile Include="SceneObjects\Objects\BezierCurveBase.cs" />
+    <Compile Include="SceneObjects\Objects\BezierCurveC2.cs" />
     <Compile Include="SceneObjects\Objects\Camera.cs" />
     <Compile Include="SceneObjects\Objects\Cursor.cs" />
-    <Compile Include="SceneObjects\Objects\BezierCurve.cs" />
+    <Compile Include="SceneObjects\Objects\BezierCurveC0.cs" />
     <Compile Include="SceneObjects\Objects\EmptyObject.cs" />
     <Compile Include="SceneObjects\Objects\Vertex.cs" />
     <Compile Include="SceneObjects\Objects\Cube.cs" />

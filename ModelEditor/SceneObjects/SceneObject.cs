@@ -37,7 +37,7 @@ namespace ModelEditor
 
         public Guid Id { get; set; } = Guid.NewGuid();
         public SceneObject Parent { get; set; }
-        public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
+        public ObservableCollectionEx<SceneObject> Children { get; private set; } = new ObservableCollectionEx<SceneObject>();
 
         #region manipulation
         public virtual void Move(Vector3 CreateTranslation)

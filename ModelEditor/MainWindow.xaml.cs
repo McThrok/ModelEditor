@@ -40,7 +40,7 @@ namespace ModelEditor
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             Engine = new Engine(BitmapContainer);
-            objectList.ItemsSource = new ObservableCollection<SceneObject>() { Engine.Scene };
+            objectList.ItemsSource = new ObservableCollectionEx<SceneObject>() { Engine.Scene };
             Engine.Run();
 
             //init sliders
@@ -207,7 +207,7 @@ namespace ModelEditor
                 Engine.Scene.Cursor.SetTarget(item);
 
                 TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
-                BezierMenu.Visibility = item is BezierCurve ? Visibility.Visible : Visibility.Collapsed;
+                BezierMenu.Visibility = item is BezierCurveC0 ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
