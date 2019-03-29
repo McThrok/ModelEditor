@@ -29,8 +29,7 @@ namespace ModelEditor
         public SceneObject Parent { get; set; }
         public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
 
-        public delegate void MatrixDelegate(object sender, ChangeMatrixEventArgs e);
-
+        #region manipulation
         public virtual void Move(Vector3 CreateTranslation)
         {
             Matrix = Matrix4x4.CreateTranslation(CreateTranslation).Multiply(Matrix);
@@ -73,7 +72,22 @@ namespace ModelEditor
         {
             Matrix = Matrix.Multiply(Matrix4x4.CreateScale((float)x, (float)y, (float)z));
         }
+        #endregion
 
+        public void SetParent(SceneObject parent)
+        {
+            var global = GlobalMatrix;
+            if (Parent != null)
+            {
+                Parent.Children.Remove(this);
+            }
+            if (parent != null && !parent.IsEqualOrDescendantOf(this))
+            {
+                Parent = parent;
+                parent.Children.Add(this);
+            }
+            GlobalMatrix = global;
+        }
         public bool IsEqualOrDescendantOf(SceneObject obj)
         {
             if (obj == null)
@@ -94,8 +108,10 @@ namespace ModelEditor
             return result;
         }
 
-        private Matrix4x4 _matrix = Matrix4x4.Identity;
+        public delegate void MatrixDelegate(object sender, ChangeMatrixEventArgs e);
         public event MatrixDelegate MatrixChange;
+
+        private Matrix4x4 _matrix = Matrix4x4.Identity;
         public Matrix4x4 Matrix
         {
             get
@@ -118,27 +134,6 @@ namespace ModelEditor
                 }
             }
         }
-        public void InvokePropertyChanged(string prop)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
-
-        public void SetParent(SceneObject parent)
-        {
-            var global = GlobalMatrix;
-            if (Parent != null)
-            {
-                Parent.Children.Remove(this);
-            }
-            if (parent != null && !parent.IsEqualOrDescendantOf(this))
-            {
-                Parent = parent;
-                parent.Children.Add(this);
-            }
-            GlobalMatrix = global;
-        }
-
 
         public event MatrixDelegate GlobalMatrixChange;
         public Matrix4x4 GlobalMatrix
@@ -284,6 +279,10 @@ namespace ModelEditor
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public void InvokePropertyChanged(string prop)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
         private void NotifyAllChanges()
         {
             string[] props = { nameof(PositionX), nameof(PositionY), nameof(PositionZ),
@@ -299,7 +298,6 @@ namespace ModelEditor
             return (float)Math.Round(v, 2);
         }
         #endregion
-
     }
 
     public struct Transform

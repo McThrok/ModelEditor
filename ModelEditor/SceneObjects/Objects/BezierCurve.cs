@@ -19,7 +19,6 @@ namespace ModelEditor
             Holdable = false;
 
             _rayCaster = rayCaster;
-
         }
 
         private List<Vector3> GetVerts()
@@ -83,46 +82,6 @@ namespace ModelEditor
 
             return result;
         }
-        //private List<Vector3> GetSegmentQ(List<Vector3> verts, int idx, int length)
-        //{
-        //    var result = new List<Vector3>();
-        //    if (length == 0) return new List<Vector3>() { };
-        //    if (length == 1) return new List<Vector3>() { verts[idx] };
-
-        //    float step = 1;
-        //    Vector2Int prev = Vector2Int.Empty;
-        //    float prevt = 0;
-        //    float t = 0;
-
-        //    while (t <= 1)
-        //    {
-        //        var point = GetSegmentValue(verts, idx, length, t);
-        //        var pos = _rayCaster.GetScreenPositionOf(point);
-
-        //        if (pos == Vector2Int.Empty)
-        //        {
-        //            return new List<Vector3>();
-        //        }
-
-        //        if (t == 0 || Dist(prev, pos) <= 1)
-        //        {
-        //            result.Add(point);
-
-        //            prevt = t;
-        //            prev = pos;
-
-        //            t += step;
-        //            step *= 2;
-        //        }
-        //        else
-        //        {
-        //            step /= 2;
-        //            t = prevt + step;
-        //        }
-        //    }
-
-        //    return result;
-        //}
         private Vector3 GetSegmentValue(List<Vector3> verts, int idx, int length, float t)
         {
             if (length == 2)
@@ -195,6 +154,7 @@ namespace ModelEditor
 
             return data;
         }
+
         private bool _showPolygon;
         public bool ShowPolygon
         {
