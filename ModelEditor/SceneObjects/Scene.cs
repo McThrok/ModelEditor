@@ -55,10 +55,10 @@ namespace ModelEditor
             if (parent == null)
                 parent = this;
 
-            obj.SetParent(parent);
-
             if (Cursor != null)
                 obj.GlobalMatrix = Cursor.GlobalMatrix;
+
+            obj.SetParent(parent);
 
             return obj;
         }

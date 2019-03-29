@@ -65,7 +65,7 @@ namespace ModelEditor
                 cv2.Parent = this;
                 this.Children.AddItemWithoutNotification(cv2);
                 cv2.GlobalMatrix = vert.GlobalMatrix;
-                cv2.Move(0, 1, 0);
+                cv2.Move(0, 2, 0);
                 bVert.ControlVertex2 = cv2;
 
                 DerivativeRight.SetParent(vert);
