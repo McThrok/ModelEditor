@@ -40,7 +40,7 @@ namespace ModelEditor
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             Engine = new Engine(BitmapContainer);
-            objectList.ItemsSource = new ObservableCollectionEx<SceneObject>() { Engine.Scene };
+            objectList.ItemsSource = new ObservableCollection<SceneObject>() { Engine.Scene };
             Engine.Run();
 
             //init sliders

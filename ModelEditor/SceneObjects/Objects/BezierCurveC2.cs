@@ -27,20 +27,20 @@ namespace ModelEditor
             Name = nameof(BezierCurveC2) + " " + _count++.ToString();
             Children.CollectionChanged += Children_CollectionChanged;
 
-            DerivativeLeft = new Vertex() { IsVisible = false };
-            DerivativeRight = new Vertex() { IsVisible = false };
+            DerivativeLeft = new Vertex();
+            DerivativeRight = new Vertex();
         }
 
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
                 foreach (var item in e.NewItems)
-                    if (item is Vertex vert && vert.IsVisible)
+                    if (item is Vertex vert)
                         AddBernstein(vert);
 
             if (e.OldItems != null)
                 foreach (var item in e.OldItems)
-                    if (item is Vertex vert && vert.IsVisible)
+                    if (item is Vertex vert)
                         DeleteBernstein(vert);
         }
 
@@ -54,20 +54,20 @@ namespace ModelEditor
 
                 var cv1 = CreateControlVertex();
                 cv1.GlobalMatrix = vert.GlobalMatrix;
-                cv1.Move(0, 1, 0);
+                cv1.Move(-0.4f, 1, 0);
                 bVert.ControlVertex1 = cv1;
 
                 var cv2 = CreateControlVertex();
                 cv2.GlobalMatrix = vert.GlobalMatrix;
-                cv2.Move(0, 2, 0);
+                cv2.Move(-0.2f, 2, 0);
                 bVert.ControlVertex2 = cv2;
 
-                DerivativeRight.SetParent(this, false);
+                DerivativeRight.SetParent(this, true);
             }
 
             if (_vertices.Count == 1)
             {
-                //DerivativeLeft.SetParent(this, false);
+                DerivativeLeft.SetParent(this, true);
             }
 
             _vertices.Add(bVert);
@@ -76,8 +76,7 @@ namespace ModelEditor
         private Vertex CreateControlVertex()
         {
             var cv = new Vertex();
-            cv.IsVisible = false;
-            cv.SetParent(this, false);
+            cv.SetParent(this, true);
 
             return cv;
         }
@@ -85,18 +84,16 @@ namespace ModelEditor
         private void DeleteBernstein(Vertex vert)
         {
             int idx = _vertices.FindIndex(x => x.Vertex.Id == vert.Id);
-                
+
             if (idx != 0 || idx == 0 && _vertices.Count > 1)
             {
                 var bVert = _vertices[idx != 0 ? idx : 1];
 
                 if (bVert.ControlVertex1 != null)
-                    //this.Children.RemoveWithoutNotification(bVert.ControlVertex1);
-                    this.Children.Remove(bVert.ControlVertex1);
+                    this.HiddenChildren.Remove(bVert.ControlVertex1);
 
                 if (bVert.ControlVertex2 != null)
-                    //this.Children.RemoveWithoutNotification(bVert.ControlVertex2);
-                    this.Children.Remove(bVert.ControlVertex2);
+                    this.HiddenChildren.Remove(bVert.ControlVertex2);
             }
 
             _vertices.RemoveAt(idx);
@@ -118,8 +115,7 @@ namespace ModelEditor
 
         public ObjRenderData GetRenderData()
         {
-            var data = new ObjRenderData();
-
+            var data = Spline ? GetSpline() : GetBernstein();
             ////polygon
             //if (ShowPolygon && verts.Count > 1)
             //{
@@ -134,6 +130,49 @@ namespace ModelEditor
 
             //var left = verts.Count - i;
             //data.Vertices.AddRange(GetSegment(verts, i, left));
+
+            return data;
+
+        }
+        private ObjRenderData GetBernstein()
+        {
+            var data = new ObjRenderData();
+
+
+            return GerBernsteinPolygon();
+        }
+        private ObjRenderData GerBernsteinPolygon()
+        {
+            var verts = GetBernsteinVertices();
+            var data = new ObjRenderData();
+            //if (ShowPolygon && verts.Count > 1)
+            if (verts.Count > 1)
+            {
+                data.Vertices = verts.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
+                data.Edges = Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList();
+            }
+
+            return data;
+        }
+        private List<Vertex> GetBernsteinVertices()
+        {
+            var verts = new List<Vertex>();
+            foreach (var vert in _vertices)
+            {
+                if (vert.ControlVertex1 != null)
+                    verts.Add(vert.ControlVertex1);
+
+                if (vert.ControlVertex2 != null)
+                    verts.Add(vert.ControlVertex2);
+
+                verts.Add(vert.Vertex);
+            }
+
+            return verts;
+        }
+        private ObjRenderData GetSpline()
+        {
+            var data = new ObjRenderData();
 
             return data;
         }

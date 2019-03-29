@@ -71,7 +71,6 @@
     </Compile>
     <Compile Include="Common\Vector2Int.cs" />
     <Compile Include="Common\MathExtension.cs" />
-    <Compile Include="Common\ObservableCollcectionEx.cs" />
     <Compile Include="Common\WBExtension.cs" />
     <Compile Include="Engine\InputManager.cs" />
     <Compile Include="Engine\Engine.cs" />

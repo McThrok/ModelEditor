@@ -187,15 +187,11 @@
                     </TreeView.Resources>
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                                <EventSetter Event="TreeViewItem.DragOver" Handler="TreeView_DragOver"/>
+                            <EventSetter Event="TreeViewItem.DragOver" Handler="TreeView_DragOver"/>
                             <EventSetter Event="TreeViewItem.Drop" Handler="TreeView_Drop"/>
                             <EventSetter Event="TreeViewItem.MouseMove" Handler="TreeView_MouseMove"/>
                             <Setter Property="Foreground" Value="#555555"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsVisible }" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Foreground" Value="#3333ff"/>
                                     <Setter Property="FontWeight" Value="Bold"/>

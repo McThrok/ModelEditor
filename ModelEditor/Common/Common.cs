@@ -19,6 +19,16 @@ namespace ModelEditor
         public List<Vector3> Vertices { get; set; } = new List<Vector3>();
         public List<Edge> Edges { get; set; } = new List<Edge>();
 
+        public void Add(ObjRenderData data)
+        {
+            if (data == null)
+                return;
+
+            int count = Vertices.Count;
+            Vertices.AddRange(data.Vertices);
+            Edges.AddRange(data.Edges.Select(x => new Edge(x.IdxA + count, x.IdxB + count)));
+        }
+
     }
 
     public interface IScreenRenderable

@@ -116,6 +116,11 @@ namespace ModelEditor
             {
                 RenderRec(child, model, frameData);
             }
+            
+            foreach (var child in obj.HiddenChildren)
+            {
+                RenderRec(child, model, frameData);
+            }
         }
         private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData, Color color)
         {

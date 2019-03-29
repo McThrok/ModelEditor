@@ -23,21 +23,12 @@ namespace ModelEditor
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
-        private bool _isVisible = true;
-        public bool IsVisible
-        {
-            get => _isVisible;
-            set
-            {
-                _isVisible = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsVisible)));
-            }
-        }
         public bool Holdable { get; set; }
 
         public Guid Id { get; set; } = Guid.NewGuid();
         public SceneObject Parent { get; set; }
-        public ObservableCollectionEx<SceneObject> Children { get; private set; } = new ObservableCollectionEx<SceneObject>();
+        public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
+        public ObservableCollection<SceneObject> HiddenChildren { get; private set; } = new ObservableCollection<SceneObject>();
 
         #region manipulation
         public virtual void Move(Vector3 CreateTranslation)
@@ -84,23 +75,21 @@ namespace ModelEditor
         }
         #endregion
 
-        public void SetParent(SceneObject parent, bool notify = true)
+        public void SetParent(SceneObject parent, bool hidden = false)
         {
             var global = GlobalMatrix;
             if (Parent != null)
             {
-                //if (notify)
-                    parent.Children.Remove(this);
-                //else
-                    //parent.Children.RemoveWithoutNotification(this);
+                parent.Children.Remove(this);
+                parent.HiddenChildren.Remove(this);
             }
             if (parent != null && !parent.IsEqualOrDescendantOf(this))
             {
                 Parent = parent;
-                //if (notify)
-                parent.Children.Add(this);
-                //else
-                //    parent.Children.AddWithoutNotification(this);
+                if (hidden)
+                    parent.HiddenChildren.Add(this);
+                else
+                    parent.Children.Add(this);
             }
             GlobalMatrix = global;
         }
