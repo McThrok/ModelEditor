@@ -93,7 +93,6 @@ namespace ModelEditor
             }
             GlobalMatrix = global;
         }
-
         public bool IsEqualOrDescendantOf(SceneObject obj)
         {
             if (obj == null)
@@ -112,6 +111,10 @@ namespace ModelEditor
             var result = node != null;
 
             return result;
+        }
+        public virtual bool CanBeParentOf(SceneObject obj)
+        {
+            return true;
         }
 
         public delegate void MatrixDelegate(object sender, ChangeMatrixEventArgs e);

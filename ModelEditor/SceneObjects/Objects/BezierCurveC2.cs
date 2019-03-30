@@ -15,6 +15,7 @@ namespace ModelEditor
         public Vertex ControlVertex1 { get; set; }
         public Vertex ControlVertex2 { get; set; }
     }
+
     public class BezierCurveC2 : BezierCurveBase, IRenderableObj
     {
         private static int _count = 0;
@@ -99,7 +100,7 @@ namespace ModelEditor
             _vertices.RemoveAt(idx);
         }
 
-        private bool _spline = false;
+        private bool _spline = true;
         public bool Spline
         {
             get => _spline;
@@ -111,6 +112,11 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(Spline));
                 }
             }
+        }
+
+        public override bool CanBeParentOf(SceneObject obj)
+        {
+            return obj is Vertex;
         }
 
         public ObjRenderData GetRenderData()
@@ -173,10 +179,67 @@ namespace ModelEditor
         private ObjRenderData GetSpline()
         {
             var data = new ObjRenderData();
+            var verts = Children.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
+            if (verts.Count == 4)
+            {
+                int n = 10;
+                for (int i = 0; i < n; i++)
+                {
+                    data.Vertices.Add(Interpolate(1f * i / n, 3, verts));
+                }
+            }
 
             return data;
         }
 
+        public Vector3 Interpolate(float t, int degree, List<Vector3> points)
+        {
+            int i, j, s, l;              // function-scoped iteration variables
+            var n = points.Count;    // points count
+
+            // build knot vector of length [n + degree + 1]
+            var knots = Enumerable.Range(0, n + degree + 1).ToList();
+
+            var domain = new Vector2Int(degree, knots.Count - 1 - degree);
+
+            // remap t to the domain where the spline is defined
+            var low = knots[domain.X];
+            var high = knots[domain.Y];
+            t = t * (high - low) + low;
+
+            if (t < low || t > high) throw new Exception("out of bounds");
+
+            // find s (the spline segment) for the [t] value provided
+            for (s = domain.X; s < domain.Y; s++)
+            {
+                if (t >= knots[s] && t <= knots[s + 1])
+                {
+                    break;
+                }
+            }
+
+            // convert points to homogeneous coordinates
+            var v = points.ToList();
+
+            // l (level) goes from 1 to the curve degree + 1
+            float alpha;
+            for (l = 1; l <= degree + 1; l++)
+            {
+                // build level l of the pyramid
+                for (i = s; i > s - degree - 1 + l; i--)
+                {
+                    alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+
+                    // interpolate each component
+                    v[i] = (1 - alpha) * v[i - 1] + alpha * v[i];
+                }
+            }
+
+            // convert back to cartesian and return
+            var result = v[s];
+
+            return result;
+        }
+
     }
 }
-
