@@ -42,7 +42,7 @@ namespace ModelEditor
                 var last = _vertices[_vertices.Count - 1];
 
                 var cv1 = CreateControlVertex();
-                cv1.Matrix = _vertices[_vertices.Count-1].Matrix;
+                cv1.Matrix = _vertices[_vertices.Count - 1].Matrix;
                 cv1.Move(0, 1, 0);
 
                 var cv2 = CreateControlVertex();
@@ -58,7 +58,6 @@ namespace ModelEditor
 
             _vertices.Add(vert);
 
-            RecalculateBernstein();
 
         }
 
@@ -73,7 +72,9 @@ namespace ModelEditor
 
         private void RecalculateBernstein()
         {
-            int idx = _controlVertices.FindIndex(x => x.Id == _lastChanged.Id) / 2;
+            int idx = 0;
+            if (_lastChanged != null)
+                idx = _controlVertices.FindIndex(x => x.Id == _lastChanged.Id) / 2;
 
             for (int i = idx + 1; i < _vertices.Count - 1; i++)
             {
@@ -186,35 +187,45 @@ namespace ModelEditor
         }
         private ObjRenderData GetBernstein()
         {
+            RecalculateBernstein();
+
+            var data = GerBernsteinCurve();
+            data.Add(GerBernsteinPolygon());
+
+            return data;
+        }
+        private ObjRenderData GerBernsteinCurve()
+        {
+            var verts = GetBernsteinVertices();
             var data = new ObjRenderData();
+            for (int i = 0; i + 3 < verts.Count; i += 3)
+                data.Vertices.AddRange(GetSegment(verts, i, 4));
 
-
-            return GerBernsteinPolygon();
+            return data;
         }
         private ObjRenderData GerBernsteinPolygon()
         {
             var verts = GetBernsteinVertices();
             var data = new ObjRenderData();
-            //if (ShowPolygon && verts.Count > 1)
-            if (verts.Count > 1)
+            if (ShowPolygon && verts.Count > 1)
             {
-                data.Vertices = verts.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
+                data.Vertices = verts;
                 data.Edges = Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList();
             }
 
             return data;
         }
-        private List<Vertex> GetBernsteinVertices()
+        private List<Vector3> GetBernsteinVertices()
         {
-            var verts = new List<Vertex>();
+            var verts = new List<Vector3>();
             for (int i = 0; i < _vertices.Count; i++)
             {
-                verts.Add(_vertices[i]);
+                verts.Add(_vertices[i].Matrix.Translation);
 
-                if (i < _vertices.Count-1)
+                if (i < _vertices.Count - 1)
                 {
-                    verts.Add(_controlVertices[2 * i]);
-                    verts.Add(_controlVertices[2 * i + 1]);
+                    verts.Add(_controlVertices[2 * i].Matrix.Translation);
+                    verts.Add(_controlVertices[2 * i + 1].Matrix.Translation);
                 }
             }
 

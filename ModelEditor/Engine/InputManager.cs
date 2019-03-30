@@ -129,7 +129,8 @@ namespace ModelEditor
             if (pos.X < 0 || pos.Y < 0 || pos.X >= _wb.PixelWidth || pos.Y >= _wb.PixelHeight)
                 return null;
 
-            var toCheck = new Stack<SceneObject>(_scene.Children);
+            var toCheck = new Stack<SceneObject>();
+            toCheck.Push(_scene);
             float best = float.MaxValue;
             SceneObject toSelect = null;
 
@@ -155,6 +156,9 @@ namespace ModelEditor
                 }
 
                 foreach (var child in obj.Children)
+                    toCheck.Push(child);
+
+                foreach (var child in obj.HiddenChildren)
                     toCheck.Push(child);
             }
 

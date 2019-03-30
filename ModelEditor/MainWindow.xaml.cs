@@ -149,7 +149,7 @@ namespace ModelEditor
             }
             else
             {
-                Engine.Scene.Cursor.HoldObject(Engine.Scene.Children);
+                Engine.Scene.Cursor.HoldObject(Engine.Scene);
                 if (Engine.Scene.Cursor.HeldObjects.Count > 0)
                     holdReleaseBtn.Content = "Release";
             }
@@ -207,7 +207,7 @@ namespace ModelEditor
                 Engine.Scene.Cursor.SetTarget(item);
 
                 TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
-                BezierMenu.Visibility = item is BezierCurveC0 ? Visibility.Visible : Visibility.Collapsed;
+                BezierMenu.Visibility = item is BezierCurveBase ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

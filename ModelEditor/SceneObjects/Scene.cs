@@ -22,6 +22,7 @@ namespace ModelEditor
         public Scene()
         {
             Name = "Scene";
+            Holdable = false;
 
             Camera = AddObj(new Camera(), this);
             ResetCamera();

@@ -42,11 +42,12 @@ namespace ModelEditor
             foreach (var obj in HeldObjects)
                 obj.GlobalMatrix *= change;
         }
-        public void HoldObject(IEnumerable<SceneObject> objs)
+        public void HoldObject(SceneObject sceneObject)
         {
             ReleaseObjects();
 
-            Stack<SceneObject> toCheck = new Stack<SceneObject>(objs);
+            Stack<SceneObject> toCheck = new Stack<SceneObject>();
+            toCheck.Push(sceneObject);
             float best = float.MaxValue;
             SceneObject toHeld = null;
 
@@ -61,6 +62,9 @@ namespace ModelEditor
                 }
 
                 foreach (var child in obj.Children)
+                    toCheck.Push(child);
+
+                foreach (var child in obj.HiddenChildren)
                     toCheck.Push(child);
             }
 
