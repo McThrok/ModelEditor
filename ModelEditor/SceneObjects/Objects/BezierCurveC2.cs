@@ -9,27 +9,17 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BernsteinVertex
-    {
-        public Vertex Vertex { get; set; }
-        public Vertex ControlVertex1 { get; set; }
-        public Vertex ControlVertex2 { get; set; }
-    }
-
     public class BezierCurveC2 : BezierCurveBase, IRenderableObj
     {
         private static int _count = 0;
-        private List<BernsteinVertex> _vertices = new List<BernsteinVertex>();
-        private Vertex DerivativeLeft { get; set; }
-        private Vertex DerivativeRight { get; set; }
+        private List<Vertex> _vertices = new List<Vertex>();
+        private List<Vertex> _controlVertices = new List<Vertex>();
+        private Vertex _lastChanged;
 
         public BezierCurveC2(RayCaster rayCaster) : base(rayCaster)
         {
             Name = nameof(BezierCurveC2) + " " + _count++.ToString();
             Children.CollectionChanged += Children_CollectionChanged;
-
-            DerivativeLeft = new Vertex();
-            DerivativeRight = new Vertex();
         }
 
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -47,60 +37,114 @@ namespace ModelEditor
 
         private void AddBernstein(Vertex vert)
         {
-            var bVert = new BernsteinVertex() { Vertex = vert };
-
             if (_vertices.Count != 0)
             {
                 var last = _vertices[_vertices.Count - 1];
 
                 var cv1 = CreateControlVertex();
-                cv1.GlobalMatrix = vert.GlobalMatrix;
-                cv1.Move(-0.4f, 1, 0);
-                bVert.ControlVertex1 = cv1;
+                cv1.Matrix = _vertices[_vertices.Count-1].Matrix;
+                cv1.Move(0, 1, 0);
 
                 var cv2 = CreateControlVertex();
-                cv2.GlobalMatrix = vert.GlobalMatrix;
-                cv2.Move(-0.2f, 2, 0);
-                bVert.ControlVertex2 = cv2;
+                cv2.Matrix = vert.Matrix;
+                cv2.Move(0, 1, 0);
 
-                DerivativeRight.SetParent(this, true);
+
+                if (_vertices.Count == 1)
+                {
+                    _lastChanged = cv1;
+                }
             }
 
-            if (_vertices.Count == 1)
-            {
-                DerivativeLeft.SetParent(this, true);
-            }
+            _vertices.Add(vert);
 
-            _vertices.Add(bVert);
+            RecalculateBernstein();
+
         }
 
         private Vertex CreateControlVertex()
         {
             var cv = new Vertex();
             cv.SetParent(this, true);
+            _controlVertices.Add(cv);
 
             return cv;
         }
 
+        private void RecalculateBernstein()
+        {
+            int idx = _controlVertices.FindIndex(x => x.Id == _lastChanged.Id) / 2;
+
+            for (int i = idx + 1; i < _vertices.Count - 1; i++)
+            {
+                RecalculateBernsteinRight(i);
+            }
+
+            for (int i = idx - 1; i > 0 - 1; i--)
+            {
+                RecalculateBernsteinLeft(i);
+            }
+
+        }
+        private void RecalculateBernsteinRight(int idx)
+        {
+            //previous - abcd 
+            //this - defg
+
+            var b = _controlVertices[2 * (idx - 1)];
+            var c = _controlVertices[2 * (idx - 1) + 1];
+            var d = _vertices[idx];
+            var e = _controlVertices[2 * idx];
+            var f = _controlVertices[2 * idx + 1];
+
+            e.Matrix = d.Matrix;
+            e.MoveLoc(d.Matrix.Translation - c.Matrix.Translation);
+
+            f.Matrix = e.Matrix;
+            var deBoor = c.Matrix.Translation + (c.Matrix.Translation - b.Matrix.Translation);
+            f.MoveLoc(e.Matrix.Translation - deBoor);
+
+        }
+        private void RecalculateBernsteinLeft(int idx)
+        {
+            //this - abcd 
+            //next - defg
+
+            var b = _controlVertices[2 * idx];
+            var c = _controlVertices[2 * idx + 1];
+            var d = _vertices[idx + 1];
+            var e = _controlVertices[2 * (idx + 1)];
+            var f = _controlVertices[2 * (idx + 1) + 1];
+
+            c.Matrix = d.Matrix;
+            c.MoveLoc(d.Matrix.Translation - e.Matrix.Translation);
+
+            b.Matrix = c.Matrix;
+            var deBoor = e.Matrix.Translation + (e.Matrix.Translation - f.Matrix.Translation);
+            b.MoveLoc(c.Matrix.Translation - deBoor);
+        }
+
+
         private void DeleteBernstein(Vertex vert)
         {
-            int idx = _vertices.FindIndex(x => x.Vertex.Id == vert.Id);
+            int idx = _vertices.FindIndex(x => x.Id == vert.Id);
 
-            if (idx != 0 || idx == 0 && _vertices.Count > 1)
+            if (idx == 0 && _vertices.Count > 1)
             {
-                var bVert = _vertices[idx != 0 ? idx : 1];
+                _controlVertices.RemoveAt(1);
+                _controlVertices.RemoveAt(0);
+            }
 
-                if (bVert.ControlVertex1 != null)
-                    this.HiddenChildren.Remove(bVert.ControlVertex1);
-
-                if (bVert.ControlVertex2 != null)
-                    this.HiddenChildren.Remove(bVert.ControlVertex2);
+            if (idx > 0)
+            {
+                _controlVertices.RemoveAt(2 * (idx - 1) + 1);
+                _controlVertices.RemoveAt(2 * (idx - 1));
             }
 
             _vertices.RemoveAt(idx);
         }
 
-        private bool _spline = true;
+        private bool _spline = false;
         public bool Spline
         {
             get => _spline;
@@ -163,15 +207,15 @@ namespace ModelEditor
         private List<Vertex> GetBernsteinVertices()
         {
             var verts = new List<Vertex>();
-            foreach (var vert in _vertices)
+            for (int i = 0; i < _vertices.Count; i++)
             {
-                if (vert.ControlVertex1 != null)
-                    verts.Add(vert.ControlVertex1);
+                verts.Add(_vertices[i]);
 
-                if (vert.ControlVertex2 != null)
-                    verts.Add(vert.ControlVertex2);
-
-                verts.Add(vert.Vertex);
+                if (i < _vertices.Count-1)
+                {
+                    verts.Add(_controlVertices[2 * i]);
+                    verts.Add(_controlVertices[2 * i + 1]);
+                }
             }
 
             return verts;
