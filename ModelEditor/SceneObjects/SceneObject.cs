@@ -75,21 +75,21 @@ namespace ModelEditor
         }
         #endregion
 
-        public void SetParent(SceneObject parent, bool hidden = false)
+        public void SetParent(SceneObject newParent, bool hidden = false)
         {
             var global = GlobalMatrix;
             if (Parent != null)
             {
-                parent.Children.Remove(this);
-                parent.HiddenChildren.Remove(this);
+                Parent.Children.Remove(this);
+                Parent.HiddenChildren.Remove(this);
             }
-            if (parent != null && !parent.IsEqualOrDescendantOf(this))
+            if (newParent != null && !newParent.IsEqualOrDescendantOf(this))
             {
-                Parent = parent;
+                Parent = newParent;
                 if (hidden)
-                    parent.HiddenChildren.Add(this);
+                    newParent.HiddenChildren.Add(this);
                 else
-                    parent.Children.Add(this);
+                    newParent.Children.Add(this);
             }
             GlobalMatrix = global;
         }
