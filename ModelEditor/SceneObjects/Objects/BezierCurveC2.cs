@@ -16,11 +16,13 @@ namespace ModelEditor
         private Vertex _lastChanged;
         public BezierCurveC2(RayCaster rayCaster) : base(rayCaster)
         {
+            if (_count == 0)
+                Spline = true;
             Name = nameof(BezierCurveC2) + " " + _count++.ToString();
             base.Children.CollectionChanged += Children_CollectionChanged;
         }
 
-        private bool _spline = true;
+        private bool _spline = false;
         public bool Spline
         {
             get => _spline;
@@ -272,7 +274,7 @@ namespace ModelEditor
         {
             var data = new ObjRenderData();
             var verts = Children.Select(x => x.Matrix.Translation).ToList();
-            if (verts.Count > 3)
+            if (verts.Count > 1)
                 data.Vertices = GetSplineRec(verts, 0, 0, 1);
 
             return data;
@@ -323,16 +325,22 @@ namespace ModelEditor
         public Vector3 GetSplineValue(List<Vector3> points, float t)
         {
             int degree = 3;
-            int i, s, l;              // function-scoped iteration variables
-            //var n = points.Count;    // points count
+
+            var verts = new List<Vector3>();
+            verts.Add(points[0]);
+            verts.Add(points[0]);
+            verts.AddRange(points);
+            verts.Add(points[points.Count - 1]);
+            verts.Add(points[points.Count - 1]);
 
             // remap t to the domain where the spline is defined
-            var low = degree;
-            var high = points.Count;
-            t = t * (high - low) + low;
+            var left = degree;
+            var right = verts.Count;
+            t = t * (right - left) + left;
 
             // find s (the spline segment) for the [t] value provided
-            for (s = low; s < high; s++)
+            int s;
+            for (s = left; s < right; s++)
             {
                 if (t >= s && t <= s + 1)
                 {
@@ -340,27 +348,23 @@ namespace ModelEditor
                 }
             }
 
-            var v = points.ToList();
-
             // l (level) goes from 1 to the curve degree + 1
-            float alpha;
-            for (l = 1; l <= degree + 1; l++)
+            for (int l = 1; l <= degree + 1; l++)
             {
                 // build level l of the pyramid
-                for (i = s; i > s - degree - 1 + l; i--)
+                for (int i = s; i > s - degree - 1 + l; i--)
                 {
-                    alpha = (t - i) / (degree + 1 - l);
+                    float alpha = (t - i) / (degree + 1 - l);
 
                     // interpolate each component
-                    v[i] = (1 - alpha) * v[i - 1] + alpha * v[i];
+                    verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
                 }
             }
 
-            var result = v[s];
+            var result = verts[s];
 
             return result;
         }
-
 
         private void ConvertToSpline()
         {
@@ -369,7 +373,58 @@ namespace ModelEditor
 
         private void ConvertToBezier()
         {
+            base.Children.CollectionChanged -= Children_CollectionChanged;
 
+            var verts = Children.Select(x => x.Matrix.Translation).ToList();
+            Children.Clear();
+
+            var n = verts.Count;
+            for (int i = 1; i < n - 2; i++)
+            {
+                if (i == 1)
+                {
+                    AddBernsteinControl(verts[i]);
+                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) / 2);
+                }
+                else if (i == n - 3)
+                {
+                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) / 2);
+                    AddBernsteinControl(verts[i + 1]);
+                }
+                else
+                {
+                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) / 3);
+                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) * 2 / 3);
+                }
+
+            }
+
+            AddBernstein(verts[0]);
+            for (int i = 1; i < n-1; i+=2)
+            {
+                AddBernstein(verts[i] + (verts[i + 1] - verts[i]) / 2);
+            }
+            AddBernstein(verts[n-1]);
+
+            base.Children.CollectionChanged += Children_CollectionChanged;
+
+            Spline = false;
+
+        }
+
+        private void AddBernstein(Vector3 position)
+        {
+            var vert = new Vertex();
+            vert.SetParent(this);
+            vert.MoveLoc(position);
+        }
+
+        private void AddBernsteinControl(Vector3 position)
+        {
+            var vert = new Vertex();
+            vert.SetParent(this, true);
+            vert.MoveLoc(position);
+            _controlVertices.Add(vert);
         }
     }
 }
