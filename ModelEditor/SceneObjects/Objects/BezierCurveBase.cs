@@ -118,7 +118,7 @@ namespace ModelEditor
             var point = verts[idx] * b0 + verts[idx + 1] * b1;
             return point;
         }
-        private int Dist(Vector2Int a, Vector2Int b)
+        protected int Dist(Vector2Int a, Vector2Int b)
         {
 
             var diff = a - b;

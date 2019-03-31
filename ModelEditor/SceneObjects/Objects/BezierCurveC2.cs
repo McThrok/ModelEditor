@@ -49,7 +49,6 @@ namespace ModelEditor
 
         private void AddSpline(Vertex vert)
         {
-
         }
         private void DeleteSpline(Vertex vert)
         {
@@ -118,6 +117,7 @@ namespace ModelEditor
             vert.MatrixChange -= BezierVertexChange;
             vert.Parent.HiddenChildren.Remove(vert);
         }
+
         private int GetConstBezierSegmentIndex()
         {
             int idx = 0;
@@ -145,12 +145,12 @@ namespace ModelEditor
         {
             int idx = GetConstBezierSegmentIndex();
 
-                for (int i = idx + 1; i < _vertices.Count - 1; i++)
-                {
-                    RecalculateBernsteinRight(i);
-                }
+            for (int i = idx + 1; i < _vertices.Count - 1; i++)
+            {
+                RecalculateBernsteinRight(i);
+            }
 
-            if (idx != _vertices.Count-1)
+            if (idx != _vertices.Count - 1)
                 for (int i = idx - 1; i > 0 - 1; i--)
                 {
                     RecalculateBernsteinLeft(i);
@@ -195,7 +195,7 @@ namespace ModelEditor
             b.MoveLoc(c.Matrix.Translation - deBoor);
         }
 
-        private bool _spline = false;
+        private bool _spline = true;
         public bool Spline
         {
             get => _spline;
@@ -208,7 +208,6 @@ namespace ModelEditor
                 }
             }
         }
-
 
         public ObjRenderData GetRenderData()
         {
@@ -281,23 +280,68 @@ namespace ModelEditor
 
         private ObjRenderData GetSpline()
         {
+            var data = GerSplineCurve();
+            data.Add(GerSplinePolygon());
+
+            return data;
+        }
+        private ObjRenderData GerSplineCurve()
+        {
             var data = new ObjRenderData();
-            var verts = Children.Select(x => x.Matrix.Multiply(Vector3.Zero.ToVector4()).ToVector3()).ToList();
-            if (verts.Count == 4)
+            var verts = Children.Select(x => x.Matrix.Translation).ToList();
+            if (verts.Count > 3)
+                data.Vertices = GetSplineRec(verts, 0, 0, 1);
+
+            return data;
+        }
+        private List<Vector3> GetSplineRec(List<Vector3> verts, int level, float start, float end)
+        {
+            var pointA = GetSplineValue(verts, start);
+            var pointB = GetSplineValue(verts, end);
+            var screenPosA = _rayCaster.GetExScreenPositionOf(pointA);
+            var screenPosB = _rayCaster.GetExScreenPositionOf(pointB);
+
+            var result = new List<Vector3>();
+
+            if (Dist(screenPosA, screenPosB) <= 1 || level > 10)
             {
-                int n = 10;
-                for (int i = 0; i < n; i++)
-                {
-                    data.Vertices.Add(Interpolate(1f * i / n, 3, verts));
-                }
+                if (screenPosA != Vector2Int.Empty)
+                    result.Add(pointA);
+                if (screenPosB != Vector2Int.Empty)
+                    result.Add(pointB);
+            }
+            else
+            {
+                float mid = (start + end) / 2;
+                var left = GetSplineRec(verts, level + 1, start, mid);
+                var right = GetSplineRec(verts, level + 1, mid, end);
+                result.AddRange(left);
+
+                if (left.Count > 0 && right.Count > 0 && left[left.Count - 1] == right[0])
+                    result.AddRange(right.Skip(1));
+                else
+                    result.AddRange(right);
+            }
+
+            return result;
+        }
+        private ObjRenderData GerSplinePolygon()
+        {
+            var verts = GetBernsteinVertices();
+            var data = new ObjRenderData();
+            if (ShowPolygon && verts.Count > 1)
+            {
+                data.Vertices = verts;
+                data.Edges = Enumerable.Range(0, verts.Count - 1).Select(x => new Edge(x, x + 1)).ToList();
             }
 
             return data;
         }
 
-        public Vector3 Interpolate(float t, int degree, List<Vector3> points)
+        public Vector3 GetSplineValue(List<Vector3> points, float t)
         {
-            int i, j, s, l;              // function-scoped iteration variables
+            int degree = 3;
+            int i, s, l;              // function-scoped iteration variables
             var n = points.Count;    // points count
 
             // build knot vector of length [n + degree + 1]
@@ -321,7 +365,6 @@ namespace ModelEditor
                 }
             }
 
-            // convert points to homogeneous coordinates
             var v = points.ToList();
 
             // l (level) goes from 1 to the curve degree + 1
@@ -338,7 +381,6 @@ namespace ModelEditor
                 }
             }
 
-            // convert back to cartesian and return
             var result = v[s];
 
             return result;
