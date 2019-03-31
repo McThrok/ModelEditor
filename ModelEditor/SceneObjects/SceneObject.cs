@@ -112,10 +112,6 @@ namespace ModelEditor
 
             return result;
         }
-        public virtual bool CanBeParentOf(SceneObject obj)
-        {
-            return true;
-        }
 
         public delegate void MatrixDelegate(object sender, ChangeMatrixEventArgs e);
         public event MatrixDelegate MatrixChange;

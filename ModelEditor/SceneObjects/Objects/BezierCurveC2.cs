@@ -27,14 +27,30 @@ namespace ModelEditor
             if (e.NewItems != null)
                 foreach (var item in e.NewItems)
                     if (item is Vertex vert)
-                        AddBernstein(vert);
+                    {
+                        if (Spline)
+                            AddSpline(vert);
+                        else
+                            AddBernstein(vert);
+                    }
+
 
             if (e.OldItems != null)
                 foreach (var item in e.OldItems)
                     if (item is Vertex vert)
-                        DeleteBernstein(vert);
+                    {
+                        if (Spline)
+                            DeleteSpline(vert);
+                        else
+                            DeleteBernstein(vert);
+                    }
         }
 
+
+        private void AddSpline(Vertex vert)
+        {
+
+        }
         private void AddBernstein(Vertex vert)
         {
             if (_vertices.Count != 0)
@@ -42,49 +58,82 @@ namespace ModelEditor
                 var last = _vertices[_vertices.Count - 1];
 
                 var cv1 = CreateControlVertex();
-                cv1.Matrix = _vertices[_vertices.Count - 1].Matrix;
-                cv1.Move(0, 1, 0);
 
                 var cv2 = CreateControlVertex();
-                cv2.Matrix = vert.Matrix;
-                cv2.Move(0, 1, 0);
 
 
                 if (_vertices.Count == 1)
                 {
-                    _lastChanged = cv1;
+                    cv1.Matrix = _vertices[_vertices.Count - 1].Matrix;
+                    cv1.Move(0, 1, 0);
+
+                    cv2.Matrix = vert.Matrix;
+                    cv2.Move(0, 1, 0);
                 }
             }
 
+            vert.MatrixChange += VertexChange;
             _vertices.Add(vert);
+        }
 
-
+        private void VertexChange(object sender, ChangeMatrixEventArgs e)
+        {
+            _lastChanged = sender as Vertex;
         }
 
         private Vertex CreateControlVertex()
         {
-            var cv = new Vertex();
-            cv.SetParent(this, true);
-            _controlVertices.Add(cv);
+            var vert = new Vertex();
+            vert.SetParent(this, true);
+            vert.MatrixChange += VertexChange;
+            _controlVertices.Add(vert);
 
-            return cv;
+            return vert;
+        }
+        private void RemoveControlVertex(Vertex vert)
+        {
+            _controlVertices.Remove(vert);
+            vert.MatrixChange -= VertexChange;
+            vert.Parent.HiddenChildren.Remove(vert);
         }
 
-        private void RecalculateBernstein()
+        private int GetConstSegmentIndex()
         {
             int idx = 0;
             if (_lastChanged != null)
-                idx = _controlVertices.FindIndex(x => x.Id == _lastChanged.Id) / 2;
-
-            for (int i = idx + 1; i < _vertices.Count - 1; i++)
             {
-                RecalculateBernsteinRight(i);
+                var idxVisible = _vertices.FindIndex(x => x.Id == _lastChanged.Id);
+                if (idxVisible != -1)
+                {
+                    idx = idxVisible;
+                }
+                else
+                {
+                    var idxHidden = _controlVertices.FindIndex(x => x.Id == _lastChanged.Id);
+                    if (idxHidden != -1)
+                    {
+                        idx = idxHidden / 2;
+                    }
+
+                }
             }
 
-            for (int i = idx - 1; i > 0 - 1; i--)
-            {
-                RecalculateBernsteinLeft(i);
-            }
+            return idx;
+        }
+        private void RecalculateBernstein()
+        {
+            int idx = GetConstSegmentIndex();
+
+                for (int i = idx + 1; i < _vertices.Count - 1; i++)
+                {
+                    RecalculateBernsteinRight(i);
+                }
+
+            if (idx != _vertices.Count-1)
+                for (int i = idx - 1; i > 0 - 1; i--)
+                {
+                    RecalculateBernsteinLeft(i);
+                }
 
         }
         private void RecalculateBernsteinRight(int idx)
@@ -125,23 +174,27 @@ namespace ModelEditor
             b.MoveLoc(c.Matrix.Translation - deBoor);
         }
 
+        private void DeleteSpline(Vertex vert)
+        {
 
+        }
         private void DeleteBernstein(Vertex vert)
         {
             int idx = _vertices.FindIndex(x => x.Id == vert.Id);
 
             if (idx == 0 && _vertices.Count > 1)
             {
-                _controlVertices.RemoveAt(1);
-                _controlVertices.RemoveAt(0);
+                RemoveControlVertex(_controlVertices[1]);
+                RemoveControlVertex(_controlVertices[0]);
             }
 
             if (idx > 0)
             {
-                _controlVertices.RemoveAt(2 * (idx - 1) + 1);
-                _controlVertices.RemoveAt(2 * (idx - 1));
+                RemoveControlVertex(_controlVertices[2 * (idx - 1) + 1]);
+                RemoveControlVertex(_controlVertices[2 * (idx - 1)]);
             }
 
+            _vertices[idx].MatrixChange -= VertexChange;
             _vertices.RemoveAt(idx);
         }
 
@@ -159,10 +212,6 @@ namespace ModelEditor
             }
         }
 
-        public override bool CanBeParentOf(SceneObject obj)
-        {
-            return obj is Vertex;
-        }
 
         public ObjRenderData GetRenderData()
         {
@@ -185,6 +234,7 @@ namespace ModelEditor
             return data;
 
         }
+
         private ObjRenderData GetBernstein()
         {
             RecalculateBernstein();
@@ -231,6 +281,7 @@ namespace ModelEditor
 
             return verts;
         }
+
         private ObjRenderData GetSpline()
         {
             var data = new ObjRenderData();
