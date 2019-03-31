@@ -22,7 +22,7 @@ using System.Windows.Controls.Primitives;
 namespace ModelEditor
 {
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public Engine Engine { get; set; }
 
@@ -58,15 +58,42 @@ namespace ModelEditor
             Engine.Scene.Cursor.PropertyChanged += Cursor_PropertyChanged;
             Cursor_PropertyChanged(this, new PropertyChangedEventArgs(nameof(Engine.Scene.Cursor.ScreenPosition)));
 
+            //selectedObject
+            Engine.Scene.PropertyChanged += Scene_PropertyChanged;
+
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void Scene_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedObject)));
+            UpdateMenu();
+        }
+        public SceneObject SelectedObject
+        {
+            get
+            {
+                return Engine?.Scene?.SelectedObject;
+            }
+            set
+            {
+                Engine.Scene.SelectedObject = value;
+            }
+        }
+
         private void SelectItem(SceneObject obj)
         {
-            ExpandAndSelectItem(objectList, obj, true);
+            var found = ExpandAndSelectItem(objectList, obj, true);
+            if (!found)
+            {
+                ExpandAndSelectItem(objectList, Engine.Scene.SelectedObject, false);
+                Engine.Scene.SelectedObject = obj;
+            }
             //var tvi = ContainerFromItemRecursive(objectList.ItemContainerGenerator, obj);
             //if (tvi != null)
             //    tvi.IsSelected = true;
         }
-        private SceneObject GetSelectedObj()
+        private SceneObject GetVisibleSelectedObj()
         {
             return objectList.SelectedItem as SceneObject;
         }
@@ -111,23 +138,23 @@ namespace ModelEditor
         #region topMenu
         private void Bezier_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCurve(GetSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCurve(GetVisibleSelectedObj()));
         }
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.AddTorus(GetSelectedObj());
+            Engine.Scene.AddTorus(GetVisibleSelectedObj());
         }
         private void Empty_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.AddEmptyObject(GetSelectedObj());
+            Engine.Scene.AddEmptyObject(GetVisibleSelectedObj());
         }
         private void Vertex_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.AddVertex(GetSelectedObj());
+            Engine.Scene.AddVertex(GetVisibleSelectedObj());
         }
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.Delete(GetSelectedObj());
+            Engine.Scene.Delete(GetVisibleSelectedObj());
         }
         private void HoldRelease_click(object sender, RoutedEventArgs e)
         {
@@ -146,13 +173,13 @@ namespace ModelEditor
 
         private void FocuCamera(object sender, RoutedEventArgs e)
         {
-            var item = GetSelectedObj();
+            var item = SelectedObject;
             if (item != null)
                 Engine.Scene.Camera.SetTarget(item);
         }
         private void DeleteFlat_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.FlatDelete(GetSelectedObj());
+            Engine.Scene.FlatDelete(SelectedObject);
         }
         private void ResetCamera(object sender, RoutedEventArgs e)
         {
@@ -189,46 +216,51 @@ namespace ModelEditor
 
             if (e.NewValue != null)
             {
-                objectMenu.Visibility = Visibility.Visible;
-                Engine.Scene.SelectedObject = e.NewValue as SceneObject;
+                SelectedObject = e.NewValue as SceneObject;
             }
-
-            if (e.OldValue != null)
+            else if (e.OldValue != null && e.OldValue is SceneObject obj && obj.Id == SelectedObject.Id)
             {
-                Engine.Scene.SelectedObject = null;
-                objectMenu.Visibility = Visibility.Collapsed;
+                SelectedObject = null;
             }
-
-            var item = Engine.Scene.SelectedObject;
+        }
+        private void UpdateMenu()
+        {
+            var item = SelectedObject;
             if (item != null)
             {
                 Engine.Scene.Cursor.SetTarget(item);
 
+                objectMenu.Visibility = Visibility.Visible;
+
                 TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
                 BezierMenu.Visibility = item is BezierCurveBase ? Visibility.Visible : Visibility.Collapsed;
             }
+            else
+            {
+                objectMenu.Visibility = Visibility.Collapsed;
+            }
         }
 
-        private void PositionXUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(_positionChangeSpeed, 0, 0); }
-        private void PositionXDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(-_positionChangeSpeed, 0, 0); }
-        private void PositionYUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, _positionChangeSpeed, 0); }
-        private void PositionYDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, -_positionChangeSpeed, 0); }
-        private void PositionZUp(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, 0, _positionChangeSpeed); }
-        private void PositionZDown(object sender, RoutedEventArgs e) { GetSelectedObj().Move(0, 0, -_positionChangeSpeed); }
+        private void PositionXUp(object sender, RoutedEventArgs e) { SelectedObject.Move(_positionChangeSpeed, 0, 0); }
+        private void PositionXDown(object sender, RoutedEventArgs e) { SelectedObject.Move(-_positionChangeSpeed, 0, 0); }
+        private void PositionYUp(object sender, RoutedEventArgs e) { SelectedObject.Move(0, _positionChangeSpeed, 0); }
+        private void PositionYDown(object sender, RoutedEventArgs e) { SelectedObject.Move(0, -_positionChangeSpeed, 0); }
+        private void PositionZUp(object sender, RoutedEventArgs e) { SelectedObject.Move(0, 0, _positionChangeSpeed); }
+        private void PositionZDown(object sender, RoutedEventArgs e) { SelectedObject.Move(0, 0, -_positionChangeSpeed); }
 
-        private void RotationXUp(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(_rotationChangeSpeed, 0, 0); }
-        private void RotationXDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(-_rotationChangeSpeed, 0, 0); }
-        private void RotationYUp(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, _rotationChangeSpeed, 0); }
-        private void RotationYDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, -_rotationChangeSpeed, 0); }
-        private void RotationZUp(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, 0, _rotationChangeSpeed); }
-        private void RotationZDown(object sender, RoutedEventArgs e) { GetSelectedObj().RotateLoc(0, 0, -_rotationChangeSpeed); }
+        private void RotationXUp(object sender, RoutedEventArgs e) { SelectedObject.RotateLoc(_rotationChangeSpeed, 0, 0); }
+        private void RotationXDown(object sender, RoutedEventArgs e) { SelectedObject.RotateLoc(-_rotationChangeSpeed, 0, 0); }
+        private void RotationYUp(object sender, RoutedEventArgs e) { SelectedObject.RotateLoc(0, _rotationChangeSpeed, 0); }
+        private void RotationYDown(object sender, RoutedEventArgs e) { SelectedObject.RotateLoc(0, -_rotationChangeSpeed, 0); }
+        private void RotationZUp(object sender, RoutedEventArgs e) { SelectedObject.RotateLoc(0, 0, _rotationChangeSpeed); }
+        private void RotationZDown(object sender, RoutedEventArgs e) { SelectedObject.RotateLoc(0, 0, -_rotationChangeSpeed); }
 
-        private void ScaleXUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(_scaleChangeSpeed, 1, 1); }
-        private void ScaleXDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1 / _scaleChangeSpeed, 1, 1); }
-        private void ScaleYUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, _scaleChangeSpeed, 1); }
-        private void ScaleYDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1 / _scaleChangeSpeed, 1); }
-        private void ScaleZUp(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1, _scaleChangeSpeed); }
-        private void ScaleZDown(object sender, RoutedEventArgs e) { GetSelectedObj().ScaleLoc(1, 1, 1 / _scaleChangeSpeed); }
+        private void ScaleXUp(object sender, RoutedEventArgs e) { SelectedObject.ScaleLoc(_scaleChangeSpeed, 1, 1); }
+        private void ScaleXDown(object sender, RoutedEventArgs e) { SelectedObject.ScaleLoc(1 / _scaleChangeSpeed, 1, 1); }
+        private void ScaleYUp(object sender, RoutedEventArgs e) { SelectedObject.ScaleLoc(1, _scaleChangeSpeed, 1); }
+        private void ScaleYDown(object sender, RoutedEventArgs e) { SelectedObject.ScaleLoc(1, 1 / _scaleChangeSpeed, 1); }
+        private void ScaleZUp(object sender, RoutedEventArgs e) { SelectedObject.ScaleLoc(1, 1, _scaleChangeSpeed); }
+        private void ScaleZDown(object sender, RoutedEventArgs e) { SelectedObject.ScaleLoc(1, 1, 1 / _scaleChangeSpeed); }
         #endregion
 
         #region dragAndDrop
@@ -423,82 +455,6 @@ namespace ModelEditor
             //no item was found
             return false;
         }
-        //private bool ExpandAndSelectItem(ItemsControl parentContainer, object itemToSelect)
-        //{
-        //    //check all items at the current level
-        //    foreach (object item in parentContainer.Items)
-        //    {
-        //        TreeViewItem currentContainer = parentContainer.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
-
-        //        //if the data item matches the item we want to select, set the corresponding
-        //        //TreeViewItem IsSelected to true
-        //        if (item == itemToSelect && currentContainer != null)
-        //        {
-        //            currentContainer.IsSelected = true;
-        //            currentContainer.BringIntoView();
-        //            currentContainer.Focus();
-
-        //            //the item was found
-        //            return true;
-        //        }
-        //    }
-
-        //    //if we get to this point, the selected item was not found at the current level, so we must check the children
-        //    foreach (object item in parentContainer.Items)
-        //    {
-        //        TreeViewItem currentContainer = parentContainer.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
-
-        //        //if children exist
-        //        if (currentContainer != null && currentContainer.Items.Count > 0)
-        //        {
-        //            //keep track of if the TreeViewItem was expanded or not
-        //            bool wasExpanded = currentContainer.IsExpanded;
-
-        //            //expand the current TreeViewItem so we can check its child TreeViewItems
-        //            currentContainer.IsExpanded = true;
-
-        //            //if the TreeViewItem child containers have not been generated, we must listen to
-        //            //the StatusChanged event until they are
-        //            if (currentContainer.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
-        //            {
-        //                //store the event handler in a variable so we can remove it (in the handler itself)
-        //                EventHandler eh = null;
-        //                eh = new EventHandler(delegate
-        //                {
-        //                    if (currentContainer.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-        //                    {
-        //                        if (ExpandAndSelectItem(currentContainer, itemToSelect) == false)
-        //                        {
-        //                            //The assumption is that code executing in this EventHandler is the result of the parent not
-        //                            //being expanded since the containers were not generated.
-        //                            //since the itemToSelect was not found in the children, collapse the parent since it was previously collapsed
-        //                            currentContainer.IsExpanded = false;
-        //                        }
-
-        //                        //remove the StatusChanged event handler since we just handled it (we only needed it once)
-        //                        currentContainer.ItemContainerGenerator.StatusChanged -= eh;
-        //                    }
-        //                });
-        //                currentContainer.ItemContainerGenerator.StatusChanged += eh;
-        //            }
-        //            else //otherwise the containers have been generated, so look for item to select in the children
-        //            {
-        //                if (ExpandAndSelectItem(currentContainer, itemToSelect) == false)
-        //                {
-        //                    //restore the current TreeViewItem's expanded state
-        //                    currentContainer.IsExpanded = wasExpanded;
-        //                }
-        //                else //otherwise the node was found and selected, so return true
-        //                {
-        //                    return true;
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    //no item was found
-        //    return false;
-        //}
         #endregion
 
     }

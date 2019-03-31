@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Numerics;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace ModelEditor
 {
@@ -15,7 +16,6 @@ namespace ModelEditor
         public Camera Camera { get; private set; }
         public Cursor Cursor { get; private set; }
         public RayCaster RayCaster { get; set; }
-        public SceneObject SelectedObject { get; set; }
 
         private Random _rd = new Random();
 
@@ -105,6 +105,25 @@ namespace ModelEditor
             Camera.Matrix = Matrix4x4.Identity;
             Camera.SetTarget(Vector3.Zero);
 
+        }
+
+
+        private SceneObject _selectedObject;
+        public SceneObject SelectedObject
+        {
+            get => _selectedObject;
+            set
+            {
+                var invoke = (value != null && _selectedObject == null)
+                    || (value == null && _selectedObject != null)
+                    || (value != null && _selectedObject != null && value.Id != _selectedObject.Id);
+
+                if (invoke)
+                {
+                    _selectedObject = value;
+                    InvokePropertyChanged(nameof(SelectedObject));
+                }
+            }
         }
     }
 }
