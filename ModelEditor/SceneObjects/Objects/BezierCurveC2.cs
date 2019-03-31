@@ -12,14 +12,12 @@ namespace ModelEditor
     public class BezierCurveC2 : BezierCurveBase, IRenderableObj
     {
         private static int _count = 0;
-        private List<Vertex> _vertices = new List<Vertex>();
         private List<Vertex> _controlVertices = new List<Vertex>();
         private Vertex _lastChanged;
-
         public BezierCurveC2(RayCaster rayCaster) : base(rayCaster)
         {
             Name = nameof(BezierCurveC2) + " " + _count++.ToString();
-            Children.CollectionChanged += Children_CollectionChanged;
+            base.Children.CollectionChanged += Children_CollectionChanged;
         }
 
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -46,7 +44,6 @@ namespace ModelEditor
                     }
         }
 
-
         private void AddSpline(Vertex vert)
         {
         }
@@ -56,16 +53,14 @@ namespace ModelEditor
         }
         private void AddBernstein(Vertex vert)
         {
-            if (_vertices.Count != 0)
+            if (Children.Count != 1)
             {
-                var last = _vertices[_vertices.Count - 1];
-
                 var cv1 = CreateBezierControlVertex();
                 var cv2 = CreateBezierControlVertex();
 
-                if (_vertices.Count == 1)
+                if (Children.Count == 2)
                 {
-                    cv1.Matrix = _vertices[_vertices.Count - 1].Matrix;
+                    cv1.Matrix = Children[Children.Count - 2].Matrix;
                     cv1.Move(0, 1, 0);
 
                     cv2.Matrix = vert.Matrix;
@@ -74,15 +69,14 @@ namespace ModelEditor
             }
 
             vert.MatrixChange += BezierVertexChange;
-            _vertices.Add(vert);
 
             _lastChanged = null;
         }
         private void DeleteBernstein(Vertex vert)
         {
-            int idx = _vertices.FindIndex(x => x.Id == vert.Id);
+            var idx = Children.IndexOf(vert);
 
-            if (idx == 0 && _vertices.Count > 1)
+            if (idx == 0 && Children.Count > 0)
             {
                 RemoveBezierControlVertex(_controlVertices[1]);
                 RemoveBezierControlVertex(_controlVertices[0]);
@@ -94,8 +88,7 @@ namespace ModelEditor
                 RemoveBezierControlVertex(_controlVertices[2 * (idx - 1)]);
             }
 
-            _vertices[idx].MatrixChange -= BezierVertexChange;
-            _vertices.RemoveAt(idx);
+            vert.MatrixChange -= BezierVertexChange;
         }
 
         private void BezierVertexChange(object sender, ChangeMatrixEventArgs e)
@@ -123,7 +116,7 @@ namespace ModelEditor
             int idx = 0;
             if (_lastChanged != null)
             {
-                var idxVisible = _vertices.FindIndex(x => x.Id == _lastChanged.Id);
+                var idxVisible = Children.IndexOf(_lastChanged);
                 if (idxVisible != -1)
                 {
                     idx = idxVisible;
@@ -145,12 +138,12 @@ namespace ModelEditor
         {
             int idx = GetConstBezierSegmentIndex();
 
-            for (int i = idx + 1; i < _vertices.Count - 1; i++)
+            for (int i = idx + 1; i < Children.Count - 1; i++)
             {
                 RecalculateBernsteinRight(i);
             }
 
-            if (idx != _vertices.Count - 1)
+            if (idx != Children.Count - 1)
                 for (int i = idx - 1; i > 0 - 1; i--)
                 {
                     RecalculateBernsteinLeft(i);
@@ -161,10 +154,9 @@ namespace ModelEditor
         {
             //previous - abcd 
             //this - defg
-
             var b = _controlVertices[2 * (idx - 1)];
             var c = _controlVertices[2 * (idx - 1) + 1];
-            var d = _vertices[idx];
+            var d = Children[idx];
             var e = _controlVertices[2 * idx];
             var f = _controlVertices[2 * idx + 1];
 
@@ -183,7 +175,7 @@ namespace ModelEditor
 
             var b = _controlVertices[2 * idx];
             var c = _controlVertices[2 * idx + 1];
-            var d = _vertices[idx + 1];
+            var d = Children[idx + 1];
             var e = _controlVertices[2 * (idx + 1)];
             var f = _controlVertices[2 * (idx + 1) + 1];
 
@@ -195,7 +187,7 @@ namespace ModelEditor
             b.MoveLoc(c.Matrix.Translation - deBoor);
         }
 
-        private bool _spline = true;
+        private bool _spline = false;
         public bool Spline
         {
             get => _spline;
@@ -264,11 +256,11 @@ namespace ModelEditor
         private List<Vector3> GetBernsteinVertices()
         {
             var verts = new List<Vector3>();
-            for (int i = 0; i < _vertices.Count; i++)
+            for (int i = 0; i < Children.Count; i++)
             {
-                verts.Add(_vertices[i].Matrix.Translation);
+                verts.Add(Children[i].Matrix.Translation);
 
-                if (i < _vertices.Count - 1)
+                if (i < Children.Count - 1)
                 {
                     verts.Add(_controlVertices[2 * i].Matrix.Translation);
                     verts.Add(_controlVertices[2 * i + 1].Matrix.Translation);
