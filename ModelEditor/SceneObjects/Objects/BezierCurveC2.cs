@@ -51,16 +51,18 @@ namespace ModelEditor
         {
 
         }
+        private void DeleteSpline(Vertex vert)
+        {
+
+        }
         private void AddBernstein(Vertex vert)
         {
             if (_vertices.Count != 0)
             {
                 var last = _vertices[_vertices.Count - 1];
 
-                var cv1 = CreateControlVertex();
-
-                var cv2 = CreateControlVertex();
-
+                var cv1 = CreateBezierControlVertex();
+                var cv2 = CreateBezierControlVertex();
 
                 if (_vertices.Count == 1)
                 {
@@ -72,32 +74,51 @@ namespace ModelEditor
                 }
             }
 
-            vert.MatrixChange += VertexChange;
+            vert.MatrixChange += BezierVertexChange;
             _vertices.Add(vert);
+
+            _lastChanged = null;
+        }
+        private void DeleteBernstein(Vertex vert)
+        {
+            int idx = _vertices.FindIndex(x => x.Id == vert.Id);
+
+            if (idx == 0 && _vertices.Count > 1)
+            {
+                RemoveBezierControlVertex(_controlVertices[1]);
+                RemoveBezierControlVertex(_controlVertices[0]);
+            }
+
+            if (idx > 0)
+            {
+                RemoveBezierControlVertex(_controlVertices[2 * (idx - 1) + 1]);
+                RemoveBezierControlVertex(_controlVertices[2 * (idx - 1)]);
+            }
+
+            _vertices[idx].MatrixChange -= BezierVertexChange;
+            _vertices.RemoveAt(idx);
         }
 
-        private void VertexChange(object sender, ChangeMatrixEventArgs e)
+        private void BezierVertexChange(object sender, ChangeMatrixEventArgs e)
         {
             _lastChanged = sender as Vertex;
         }
-
-        private Vertex CreateControlVertex()
+        private Vertex CreateBezierControlVertex()
         {
             var vert = new Vertex();
             vert.SetParent(this, true);
-            vert.MatrixChange += VertexChange;
+            vert.MatrixChange += BezierVertexChange;
             _controlVertices.Add(vert);
 
             return vert;
         }
-        private void RemoveControlVertex(Vertex vert)
+        private void RemoveBezierControlVertex(Vertex vert)
         {
             _controlVertices.Remove(vert);
-            vert.MatrixChange -= VertexChange;
+            vert.MatrixChange -= BezierVertexChange;
             vert.Parent.HiddenChildren.Remove(vert);
         }
-
-        private int GetConstSegmentIndex()
+        private int GetConstBezierSegmentIndex()
         {
             int idx = 0;
             if (_lastChanged != null)
@@ -122,7 +143,7 @@ namespace ModelEditor
         }
         private void RecalculateBernstein()
         {
-            int idx = GetConstSegmentIndex();
+            int idx = GetConstBezierSegmentIndex();
 
                 for (int i = idx + 1; i < _vertices.Count - 1; i++)
                 {
@@ -172,30 +193,6 @@ namespace ModelEditor
             b.Matrix = c.Matrix;
             var deBoor = e.Matrix.Translation + (e.Matrix.Translation - f.Matrix.Translation);
             b.MoveLoc(c.Matrix.Translation - deBoor);
-        }
-
-        private void DeleteSpline(Vertex vert)
-        {
-
-        }
-        private void DeleteBernstein(Vertex vert)
-        {
-            int idx = _vertices.FindIndex(x => x.Id == vert.Id);
-
-            if (idx == 0 && _vertices.Count > 1)
-            {
-                RemoveControlVertex(_controlVertices[1]);
-                RemoveControlVertex(_controlVertices[0]);
-            }
-
-            if (idx > 0)
-            {
-                RemoveControlVertex(_controlVertices[2 * (idx - 1) + 1]);
-                RemoveControlVertex(_controlVertices[2 * (idx - 1)]);
-            }
-
-            _vertices[idx].MatrixChange -= VertexChange;
-            _vertices.RemoveAt(idx);
         }
 
         private bool _spline = false;
