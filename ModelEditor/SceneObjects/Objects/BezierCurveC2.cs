@@ -20,37 +20,42 @@ namespace ModelEditor
             base.Children.CollectionChanged += Children_CollectionChanged;
         }
 
+        private bool _spline = true;
+        public bool Spline
+        {
+            get => _spline;
+            set
+            {
+                if (_spline != value)
+                {
+                    _spline = value;
+
+                    if (value)
+                        ConvertToSpline();
+                    else
+                        ConvertToBezier();
+
+                    InvokePropertyChanged(nameof(Spline));
+                }
+            }
+
+        }
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            if (Spline)
+                return;
+
             if (e.NewItems != null)
                 foreach (var item in e.NewItems)
                     if (item is Vertex vert)
-                    {
-                        if (Spline)
-                            AddSpline(vert);
-                        else
-                            AddBernstein(vert);
-                    }
-
+                        AddBernstein(vert);
 
             if (e.OldItems != null)
                 foreach (var item in e.OldItems)
                     if (item is Vertex vert)
-                    {
-                        if (Spline)
-                            DeleteSpline(vert);
-                        else
-                            DeleteBernstein(vert);
-                    }
+                        DeleteBernstein(vert);
         }
 
-        private void AddSpline(Vertex vert)
-        {
-        }
-        private void DeleteSpline(Vertex vert)
-        {
-
-        }
         private void AddBernstein(Vertex vert)
         {
             if (Children.Count != 1)
@@ -90,7 +95,6 @@ namespace ModelEditor
 
             vert.MatrixChange -= BezierVertexChange;
         }
-
         private void BezierVertexChange(object sender, ChangeMatrixEventArgs e)
         {
             _lastChanged = sender as Vertex;
@@ -187,19 +191,6 @@ namespace ModelEditor
             b.MoveLoc(c.Matrix.Translation - deBoor);
         }
 
-        private bool _spline = false;
-        public bool Spline
-        {
-            get => _spline;
-            set
-            {
-                if (_spline != value)
-                {
-                    _spline = value;
-                    InvokePropertyChanged(nameof(Spline));
-                }
-            }
-        }
 
         public ObjRenderData GetRenderData()
         {
@@ -319,7 +310,7 @@ namespace ModelEditor
         }
         private ObjRenderData GerSplinePolygon()
         {
-            var verts = GetBernsteinVertices();
+            var verts = Children.Select(x => x.Matrix.Translation).ToList();
             var data = new ObjRenderData();
             if (ShowPolygon && verts.Count > 1)
             {
@@ -329,29 +320,21 @@ namespace ModelEditor
 
             return data;
         }
-
         public Vector3 GetSplineValue(List<Vector3> points, float t)
         {
             int degree = 3;
             int i, s, l;              // function-scoped iteration variables
-            var n = points.Count;    // points count
-
-            // build knot vector of length [n + degree + 1]
-            var knots = Enumerable.Range(0, n + degree + 1).ToList();
-
-            var domain = new Vector2Int(degree, knots.Count - 1 - degree);
+            //var n = points.Count;    // points count
 
             // remap t to the domain where the spline is defined
-            var low = knots[domain.X];
-            var high = knots[domain.Y];
+            var low = degree;
+            var high = points.Count;
             t = t * (high - low) + low;
 
-            if (t < low || t > high) throw new Exception("out of bounds");
-
             // find s (the spline segment) for the [t] value provided
-            for (s = domain.X; s < domain.Y; s++)
+            for (s = low; s < high; s++)
             {
-                if (t >= knots[s] && t <= knots[s + 1])
+                if (t >= s && t <= s + 1)
                 {
                     break;
                 }
@@ -366,7 +349,7 @@ namespace ModelEditor
                 // build level l of the pyramid
                 for (i = s; i > s - degree - 1 + l; i--)
                 {
-                    alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+                    alpha = (t - i) / (degree + 1 - l);
 
                     // interpolate each component
                     v[i] = (1 - alpha) * v[i - 1] + alpha * v[i];
@@ -378,5 +361,15 @@ namespace ModelEditor
             return result;
         }
 
+
+        private void ConvertToSpline()
+        {
+
+        }
+
+        private void ConvertToBezier()
+        {
+
+        }
     }
 }
