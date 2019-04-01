@@ -324,16 +324,10 @@ namespace ModelEditor
         {
             int degree = 3;
 
-            var verts = new List<Vector3>();
-            //verts.Add(points[0]);
-            //verts.Add(points[0]);
-            verts.AddRange(points);
-            //verts.Add(points[points.Count - 1]);
-            //verts.Add(points[points.Count - 1]);
 
             // remap t to the domain where the spline is defined
             var left = degree;
-            var right = verts.Count;
+            var right = points.Count;
             t = t * (right - left) + left;
 
             // find s (the spline segment) for the [t] value provided
@@ -346,6 +340,7 @@ namespace ModelEditor
                 }
             }
 
+            var verts = points.ToList();
             // l (level) goes from 1 to the curve degree + 1
             for (int l = 1; l <= degree + 1; l++)
             {
@@ -368,7 +363,7 @@ namespace ModelEditor
         {
             var verts = GetBernsteinVertices();
 
-            if (verts.Count == 0)
+            if (verts.Count < 4)
                 return;
 
             Children.Clear();
@@ -417,21 +412,18 @@ namespace ModelEditor
 
             if (n > 3)
             {
-                AddBernstein((2 * verts[0] + 3 * verts[1] + 2 * verts[2]) / 6);
+                AddBernstein((verts[0] + 4 * verts[1] + verts[2]) / 6);
 
                 int i;
                 for (i = 2; i < n - 1; i++)
                 {
                     AddBernsteinControl((2 * verts[i - 1] + verts[i]) / 3);
                     AddBernsteinControl((verts[i - 1] + 2 * verts[i]) / 3);
-                    AddBernstein((2 * verts[i-1] + 3 * verts[i] + 2 * verts[i+1]) / 6);
+                    AddBernstein((verts[i - 1] + 4 * verts[i] + verts[i + 1]) / 6);
                 }
-
             }
 
-
             base.Children.CollectionChanged += Children_CollectionChanged;
-
         }
         private Vertex AddBernstein(Vector3 position)
         {
