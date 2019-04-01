@@ -192,7 +192,6 @@ namespace ModelEditor
             b.MoveLoc(c.Matrix.Translation - deBoor);
         }
 
-
         public ObjRenderData GetRenderData()
         {
             var data = Spline ? GetSpline() : GetBernstein();
@@ -273,7 +272,7 @@ namespace ModelEditor
         {
             var data = new ObjRenderData();
             var verts = Children.Select(x => x.Matrix.Translation).ToList();
-            if (verts.Count > 1)
+            if (verts.Count > 3)
                 data.Vertices = GetSplineRec(verts, 0, 0, 1);
 
             return data;
@@ -326,11 +325,11 @@ namespace ModelEditor
             int degree = 3;
 
             var verts = new List<Vector3>();
-            verts.Add(points[0]);
-            verts.Add(points[0]);
+            //verts.Add(points[0]);
+            //verts.Add(points[0]);
             verts.AddRange(points);
-            verts.Add(points[points.Count - 1]);
-            verts.Add(points[points.Count - 1]);
+            //verts.Add(points[points.Count - 1]);
+            //verts.Add(points[points.Count - 1]);
 
             // remap t to the domain where the spline is defined
             var left = degree;
@@ -416,62 +415,40 @@ namespace ModelEditor
 
             var n = verts.Count;
 
-            if (n == 1)
+            if (n > 3)
             {
-                AddBernstein(verts[0]);
-            }
-            if (n == 2)
-            {
-                AddBernstein(verts[0]);
-                AddBernstein(verts[1]);
-            }
-            if (n == 3)
-            {
-                AddBernstein(verts[0]);
-                AddBernsteinControl(verts[1]);
-                AddBernsteinControl(verts[1]);
-                AddBernstein(verts[2]);
-            }
-            if (n == 4)
-            {
-                AddBernstein(verts[0]);
-                AddBernsteinControl(verts[1]);
-                AddBernsteinControl(verts[2]);
-                AddBernstein(verts[3]);
-            }
-            if (n >4)
-            {
-                AddBernstein(verts[0]);
-                AddBernsteinControl(verts[1]);
+                AddBernstein((2 * verts[0] + 3 * verts[1] + 2 * verts[2]) / 6);
 
                 int i;
-                for (i = 2; i < n-2; i++)
+                for (i = 2; i < n - 1; i++)
                 {
-                    AddBernsteinControl((verts[i-1] + verts[i]) / 2);
-                    AddBernstein((verts[i - 1] + 2 * verts[i] + verts[i + 1]) / 4);
-                    AddBernsteinControl((verts[i + 1] + verts[i]) / 2);
+                    AddBernsteinControl((2 * verts[i - 1] + verts[i]) / 3);
+                    AddBernsteinControl((verts[i - 1] + 2 * verts[i]) / 3);
+                    AddBernstein((2 * verts[i-1] + 3 * verts[i] + 2 * verts[i+1]) / 6);
                 }
 
-                AddBernsteinControl(verts[i]);
-                AddBernstein(verts[i+1]);
             }
 
 
             base.Children.CollectionChanged += Children_CollectionChanged;
 
         }
-        private void AddBernstein(Vector3 position)
+        private Vertex AddBernstein(Vector3 position)
         {
             var vert = new Vertex();
             vert.SetParent(this);
             vert.MoveLoc(position);
+
+            return vert;
         }
-        private void AddBernsteinControl(Vector3 position)
+        private Vertex AddBernsteinControl(Vector3 position)
         {
             var vert = new Vertex();
             vert.SetParent(this, true);
             vert.MoveLoc(position);
             _controlVertices.Add(vert);
+
+            return vert;
         }
     }
 }
