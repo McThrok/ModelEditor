@@ -362,33 +362,30 @@ namespace ModelEditor
         private void ConvertToSpline()
         {
             var verts = GetBernsteinVertices();
-
-            if (verts.Count < 4)
-                return;
+            base.Children.CollectionChanged -= Children_CollectionChanged;
 
             Children.Clear();
             HiddenChildren.Clear();
             _controlVertices.Clear();
 
-            var n = (verts.Count - 1) / 3 + 1;
-
-            if (n == 1)
+            var n = verts.Count;
+            if (n > 3)
             {
-                AddDeBoor(verts[0]);
-            }
-            else
-            {
-                AddDeBoor(verts[0]);
-                AddDeBoor(verts[1]);
+                var b2 = verts[1] + (verts[1] - verts[2]);
+                var b1 = b2 + 3 * (verts[0] + (verts[0] - verts[1]) - b2);
+                AddDeBoor(b1);
+                AddDeBoor(b2);
 
                 int i;
-                for (i = 2; i < verts.Count - 3; i += 3)
+                for (i = 3; i < n - 3; i += 3)
                 {
-                    AddDeBoor(verts[i] + (verts[i] - verts[i - 1]));
+                    AddDeBoor(verts[i-1] + (verts[i-1] - verts[i - 2]));
                 }
 
-                AddDeBoor(verts[i]);
-                AddDeBoor(verts[i + 1]);
+                var b3 = verts[i - 1] + (verts[i - 1] - verts[i - 2]);
+                var b4 = b3 + 3 * (verts[i] + (verts[i] - verts[i - 1]) - b3);
+                AddDeBoor(b3);
+                AddDeBoor(b4);
             }
         }
         private void AddDeBoor(Vector3 position)
