@@ -415,32 +415,47 @@ namespace ModelEditor
             Children.Clear();
 
             var n = verts.Count;
-            for (int i = 1; i < n - 2; i++)
+
+            if (n == 1)
             {
-                if (i == 1)
+                AddBernstein(verts[0]);
+            }
+            if (n == 2)
+            {
+                AddBernstein(verts[0]);
+                AddBernstein(verts[1]);
+            }
+            if (n == 3)
+            {
+                AddBernstein(verts[0]);
+                AddBernsteinControl(verts[1]);
+                AddBernsteinControl(verts[1]);
+                AddBernstein(verts[2]);
+            }
+            if (n == 4)
+            {
+                AddBernstein(verts[0]);
+                AddBernsteinControl(verts[1]);
+                AddBernsteinControl(verts[2]);
+                AddBernstein(verts[3]);
+            }
+            if (n >4)
+            {
+                AddBernstein(verts[0]);
+                AddBernsteinControl(verts[1]);
+
+                int i;
+                for (i = 2; i < n-2; i++)
                 {
-                    AddBernsteinControl(verts[i]);
-                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) / 2);
-                }
-                else if (i == n - 3)
-                {
-                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) / 2);
-                    AddBernsteinControl(verts[i + 1]);
-                }
-                else
-                {
-                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) / 3);
-                    AddBernsteinControl(verts[i] + (verts[i + 1] - verts[i]) * 2 / 3);
+                    AddBernsteinControl((verts[i-1] + verts[i]) / 2);
+                    AddBernstein((verts[i - 1] + 2 * verts[i] + verts[i + 1]) / 4);
+                    AddBernsteinControl((verts[i + 1] + verts[i]) / 2);
                 }
 
+                AddBernsteinControl(verts[i]);
+                AddBernstein(verts[i+1]);
             }
 
-            AddBernstein(verts[0]);
-            for (int i = 1; i < n - 3; i += 2)
-            {
-                AddBernstein(verts[i] + (verts[i + 1] - verts[i]) / 2);
-            }
-            AddBernstein(verts[n - 1]);
 
             base.Children.CollectionChanged += Children_CollectionChanged;
 
