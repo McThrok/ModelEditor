@@ -45,11 +45,20 @@ namespace ModelEditor
         {
             return AddObj(new EmptyObject(), parent);
         }
-        public SceneObject AddBezierCurve(SceneObject parent)
+        public SceneObject AddBezierCurveC0(SceneObject parent)
+        {
+            var bezier = new BezierCurveC0(RayCaster);
+            return AddObj(bezier, parent);
+        }
+        public SceneObject AddBezierCurveC2(SceneObject parent)
         {
             var bezier = new BezierCurveC2(RayCaster);
-            //var bezier = new BezierCurveC0(RayCaster);
             return AddObj(bezier, parent);
+        }
+        public void Test(SceneObject obj)
+        {
+            if (obj is BezierCurveC2 bezierCurve)
+                bezierCurve.Spline = false;
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {

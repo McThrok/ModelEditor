@@ -16,8 +16,7 @@ namespace ModelEditor
         private Vertex _lastChanged;
         public BezierCurveC2(RayCaster rayCaster) : base(rayCaster)
         {
-            if (_count == 0)
-                Spline = true;
+            Spline = true;
             Name = nameof(BezierCurveC2) + " " + _count++.ToString();
             base.Children.CollectionChanged += Children_CollectionChanged;
         }
@@ -368,14 +367,51 @@ namespace ModelEditor
 
         private void ConvertToSpline()
         {
+            var verts = GetBernsteinVertices();
 
+            if (verts.Count == 0)
+                return;
+
+            Children.Clear();
+            HiddenChildren.Clear();
+            _controlVertices.Clear();
+
+            var n = (verts.Count - 1) / 3 + 1;
+
+            if (n == 1)
+            {
+                AddDeBoor(verts[0]);
+            }
+            else
+            {
+                AddDeBoor(verts[0]);
+                AddDeBoor(verts[1]);
+
+                int i;
+                for (i = 2; i < verts.Count - 3; i += 3)
+                {
+                    AddDeBoor(verts[i] + (verts[i] - verts[i - 1]));
+                }
+
+                AddDeBoor(verts[i]);
+                AddDeBoor(verts[i + 1]);
+            }
+        }
+        private void AddDeBoor(Vector3 position)
+        {
+            var vert = new Vertex();
+            vert.SetParent(this);
+            vert.MoveLoc(position);
         }
 
         private void ConvertToBezier()
         {
-            base.Children.CollectionChanged -= Children_CollectionChanged;
-
             var verts = Children.Select(x => x.Matrix.Translation).ToList();
+
+            if (verts.Count == 0)
+                return;
+
+            base.Children.CollectionChanged -= Children_CollectionChanged;
             Children.Clear();
 
             var n = verts.Count;
@@ -400,25 +436,21 @@ namespace ModelEditor
             }
 
             AddBernstein(verts[0]);
-            for (int i = 1; i < n-1; i+=2)
+            for (int i = 1; i < n - 3; i += 2)
             {
                 AddBernstein(verts[i] + (verts[i + 1] - verts[i]) / 2);
             }
-            AddBernstein(verts[n-1]);
+            AddBernstein(verts[n - 1]);
 
             base.Children.CollectionChanged += Children_CollectionChanged;
 
-            Spline = false;
-
         }
-
         private void AddBernstein(Vector3 position)
         {
             var vert = new Vertex();
             vert.SetParent(this);
             vert.MoveLoc(position);
         }
-
         private void AddBernsteinControl(Vector3 position)
         {
             var vert = new Vertex();

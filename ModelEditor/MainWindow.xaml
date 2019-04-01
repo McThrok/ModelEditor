@@ -36,7 +36,9 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
-                <Button Margin="5" Height="20" Click="Bezier_Click">Add Bezier Curve</Button>
+                <Button Margin="5" Height="20" Click="Bezier0_Click">Add Bezier Curve C0</Button>
+                <Button Margin="5" Height="20" Click="Bezier2_Click">Add Bezier Curve C2</Button>
+                <Button Margin="5" Height="20" Click="Test">Test</Button>
                 <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
                 <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>
                 <Button Margin="5,5,30,5" Height="20" Click="Torus_Click">Add Torus</Button>
@@ -86,7 +88,6 @@
                         <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedObject.SmallRadius, ElementName=mainWindow}" />
                     </Grid>
 
-
                     <Grid Margin="5" Name="BezierMenu">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="80"/>
@@ -95,6 +96,16 @@
 
                         <TextBlock Grid.Column="0" Text="Show polygon:" VerticalAlignment="Center" TextAlignment="Center" />
                         <CheckBox Grid.Column="1" IsChecked="{Binding SelectedObject.ShowPolygon, ElementName=mainWindow, Mode=TwoWay }" />
+                    </Grid>
+
+                    <Grid Margin="5" Name="BezierC2Menu">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Spline reprezentation:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <CheckBox Grid.Column="1" IsChecked="{Binding SelectedObject.Spline, ElementName=mainWindow, Mode=TwoWay }" />
                     </Grid>
 
                     <Grid Margin="5">

@@ -136,9 +136,17 @@ namespace ModelEditor
         #endregion
 
         #region topMenu
-        private void Bezier_Click(object sender, RoutedEventArgs e)
+        private void Bezier0_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCurve(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCurveC0(GetVisibleSelectedObj()));
+        }
+        private void Bezier2_Click(object sender, RoutedEventArgs e)
+        {
+            SelectItem(Engine.Scene.AddBezierCurveC2(GetVisibleSelectedObj()));
+        }
+        private void Test(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.Test(GetVisibleSelectedObj());
         }
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
@@ -234,6 +242,7 @@ namespace ModelEditor
 
                 TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
                 BezierMenu.Visibility = item is BezierCurveBase ? Visibility.Visible : Visibility.Collapsed;
+                BezierC2Menu.Visibility = item is BezierCurveC2 ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {
