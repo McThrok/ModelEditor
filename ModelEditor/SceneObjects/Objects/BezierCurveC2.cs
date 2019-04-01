@@ -148,8 +148,8 @@ namespace ModelEditor
                 RecalculateBernsteinRight(i);
             }
 
-            if (idx != Children.Count - 1)
-                for (int i = idx - 1; i > 0 - 1; i--)
+            if (idx < Children.Count-1)
+                for (int i = idx - 1; i >= 0; i--)
                 {
                     RecalculateBernsteinLeft(i);
                 }
@@ -379,13 +379,13 @@ namespace ModelEditor
                 int i;
                 for (i = 3; i < n - 3; i += 3)
                 {
-                    AddDeBoor(verts[i-1] + (verts[i-1] - verts[i - 2]));
+                    AddDeBoor(verts[i - 1] + (verts[i - 1] - verts[i - 2]));
                 }
 
-                var b3 = verts[i - 1] + (verts[i - 1] - verts[i - 2]);
-                var b4 = b3 + 3 * (verts[i] + (verts[i] - verts[i - 1]) - b3);
-                AddDeBoor(b3);
-                AddDeBoor(b4);
+                var preLast = verts[i - 1] + (verts[i - 1] - verts[i - 2]);
+                var last = preLast + 3 * (verts[i] + (verts[i] - verts[i - 1]) - preLast);
+                AddDeBoor(preLast);
+                AddDeBoor(last);
             }
         }
         private void AddDeBoor(Vector3 position)
@@ -436,6 +436,7 @@ namespace ModelEditor
             vert.SetParent(this, true);
             vert.MoveLoc(position);
             _controlVertices.Add(vert);
+            vert.MatrixChange += BezierVertexChange;
 
             return vert;
         }

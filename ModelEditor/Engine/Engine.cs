@@ -36,6 +36,19 @@ namespace ModelEditor
             Renderer = new Renderer(_writableBitmap, Scene);
             Scene.RayCaster = new RayCaster(Renderer.GetRenderAccessor());
             Input = new InputManager(_bitmapConatiner,_writableBitmap, Scene, new RayCaster(Renderer.GetRenderAccessor()));
+
+            var trans = Matrix4x4.CreateTranslation(1, 2, 3);
+            var ly = Matrix4x4.CreateRotationY((float)-Math.PI / 4);
+            var lz = Matrix4x4.CreateRotationZ((float)Math.PI / 4);
+            var c = Matrix4x4.CreateRotationX(2*(float)Math.PI / 3);
+            var rz = Matrix4x4.CreateRotationZ((float)-Math.PI / 4);
+            var ry = Matrix4x4.CreateRotationY((float)Math.PI / 4);
+
+            var q1 = lz * ly;
+            var q2 = c * q1;
+            var q3 = rz * q2;
+            var q4 = ry * q3;
+
         }
 
         private void InitBitmap()
