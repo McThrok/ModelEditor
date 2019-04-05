@@ -36,10 +36,10 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
+                <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
                 <Button Margin="5" Height="20" Click="Bezier0_Click">Add Bezier Curve C0</Button>
                 <Button Margin="5" Height="20" Click="Bezier2_Click">Add Bezier Curve C2</Button>
-                <Button Margin="5" Height="20" Click="Test">Test</Button>
-                <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
+                <Button Margin="5" Height="20" Click="InterpolatingCurve">Add Interpolating Curve</Button>
                 <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>
                 <Button Margin="5,5,30,5" Height="20" Click="Torus_Click">Add Torus</Button>
 

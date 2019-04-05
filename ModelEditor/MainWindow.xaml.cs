@@ -144,9 +144,9 @@ namespace ModelEditor
         {
             SelectItem(Engine.Scene.AddBezierCurveC2(GetVisibleSelectedObj()));
         }
-        private void Test(object sender, RoutedEventArgs e)
+        private void InterpolatingCurve(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.Test(GetVisibleSelectedObj());
+            SelectItem(Engine.Scene.AddInterpolatingCurve(GetVisibleSelectedObj()));
         }
         private void Torus_Click(object sender, RoutedEventArgs e)
         {

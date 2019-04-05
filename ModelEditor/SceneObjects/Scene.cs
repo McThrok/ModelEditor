@@ -47,18 +47,15 @@ namespace ModelEditor
         }
         public SceneObject AddBezierCurveC0(SceneObject parent)
         {
-            var bezier = new BezierCurveC0(RayCaster);
-            return AddObj(bezier, parent);
+            return AddObj(new BezierCurveC0(RayCaster), parent);
         }
         public SceneObject AddBezierCurveC2(SceneObject parent)
         {
-            var bezier = new BezierCurveC2(RayCaster);
-            return AddObj(bezier, parent);
+            return AddObj(new BezierCurveC2(RayCaster), parent);
         }
-        public void Test(SceneObject obj)
+        internal SceneObject AddInterpolatingCurve(SceneObject parent)
         {
-            if (obj is BezierCurveC2 bezierCurve)
-                bezierCurve.Spline = false;
+            return AddObj(new InterpolatingCurve(), parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {
@@ -134,6 +131,7 @@ namespace ModelEditor
                 }
             }
         }
+
     }
 }
 
