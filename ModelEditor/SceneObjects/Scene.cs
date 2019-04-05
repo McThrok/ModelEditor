@@ -55,7 +55,7 @@ namespace ModelEditor
         }
         internal SceneObject AddInterpolatingCurve(SceneObject parent)
         {
-            return AddObj(new InterpolatingCurve(), parent);
+            return AddObj(new InterpolatingCurve(RayCaster), parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {
