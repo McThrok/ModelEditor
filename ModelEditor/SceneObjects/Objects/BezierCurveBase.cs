@@ -53,7 +53,7 @@ namespace ModelEditor
 
             var result = new List<Vector3>();
 
-            if (Dist(screenPosA, screenPosB) <= 1 || level > 10)
+            if (Dist(screenPosA, screenPosB) <= 1 || level > 8)
             {
                 if (screenPosA != Vector2Int.Empty)
                     result.Add(pointA);
