@@ -324,13 +324,10 @@ namespace ModelEditor
         {
             int degree = 3;
 
-
-            // remap t to the domain where the spline is defined
             var left = degree;
             var right = points.Count;
             t = t * (right - left) + left;
 
-            // find s (the spline segment) for the [t] value provided
             int s;
             for (s = left; s < right; s++)
             {
@@ -341,15 +338,12 @@ namespace ModelEditor
             }
 
             var verts = points.ToList();
-            // l (level) goes from 1 to the curve degree + 1
             for (int l = 1; l <= degree + 1; l++)
             {
-                // build level l of the pyramid
                 for (int i = s; i > s - degree - 1 + l; i--)
                 {
                     float alpha = (t - i) / (degree + 1 - l);
 
-                    // interpolate each component
                     verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
                 }
             }
