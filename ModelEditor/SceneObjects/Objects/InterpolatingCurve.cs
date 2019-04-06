@@ -23,8 +23,6 @@ namespace ModelEditor
         }
         public ObjRenderData GetRenderData()
         {
-            List<float> nodes = GetNodes(4);
-            var a = GetN(3, 0, 0, nodes);
             if (Children.Count > 1)
             {
 
@@ -119,6 +117,23 @@ namespace ModelEditor
             return result;
         }
 
+        private float[] mul(float[,] mat, float[] vec)
+        {
+            int n = vec.Length;
+            var result = new float[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                float sum = 0;
+                for (int j = 0; j < n; j++)
+                {
+                    sum += mat[i, j] * vec[j];
+                }
+                result[i] = sum;
+            }
+
+            return result;
+        }
         private List<Vector3> CalculateVerts()
         {
             var verts = GetVerts();
@@ -129,7 +144,12 @@ namespace ModelEditor
             var y = verts.Select(v => v.Y).ToArray();
             var z = verts.Select(v => v.Z).ToArray();
 
+            var xx = verts.Select(v => v.X).ToArray();
+            var yy = verts.Select(v => v.Y).ToArray();
+            var zz = verts.Select(v => v.Z).ToArray();
+
             ComputeCoefficents(mat, x);
+            var a = mul(mat, x);
             ComputeCoefficents(mat, y);
             ComputeCoefficents(mat, z);
 
@@ -166,30 +186,41 @@ namespace ModelEditor
 
             return mat;
         }
+        public float[,] copy (float [,] arr)
+        {
+            int n = arr.GetLength(0);
+            var copy = new float[n, n];
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    copy[i, j] = arr[i, j];
+
+            return copy;
+        }
         public void ComputeCoefficents(float[,] X, float[] Y)
         {
             int n = Y.Length;
+            float[,] mat = copy(X);
             for (int k = 0; k < n; k++)
             {
                 int k1 = k + 1;
                 for (int i = k; i < n; i++)
                 {
-                    if (X[i, k] != 0)
+                    if (mat[i, k] != 0)
                     {
                         for (int j = k1; j < n; j++)
                         {
-                            X[i, j] /= X[i, k];
+                            mat[i, j] /= mat[i, k];
                         }
-                        Y[i] /= X[i, k];
+                        Y[i] /= mat[i, k];
                     }
                 }
                 for (int i = k1; i < n; i++)
                 {
-                    if (X[i, k] != 0)
+                    if (mat[i, k] != 0)
                     {
                         for (int j = k1; j < n; j++)
                         {
-                            X[i, j] -= X[k, j];
+                            mat[i, j] -= mat[k, j];
                         }
                         Y[i] -= Y[k];
                     }
@@ -200,7 +231,7 @@ namespace ModelEditor
             {
                 for (int j = n - 1; j >= i + 1; j--)
                 {
-                    Y[i] -= X[i, j] * Y[j];
+                    Y[i] -= mat[i, j] * Y[j];
                 }
             }
         }
@@ -231,12 +262,12 @@ namespace ModelEditor
             if (i < 0)
             {
                 return nodes[0];
-                return nodes[0] + i * (nodes[1] - nodes[0]);
+                //return nodes[0] + i * (nodes[1] - nodes[0]);
             }
             if (i > n - 1)
             {
                 return nodes[n - 1];
-                return nodes[n - 1] + (i - n + 1) * (nodes[n - 1] - nodes[n - 2]);
+                //return nodes[n - 1] + (i - n + 1) * (nodes[n - 1] - nodes[n - 2]);
             }
 
             return nodes[i];
