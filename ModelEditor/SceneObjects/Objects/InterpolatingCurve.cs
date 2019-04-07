@@ -23,13 +23,10 @@ namespace ModelEditor
         }
         public ObjRenderData GetRenderData()
         {
-            var nodes = GetNodes(5);
-            var a = GetN(3, 0, 0, nodes);
-
             if (Children.Count > 3)
             {
                 var verts = CalculateVerts();
-                var data = GerSplineCurve(verts);
+                var data = GerSplineCurve(verts,GetKnots(3,GetVerts().Count-1));
                 data.Add(GerSplinePolygon(verts));
 
                 return data;
@@ -38,11 +35,20 @@ namespace ModelEditor
                 return new ObjRenderData();
         }
 
-        private ObjRenderData GerSplineCurve(List<Vector3> verts)
+        private ObjRenderData GerSplineCurve(List<Vector3> verts, List<float>  knots)
         {
             var data = new ObjRenderData();
             if (verts.Count > 4)
-                data.Vertices = GetSplineRec(verts, 0, 0, 1);
+            {
+                for (float i = 0; i < 1; i += 0.001f)
+                {
+
+                    var point = deboorAlgorithm(i,verts, knots, 3);
+                    data.Vertices.Add(point);
+
+                }
+                //data.Vertices = GetSplineRec(verts, 0, 0, 1);
+            }
 
             return data;
         }
@@ -139,110 +145,64 @@ namespace ModelEditor
         }
         private List<Vector3> CalculateVerts()
         {
+
             var verts = GetVerts();
-            var nodes = GetNodes(verts.Count);
-            var mat = GetMatrix(nodes);
-
-            var x = verts.Select(v => (double)v.X).ToArray();
-            var y = verts.Select(v => (double)v.Y).ToArray();
-            var z = verts.Select(v => (double)v.Z).ToArray();
-
-            var xx = verts.Select(v => (double)v.X).ToArray();
-            var yy = verts.Select(v => (double)v.Y).ToArray();
-            var zz = verts.Select(v => (double)v.Z).ToArray();
-
-            ComputeCoefficents(mat, x);
-            var a = mul(mat, x);
-            ComputeCoefficents(mat, y);
-            var b = mul(mat, y);
-            ComputeCoefficents(mat, z);
-            var c = mul(mat, z);
-
-            var result = new List<Vector3>();
-            result.Add(new Vector3((float)x[0], (float)y[0], (float)z[0]));
-            result.Add(new Vector3((float)x[0], (float)y[0], (float)z[0]));
-            for (int i = 0; i < verts.Count; i++)
-            {
-                result.Add(new Vector3((float)x[i], (float)y[i], (float)z[i]));
-            }
-            var last = verts.Count - 1;
-            result.Add(new Vector3((float)x[last], (float)y[last], (float)z[last]));
-            result.Add(new Vector3((float)x[last], (float)y[last], (float)z[last]));
+            var result = interpolate(verts, 3);
 
             return result;
-        }
-        public List<float> GetNodes(int n)
-        {
-            int degreee = 3;
-            var nodes = new List<float>();
-            //nodes.AddRange(Enumerable.Repeat(0f, degreee));
-            nodes.AddRange(Enumerable.Range(0, n).Select(x => 1f * x / (n - 1)));
-            //nodes.AddRange(Enumerable.Repeat(1f, degreee));
-            //return new List<float>() { 0, 0, 0, 0, 0.5f, 1, 1, 1, 1 };
-            return nodes;
-        }
-        public float[,] GetMatrix(List<float> nodes)
-        {
-            int m = nodes.Count;
-            float[,] mat = new float[m, m];
 
-            for (int i = 0; i < m; i++)
-            {
-                for (int j = 0; j < m; j++)
-                {
-                    mat[i, j] = GetN(3, j, nodes[i], nodes);
-                }
-            }
-
-            return mat;
         }
-        public double[,] copy(float[,] arr)
+
+        public float[][] copy(float[][] arr)
         {
             int n = arr.GetLength(0);
-            var copy = new double[n, n];
+            var copy = new float[n][];
             for (int i = 0; i < n; i++)
+            {
+                copy[i] = new float[n];
                 for (int j = 0; j < n; j++)
-                    copy[i, j] = arr[i, j];
+                    copy[i][j] = arr[i][j];
+            }
 
             return copy;
         }
-        public void print(float[,] X)
+        public void print(float[][] X)
         {
             Console.WriteLine();
-            for (int i = 0; i < X.GetLength(0); i++)
+            for (int i = 0; i < X.Length; i++)
             {
-                for (int j = 0; j < X.GetLength(1); j++)
+                for (int j = 0; j < X[i].Length; j++)
                 {
-                    Console.Write(X[i, j].ToString() + " ");
+                    Console.Write(X[i][j].ToString() + " ");
                 }
                 Console.WriteLine();
             }
         }
-        public void ComputeCoefficents(float[,] X, double[] Y)
+        public void ComputeCoefficents(float[][] X, List<float> Y)
         {
-            int n = Y.Length;
-            double[,] mat = copy(X);
+            int n = Y.Count;
+            float[][] mat = copy(X);
             for (int k = 0; k < n; k++)
             {
                 int k1 = k + 1;
                 for (int i = k; i < n; i++)
                 {
-                    if (mat[i, k] != 0)
+                    if (mat[i][k] != 0)
                     {
                         for (int j = k1; j < n; j++)
                         {
-                            mat[i, j] /= mat[i, k];
+                            mat[i][j] /= mat[i][k];
                         }
-                        Y[i] /= mat[i, k];
+                        Y[i] /= mat[i][k];
                     }
                 }
                 for (int i = k1; i < n; i++)
                 {
-                    if (mat[i, k] != 0)
+                    if (mat[i][k] != 0)
                     {
                         for (int j = k1; j < n; j++)
                         {
-                            mat[i, j] -= mat[k, j];
+                            mat[i][j] -= mat[k][j];
                         }
                         Y[i] -= Y[k];
                     }
@@ -253,57 +213,250 @@ namespace ModelEditor
             {
                 for (int j = n - 1; j >= i + 1; j--)
                 {
-                    Y[i] -= mat[i, j] * Y[j];
+                    Y[i] -= mat[i][j] * Y[j];
                 }
             }
         }
 
-        private float GetN(int n, int i, float t, List<float> nodes)
+
+
+
+
+        public List<float> GetParameters(List<Vector3> dataPoints)
         {
-            if (n == 0)
-                return Get(nodes, i - 1) <= t && t <= Get(nodes, i) ? 1 : 0;
-            //return Get(nodes, i) <= t && t <= Get(nodes, i + 1) ? 1 : 0;
-            else
+
+            //var parameters = new List<float>();
+
+            //for (var i = 0; i <= n; i++)
+            //{
+
+            //    parameters.Add(1f * i / n);
+            //}
+
+            //return parameters;
+
+            var parameters = new List<float>();
+            parameters.Add(0);
+
+            float totalLength = 0;
+            var l = new List<float>();
+
+            for (var k = 0; k < dataPoints.Count - 1; k++)
             {
-                //var N = GetN(j - 1, i, t, nodes);
-                //var l = (t - Get(nodes, i));
-                //var m = Get(nodes, i + j) - Get(nodes, i);
 
-                //var NN = GetN(j - 1, i + 1, t, nodes);
-                //var ll = (Get(nodes, i + j + 1) - t);
-                //var mm = (Get(nodes, i + j + 1) - Get(nodes, i + 1));
-
-                var N = GetN(n - 1, i, t, nodes);
-                var l = (t - Get(nodes, i - 1));
-                var m = Get(nodes, i + n - 1) - Get(nodes, i - 1);
-
-                var NN = GetN(n - 1, i + 1, t, nodes);
-                var ll = (Get(nodes, i + n) - t);
-                var mm = (Get(nodes, i + n) - Get(nodes, i));
-
-                var a = m == 0 ? 0 : N * l / m;
-                var b = mm == 0 ? 0 : NN * ll / mm;
-                return a + b;
-                //return GetN(n - 1, i, t, nodes) * (t - Get(nodes, i - 1)) / (Get(nodes, i + n - 1) - Get(nodes, i - 1))
-                //    + GetN(n - 1, i + 1, t, nodes) * (Get(nodes, i + n) - t) / (Get(nodes, i + n) - Get(nodes, i));
+                var distanceK = Vector3.Distance(dataPoints[k], dataPoints[k + 1]);
+                totalLength += distanceK;
+                l.Add(totalLength);
             }
+
+            for (var k = 0; k < dataPoints.Count - 1; k++)
+            {
+                parameters.Add(l[k] / totalLength);
+            }
+
+            return parameters;
+
+        }
+        public List<float> GetKnots(int p, int n)
+        {
+            var knots = new List<float>();
+
+            for (var i = 0; i < p + 1; i++)
+            {
+                knots.Add(0);
+            }
+
+            for (var i = 1; i <= n - p; i++)
+            {
+                knots.Add(1f * i / (n - p + 1));
+            }
+
+            for (var i = 0; i < p + 1; i++)
+            {
+                knots.Add(1);
+            }
+
+            return knots;
+
+            var nodes = new List<float>();
+            //nodes.AddRange(Enumerable.Repeat(0f, degreee));
+            nodes.AddRange(Enumerable.Range(0, n).Select(x => 1f * x / (n - 1)));
+            //nodes.AddRange(Enumerable.Repeat(1f, degreee));
+            //return new List<float>() { 0, 0, 0, 0, 0.5f, 1, 1, 1, 1 };
+            return nodes;
+        }
+        public List<Vector3> interpolate(List<Vector3> dataPoints, int order)
+        {
+            var parameters = GetParameters(dataPoints);
+            var knots = GetKnots(order, dataPoints.Count - 1);
+            return interpolate(dataPoints, order, parameters, knots);
+        }
+        public List<Vector3> interpolate(List<Vector3> dataPoints, int p, List<float> parameters, List<float> knots)
+        {
+
+            var n = dataPoints.Count - 1;
+            var N = computeN(n, p, parameters, knots);
+            var dX = new List<float>();
+            var dY = new List<float>();
+            var dZ = new List<float>();
+
+            for (var i = 0; i <= n; i++)
+            {
+                dX.Add(dataPoints[i].X);
+                dY.Add(dataPoints[i].Y);
+                dZ.Add(dataPoints[i].Z);
+            }
+
+            ComputeCoefficents(N, dX);
+            ComputeCoefficents(N, dY);
+            ComputeCoefficents(N, dZ);
+
+            var controlPoints = new List<Vector3>();
+
+            for (var j = 0; j <= n; j++)
+            {
+                controlPoints.Add(new Vector3(dX[j], dY[j], dZ[j]));
+            }
+
+            //var bspline = BSplineBuilder.build(p, controlPoints, knots);
+
+            return controlPoints;
         }
 
-        private float Get(List<float> nodes, int i)
+        public float[][] computeN(int n, int p, List<float> parameters, List<float> knots)
         {
-            var n = nodes.Count;
-            if (i < 0)
+
+            var N = new float[n + 1][];
+
+            for (var i = 0; i <= n; i++)
             {
-                return nodes[0];
-                //return nodes[0] + i * (nodes[1] - nodes[0]);
-            }
-            if (i > n - 1)
-            {
-                return nodes[n - 1];
-                //return nodes[n - 1] + (i - n + 1) * (nodes[n - 1] - nodes[n - 2]);
+
+                N[i] = new float[n + 1];
+
+                for (var j = 0; j <= n; j++)
+                {
+
+                    N[i][j] = compute(parameters[i], j, p, knots);
+                }
             }
 
-            return nodes[i];
+            return N;
+        }
+
+        public float compute(float t, int i, int p, List<float> knots)
+        {
+
+            var m = knots.Count - 1;
+            var N = new List<float>();
+
+            if (i == 0 && t == knots[0])
+                return 1;
+
+            if (i == m - p - 1 && t == knots[m])
+                return 1;
+
+            if (t < knots[i] || t >= knots[i + p + 1])
+                return 0;
+
+            for (var j = 0; j <= p; j++)
+            {
+                if (t >= knots[i + j] && t < knots[i + j + 1])
+                    N.Add(1.0f);
+                else
+                    N.Add(0.0f);
+            }
+
+            var saved = 0.0;
+
+            for (var k = 1; k <= p; k++)
+            {
+
+                if (N[0] == 0.0)
+                    saved = 0.0;
+                else
+                {
+                    saved = ((t - knots[i]) * N[0]) / (knots[i + k] - knots[i]);
+                }
+
+                for (var j = 0; j < p - k + 1; j++)
+                {
+
+                    var left = knots[i + j + 1];
+                    var right = knots[i + j + k + 1];
+
+                    if (N[j + 1] == 0.0)
+                    {
+                        N[j] = (float)saved;
+                        saved = 0.0;
+                    }
+                    else
+                    {
+                        var temp = N[j + 1] / (right - left);
+                        N[j] = (float)(saved + (right - t) * temp);
+                        saved = (t - left) * temp;
+                    }
+                }
+
+            }
+
+            return N[0];
+        }
+        public int findRangeIndex(float t, List<float> knots)
+        {
+            for (var i = 0; i < knots.Count; i++)
+            {
+
+                if (knots[i] > t)
+                    return i - 1;
+
+                if (t == 1 && knots[i + 1] == 1)
+                    return i;
+            }
+
+            throw new Exception("qwe");
+        }
+        public Vector3 deboorAlgorithm(float t, List<Vector3> controlPoints, List<float> knots, int order)
+        {
+
+            var indexOfRange = findRangeIndex(t, knots);
+
+            var d = new List<Vector3>();
+
+            for (var i = 0; i <= order; i++)
+            {
+
+                var downIndex = indexOfRange - order + i;
+
+                if (downIndex > -1 && downIndex < controlPoints.Count)
+                    d.Add(controlPoints[downIndex]);
+                else
+                    d.Add(Vector3.Zero);
+            }
+
+
+            for (var r = 1; r <= order; r++)
+            {
+
+                for (var i = indexOfRange - order + r; i <= indexOfRange; i++)
+                {
+
+                    var alpha = (t - knots[i]) / (knots[i + order - r + 1] - knots[i]);
+
+
+                    var x = d[i - (indexOfRange - order + r)].X * (1 - alpha)
+                        + d[i - (indexOfRange - order + r) + 1].X * alpha;
+
+                    var y = d[i - (indexOfRange - order + r)].Y * (1 - alpha)
+                        + d[i - (indexOfRange - order + r) + 1].Y * alpha;
+
+                    var z = d[i - (indexOfRange - order + r)].Z * (1 - alpha)
+                        + d[i - (indexOfRange - order + r) + 1].Z * alpha;
+
+                    d[i - (indexOfRange - order + r)] = new Vector3(x, y, z);
+                }
+            }
+
+            return d[0];
         }
     }
 }
