@@ -26,7 +26,7 @@ namespace ModelEditor
             if (Children.Count > 3)
             {
                 var verts = CalculateVerts();
-                var data = GerSplineCurve(verts,GetKnots(3,GetVerts().Count-1));
+                var data = GerSplineCurve(verts, GetKnots(3, GetVerts().Count - 1));
                 data.Add(GerSplinePolygon(verts));
 
                 return data;
@@ -35,7 +35,7 @@ namespace ModelEditor
                 return new ObjRenderData();
         }
 
-        private ObjRenderData GerSplineCurve(List<Vector3> verts, List<float>  knots)
+        private ObjRenderData GerSplineCurve(List<Vector3> verts, List<float> knots)
         {
             var data = new ObjRenderData();
             if (verts.Count > 4)
@@ -43,7 +43,7 @@ namespace ModelEditor
                 for (float i = 0; i < 1; i += 0.001f)
                 {
 
-                    var point = deboorAlgorithm(i,verts, knots, 3);
+                    var point = deboorAlgorithm(i, verts, knots, 3);
                     data.Vertices.Add(point);
 
                 }
@@ -126,23 +126,7 @@ namespace ModelEditor
             return result;
         }
 
-        private double[] mul(float[,] mat, double[] vec)
-        {
-            int n = vec.Length;
-            var result = new double[n];
 
-            for (int i = 0; i < n; i++)
-            {
-                double sum = 0;
-                for (int j = 0; j < n; j++)
-                {
-                    sum += mat[i, j] * vec[j];
-                }
-                result[i] = sum;
-            }
-
-            return result;
-        }
         private List<Vector3> CalculateVerts()
         {
 
@@ -165,18 +149,6 @@ namespace ModelEditor
             }
 
             return copy;
-        }
-        public void print(float[][] X)
-        {
-            Console.WriteLine();
-            for (int i = 0; i < X.Length; i++)
-            {
-                for (int j = 0; j < X[i].Length; j++)
-                {
-                    Console.Write(X[i][j].ToString() + " ");
-                }
-                Console.WriteLine();
-            }
         }
         public void ComputeCoefficents(float[][] X, List<float> Y)
         {
@@ -219,22 +191,8 @@ namespace ModelEditor
         }
 
 
-
-
-
-        public List<float> GetParameters(List<Vector3> dataPoints)
+        public List<float> GetParametersRegularized(List<Vector3> dataPoints)
         {
-
-            //var parameters = new List<float>();
-
-            //for (var i = 0; i <= n; i++)
-            //{
-
-            //    parameters.Add(1f * i / n);
-            //}
-
-            //return parameters;
-
             var parameters = new List<float>();
             parameters.Add(0);
 
@@ -253,6 +211,12 @@ namespace ModelEditor
             {
                 parameters.Add(l[k] / totalLength);
             }
+            return parameters;
+        }
+        public List<float> GetParameters(List<Vector3> dataPoints)
+        {
+            var n = dataPoints.Count;
+            var parameters = Enumerable.Range(0, n).Select(x => 1f * x / (n - 1)).ToList();
 
             return parameters;
 
@@ -260,31 +224,13 @@ namespace ModelEditor
         public List<float> GetKnots(int p, int n)
         {
             var knots = new List<float>();
-
-            for (var i = 0; i < p + 1; i++)
-            {
-                knots.Add(0);
-            }
-
-            for (var i = 1; i <= n - p; i++)
-            {
-                knots.Add(1f * i / (n - p + 1));
-            }
-
-            for (var i = 0; i < p + 1; i++)
-            {
-                knots.Add(1);
-            }
+            knots.AddRange(Enumerable.Repeat(0f, p + 1));
+            knots.AddRange(Enumerable.Range(1, n - p).Select(x => 1f * x / (n - p + 1)));
+            knots.AddRange(Enumerable.Repeat(1f, p + 1));
 
             return knots;
-
-            var nodes = new List<float>();
-            //nodes.AddRange(Enumerable.Repeat(0f, degreee));
-            nodes.AddRange(Enumerable.Range(0, n).Select(x => 1f * x / (n - 1)));
-            //nodes.AddRange(Enumerable.Repeat(1f, degreee));
-            //return new List<float>() { 0, 0, 0, 0, 0.5f, 1, 1, 1, 1 };
-            return nodes;
         }
+
         public List<Vector3> interpolate(List<Vector3> dataPoints, int order)
         {
             var parameters = GetParameters(dataPoints);
