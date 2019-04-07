@@ -324,6 +324,7 @@ namespace ModelEditor
         {
             int degree = 3;
 
+
             var left = degree;
             var right = points.Count;
             t = t * (right - left) + left;
