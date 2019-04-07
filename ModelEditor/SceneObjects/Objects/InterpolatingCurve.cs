@@ -23,22 +23,25 @@ namespace ModelEditor
         }
         public ObjRenderData GetRenderData()
         {
-            if (Children.Count > 1)
-            {
+            var nodes = GetNodes(5);
+            var a = GetN(3, 0, 0, nodes);
 
+            if (Children.Count > 3)
+            {
                 var verts = CalculateVerts();
                 var data = GerSplineCurve(verts);
                 data.Add(GerSplinePolygon(verts));
 
                 return data;
             }
-            else return new ObjRenderData();
+            else
+                return new ObjRenderData();
         }
 
         private ObjRenderData GerSplineCurve(List<Vector3> verts)
         {
             var data = new ObjRenderData();
-            if (verts.Count > 3)
+            if (verts.Count > 4)
                 data.Vertices = GetSplineRec(verts, 0, 0, 1);
 
             return data;
@@ -117,14 +120,14 @@ namespace ModelEditor
             return result;
         }
 
-        private float[] mul(float[,] mat, float[] vec)
+        private double[] mul(float[,] mat, double[] vec)
         {
             int n = vec.Length;
-            var result = new float[n];
+            var result = new double[n];
 
             for (int i = 0; i < n; i++)
             {
-                float sum = 0;
+                double sum = 0;
                 for (int j = 0; j < n; j++)
                 {
                     sum += mat[i, j] * vec[j];
@@ -140,35 +143,42 @@ namespace ModelEditor
             var nodes = GetNodes(verts.Count);
             var mat = GetMatrix(nodes);
 
-            var x = verts.Select(v => v.X).ToArray();
-            var y = verts.Select(v => v.Y).ToArray();
-            var z = verts.Select(v => v.Z).ToArray();
+            var x = verts.Select(v => (double)v.X).ToArray();
+            var y = verts.Select(v => (double)v.Y).ToArray();
+            var z = verts.Select(v => (double)v.Z).ToArray();
 
-            var xx = verts.Select(v => v.X).ToArray();
-            var yy = verts.Select(v => v.Y).ToArray();
-            var zz = verts.Select(v => v.Z).ToArray();
+            var xx = verts.Select(v => (double)v.X).ToArray();
+            var yy = verts.Select(v => (double)v.Y).ToArray();
+            var zz = verts.Select(v => (double)v.Z).ToArray();
 
             ComputeCoefficents(mat, x);
             var a = mul(mat, x);
             ComputeCoefficents(mat, y);
+            var b = mul(mat, y);
             ComputeCoefficents(mat, z);
+            var c = mul(mat, z);
 
             var result = new List<Vector3>();
-            result.Add(new Vector3(x[0], y[0], z[0]));
-            result.Add(new Vector3(x[0], y[0], z[0]));
+            result.Add(new Vector3((float)x[0], (float)y[0], (float)z[0]));
+            result.Add(new Vector3((float)x[0], (float)y[0], (float)z[0]));
             for (int i = 0; i < verts.Count; i++)
             {
-                result.Add(new Vector3(x[i], y[i], z[i]));
+                result.Add(new Vector3((float)x[i], (float)y[i], (float)z[i]));
             }
             var last = verts.Count - 1;
-            result.Add(new Vector3(x[last], y[last], z[last]));
-            result.Add(new Vector3(x[last], y[last], z[last]));
+            result.Add(new Vector3((float)x[last], (float)y[last], (float)z[last]));
+            result.Add(new Vector3((float)x[last], (float)y[last], (float)z[last]));
 
             return result;
         }
         public List<float> GetNodes(int n)
         {
-            var nodes = Enumerable.Range(0, n).Select(x => 1f * x / (n - 1)).ToList();
+            int degreee = 3;
+            var nodes = new List<float>();
+            //nodes.AddRange(Enumerable.Repeat(0f, degreee));
+            nodes.AddRange(Enumerable.Range(0, n).Select(x => 1f * x / (n - 1)));
+            //nodes.AddRange(Enumerable.Repeat(1f, degreee));
+            //return new List<float>() { 0, 0, 0, 0, 0.5f, 1, 1, 1, 1 };
             return nodes;
         }
         public float[,] GetMatrix(List<float> nodes)
@@ -186,20 +196,32 @@ namespace ModelEditor
 
             return mat;
         }
-        public float[,] copy (float [,] arr)
+        public double[,] copy(float[,] arr)
         {
             int n = arr.GetLength(0);
-            var copy = new float[n, n];
+            var copy = new double[n, n];
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                     copy[i, j] = arr[i, j];
 
             return copy;
         }
-        public void ComputeCoefficents(float[,] X, float[] Y)
+        public void print(float[,] X)
+        {
+            Console.WriteLine();
+            for (int i = 0; i < X.GetLength(0); i++)
+            {
+                for (int j = 0; j < X.GetLength(1); j++)
+                {
+                    Console.Write(X[i, j].ToString() + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+        public void ComputeCoefficents(float[,] X, double[] Y)
         {
             int n = Y.Length;
-            float[,] mat = copy(X);
+            double[,] mat = copy(X);
             for (int k = 0; k < n; k++)
             {
                 int k1 = k + 1;
@@ -239,17 +261,28 @@ namespace ModelEditor
         private float GetN(int n, int i, float t, List<float> nodes)
         {
             if (n == 0)
-                return Get(nodes, i - 1) <= t && t < Get(nodes, i) ? 1 : 0;
+                return Get(nodes, i - 1) <= t && t <= Get(nodes, i) ? 1 : 0;
+            //return Get(nodes, i) <= t && t <= Get(nodes, i + 1) ? 1 : 0;
             else
             {
-                var l = GetN(n - 1, i, t, nodes) * (t - Get(nodes, i - 1));
+                //var N = GetN(j - 1, i, t, nodes);
+                //var l = (t - Get(nodes, i));
+                //var m = Get(nodes, i + j) - Get(nodes, i);
+
+                //var NN = GetN(j - 1, i + 1, t, nodes);
+                //var ll = (Get(nodes, i + j + 1) - t);
+                //var mm = (Get(nodes, i + j + 1) - Get(nodes, i + 1));
+
+                var N = GetN(n - 1, i, t, nodes);
+                var l = (t - Get(nodes, i - 1));
                 var m = Get(nodes, i + n - 1) - Get(nodes, i - 1);
 
-                var ll = GetN(n - 1, i + 1, t, nodes) * (Get(nodes, i + n) - t);
+                var NN = GetN(n - 1, i + 1, t, nodes);
+                var ll = (Get(nodes, i + n) - t);
                 var mm = (Get(nodes, i + n) - Get(nodes, i));
 
-                var a = m == 0 ? 0 : l / m;
-                var b = mm == 0 ? 0 : ll / mm;
+                var a = m == 0 ? 0 : N * l / m;
+                var b = mm == 0 ? 0 : NN * ll / mm;
                 return a + b;
                 //return GetN(n - 1, i, t, nodes) * (t - Get(nodes, i - 1)) / (Get(nodes, i + n - 1) - Get(nodes, i - 1))
                 //    + GetN(n - 1, i + 1, t, nodes) * (Get(nodes, i + n) - t) / (Get(nodes, i + n) - Get(nodes, i));
