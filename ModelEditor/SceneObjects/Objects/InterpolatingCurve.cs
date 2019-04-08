@@ -31,11 +31,11 @@ namespace ModelEditor
                 var knots = GetKnots(order, dataPoints.Count - 1);
                 var parameters = GetParametersRegularized(dataPoints);
                 var verts = Interpolate(dataPoints, order, parameters, knots);
-                //var data = GetSplineCurve(verts, knots, order);
+                var data = GetSplineCurve(verts, knots, order);
 
-                //data.Add(GerSplinePolygon(verts, order));
+                data.Add(GerSplinePolygon(verts, order));
 
-                //return data;
+                return data;
                 return new ObjRenderData();
             }
             else
@@ -139,7 +139,8 @@ namespace ModelEditor
         private List<Vector3> Interpolate(List<Vector3> verts, int order, List<float> parameters, List<float> knots)
         {
             var n = verts.Count - 1;
-            var MatN = ComputerMatN(n, order, parameters, knots);
+            //var MatN = ComputerMatN(n, order, parameters, knots);
+            var MatN = ComputerMatNSquare(n, order, parameters, knots);
 
             var dX = verts.Select(v => v.X).ToList();
             var dY = verts.Select(v => v.Y).ToList();
@@ -199,12 +200,12 @@ namespace ModelEditor
             }
 
             MatN[0][k] = MatN[n][k] = 1;
-            var mat2 = ComputerMatN1(n, order, parameters, knots);
+            var mat2 = ComputerMatNSquare(n, order, parameters, knots);
 
             return MatN;
         }
 
-        private float[][] ComputerMatN1(int n, int order, List<float> parameters, List<float> knots)
+        private float[][] ComputerMatNSquare(int n, int order, List<float> parameters, List<float> knots)
         {
             var MatN = new float[n + 1][];
 
@@ -253,6 +254,33 @@ namespace ModelEditor
             }
         }
         private void ComputeCoefficents(float[][] X, List<float> Y)
+        {
+            int n = Y.Count;
+            float[][] mat = X.Select(a => a.ToArray()).ToArray();
+
+            for (int i = 0; i < n; i++)
+            {
+                var a = mat[i][i];
+                for (int j = 0; j < n; j++)
+                {
+                    mat[i][j] /= a;
+                }
+                Y[i] /= a;
+
+                for (int k = 0; k < n; k++)
+                {
+                    if (k == i) continue;
+
+                    a = mat[k][i];
+                    for (int j = 0; j < n; j++)
+                    {
+                        mat[k][j] -= a * mat[i][j];
+                    }
+                    Y[k] -= a * Y[i];
+                }
+            }
+        }
+        private void ComputeCoefficentsSquare(float[][] X, List<float> Y)
         {
             int n = Y.Count;
             float[][] mat = X.Select(a => a.ToArray()).ToArray();
