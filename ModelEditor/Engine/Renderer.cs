@@ -116,7 +116,7 @@ namespace ModelEditor
             {
                 RenderRec(child, model, frameData);
             }
-            
+
             foreach (var child in obj.HiddenChildren)
             {
                 RenderRec(child, model, frameData);
@@ -203,12 +203,18 @@ namespace ModelEditor
             var width = _wb.PixelWidth;
             var height = _wb.PixelHeight;
 
-            var x1 = Convert.ToInt32((A.X + 1) / 2 * width);
-            var y1 = Convert.ToInt32((1 - (A.Y + 1) / 2) * height);
-            var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
-            var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
+            try
+            {
+                var x1 = Convert.ToInt32((A.X + 1) / 2 * width);
+                var y1 = Convert.ToInt32((1 - (A.Y + 1) / 2) * height);
+                var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
+                var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
 
-            ctx.MyDrawLine(x1, y1, x2, y2, col, addColors);
+                ctx.MyDrawLine(x1, y1, x2, y2, col, addColors);
+            }
+            catch (Exception e)
+            {
+            }
         }
         private void DrawVertex(BitmapContext ctx, Vector4 vert, Color col, bool addColors)
         {
@@ -217,11 +223,17 @@ namespace ModelEditor
             var width = _wb.PixelWidth;
             var height = _wb.PixelHeight;
 
-            var x = Convert.ToInt32((v.X + 1) / 2 * width);
-            var y = Convert.ToInt32((1 - (v.Y + 1) / 2) * height);
+            try
+            {
+                var x = Convert.ToInt32((v.X + 1) / 2 * width);
+                var y = Convert.ToInt32((1 - (v.Y + 1) / 2) * height);
 
-            if (x > 0 && x < width && y > 0 && y < height)
-                ctx.MySetPixel(x, y, col, addColors);
+                if (x > 0 && x < width && y > 0 && y < height)
+                    ctx.MySetPixel(x, y, col, addColors);
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         public Matrix4x4 GetViewMatrix()

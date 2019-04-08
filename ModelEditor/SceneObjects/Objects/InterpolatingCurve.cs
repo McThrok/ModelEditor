@@ -27,9 +27,9 @@ namespace ModelEditor
             if (Children.Count > order)
             {
                 var dataPoints = GetVerts();
-
+                
                 var knots = GetKnots(order, dataPoints.Count - 1);
-                var parameters = GetParameters(dataPoints);
+                var parameters = GetParametersRegularized(dataPoints);
                 var verts = Interpolate(dataPoints, order, parameters, knots);
                 var data = GetSplineCurve(verts, knots, order);
 
