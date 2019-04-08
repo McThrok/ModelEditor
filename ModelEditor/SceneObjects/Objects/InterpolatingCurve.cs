@@ -200,56 +200,6 @@ namespace ModelEditor
                 return a + b;
             }
         }
-        //private float ComputeN1(float t, int i, int n, List<float> knots)
-        //{
-        //    var m = knots.Count - 1;
-        //    var N = new List<float>();
-
-        //    if (i == 0 && t == knots[0])
-        //        return 1;
-
-        //    if (i == m - n - 1 && t == knots[m])
-        //        return 1;
-
-        //    if (t < knots[i] || t >= knots[i + n + 1])
-        //        return 0;
-
-        //    for (var j = 0; j <= n; j++)
-        //    {
-        //        N.Add(t >= knots[i + j] && t < knots[i + j + 1] ? 1f : 0f);
-        //    }
-
-        //    float saved = 0;
-
-        //    for (var k = 1; k <= n; k++)
-        //    {
-        //        if (N[0] == 0)
-        //            saved = 0;
-        //        else
-        //            saved = ((t - knots[i]) * N[0]) / (knots[i + k] - knots[i]);
-
-        //        for (var j = 0; j < n - k + 1; j++)
-        //        {
-        //            var left = knots[i + j + 1];
-        //            var right = knots[i + j + k + 1];
-
-        //            if (N[j + 1] == 0)
-        //            {
-        //                N[j] = (float)saved;
-        //                saved = 0;
-        //            }
-        //            else
-        //            {
-        //                var temp = N[j + 1] / (right - left);
-        //                N[j] = (float)(saved + (right - t) * temp);
-        //                saved = (t - left) * temp;
-        //            }
-        //        }
-
-        //    }
-
-        //    return N[0];
-        //}
         private void ComputeCoefficents(float[][] X, List<float> Y)
         {
             int n = Y.Count;
@@ -290,56 +240,5 @@ namespace ModelEditor
                 }
             }
         }
-
-        //private Vector3 DeBoor(float t, List<Vector3> controlPoints, List<float> knots, int order)
-        //{
-        //    var rangeIdx = GetRangeIdx(t, knots);
-
-        //    var d = new List<Vector3>();
-
-        //    for (var i = 0; i < order + 1; i++)
-        //    {
-        //        var downIndex = rangeIdx - order + i;
-
-        //        if (downIndex > -1 && downIndex < controlPoints.Count)
-        //            d.Add(controlPoints[downIndex]);
-        //        else
-        //            d.Add(Vector3.Zero);
-        //    }
-
-        //    for (var r = 1; r < order + 1; r++)
-        //    {
-        //        for (var i = rangeIdx - order + r; i < rangeIdx + 1; i++)
-        //        {
-        //            var alpha = (t - knots[i]) / (knots[i + order - r + 1] - knots[i]);
-
-        //            int p = i - (rangeIdx - order + r);
-
-        //            d[p] = d[p] * (1 - alpha) + d[p + 1] * alpha;
-        //        }
-        //    }
-
-        //    return d[0];
-        //}
-        //private int GetRangeIdx(float t, List<float> knots)
-        //{
-        //    var result = 0;
-        //    for (int i = 0; i < knots.Count; i++)
-        //    {
-        //        if (knots[i] > t)
-        //        {
-        //            result = i - 1;
-        //            break;
-        //        }
-
-        //        if (t == 1 && knots[i + 1] == 1)
-        //        {
-        //            result = i;
-        //            break;
-        //        }
-        //    }
-
-        //    return result;
-        //}
     }
 }
