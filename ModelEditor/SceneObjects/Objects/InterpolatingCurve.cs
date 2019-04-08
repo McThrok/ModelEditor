@@ -27,15 +27,16 @@ namespace ModelEditor
             if (Children.Count > order)
             {
                 var dataPoints = GetVerts();
-                
+
                 var knots = GetKnots(order, dataPoints.Count - 1);
                 var parameters = GetParametersRegularized(dataPoints);
                 var verts = Interpolate(dataPoints, order, parameters, knots);
-                var data = GetSplineCurve(verts, knots, order);
+                //var data = GetSplineCurve(verts, knots, order);
 
-                data.Add(GerSplinePolygon(verts, order));
+                //data.Add(GerSplinePolygon(verts, order));
 
-                return data;
+                //return data;
+                return new ObjRenderData();
             }
             else
                 return new ObjRenderData();
@@ -152,7 +153,58 @@ namespace ModelEditor
 
             return controlPoints;
         }
-        private float[][] ComputerMatN(int n, int p, List<float> parameters, List<float> knots)
+
+        private void print(float[][] mat)
+        {
+            for (int i = 0; i < mat.Length; i++)
+            {
+                for (int j = 0; j < mat[i].Length; j++)
+                {
+                    Console.Write(mat[i][j].ToString() + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        private void printB(float[][] mat)
+        {
+            for (int i = 0; i < mat.Length; i++)
+            {
+                for (int j = 0; j < mat[i].Length; j++)
+                {
+                    var val = mat[i][j];
+                    val = val == 0 ? 0 : 1;
+                    Console.Write(val.ToString() + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        private float[][] ComputerMatN(int n, int order, List<float> parameters, List<float> knots)
+        {
+            var k = 2;
+            var MatN = new float[n + 1][];
+
+            for (var i = 0; i < n + 1; i++)
+            {
+                MatN[i] = new float[2 * k + 1];
+
+                var low = Math.Max(0, k - i);
+                var high = Math.Min(n + k - i + 1, 2 * k + 2);
+
+                for (int j = low; j < high; j++)
+                {
+                    MatN[i][j] = ComputeN(parameters[i], j + i - k, order, knots);
+                }
+            }
+
+            MatN[0][k] = MatN[n][k] = 1;
+            var mat2 = ComputerMatN1(n, order, parameters, knots);
+
+            return MatN;
+        }
+
+        private float[][] ComputerMatN1(int n, int order, List<float> parameters, List<float> knots)
         {
             var MatN = new float[n + 1][];
 
@@ -162,7 +214,7 @@ namespace ModelEditor
 
                 for (var j = 0; j < n + 1; j++)
                 {
-                    MatN[i][j] = ComputeN(parameters[i], j, p, knots);
+                    MatN[i][j] = ComputeN(parameters[i], j, order, knots);
                 }
             }
 
