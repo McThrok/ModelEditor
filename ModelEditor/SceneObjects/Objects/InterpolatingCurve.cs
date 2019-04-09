@@ -139,12 +139,13 @@ namespace ModelEditor
         private List<Vector3> Interpolate(List<Vector3> verts, int order, List<float> parameters, List<float> knots)
         {
             var n = verts.Count - 1;
-            //var MatN = ComputerMatN(n, order, parameters, knots);
-            var MatN = ComputerMatNSquare(n, order, parameters, knots);
+            float[][] MatN;
+            MatN = ComputerMatN(n, order, parameters, knots);
 
             var dX = verts.Select(v => v.X).ToList();
             var dY = verts.Select(v => v.Y).ToList();
             var dZ = verts.Select(v => v.Z).ToList();
+
 
             ComputeCoefficents(MatN, dX);
             ComputeCoefficents(MatN, dY);
@@ -153,32 +154,6 @@ namespace ModelEditor
             var controlPoints = Enumerable.Range(0, n + 1).Select(i => new Vector3(dX[i], dY[i], dZ[i])).ToList();
 
             return controlPoints;
-        }
-
-        private void print(float[][] mat)
-        {
-            for (int i = 0; i < mat.Length; i++)
-            {
-                for (int j = 0; j < mat[i].Length; j++)
-                {
-                    Console.Write(mat[i][j].ToString() + " ");
-                }
-                Console.WriteLine();
-            }
-        }
-
-        private void printB(float[][] mat)
-        {
-            for (int i = 0; i < mat.Length; i++)
-            {
-                for (int j = 0; j < mat[i].Length; j++)
-                {
-                    var val = mat[i][j];
-                    val = val == 0 ? 0 : 1;
-                    Console.Write(val.ToString() + " ");
-                }
-                Console.WriteLine();
-            }
         }
 
         private float[][] ComputerMatN(int n, int order, List<float> parameters, List<float> knots)
@@ -191,7 +166,7 @@ namespace ModelEditor
                 MatN[i] = new float[2 * k + 1];
 
                 var low = Math.Max(0, k - i);
-                var high = Math.Min(n + k - i + 1, 2 * k + 2);
+                var high = Math.Min(n + k - i + 1, 2 * k + 1);
 
                 for (int j = low; j < high; j++)
                 {
@@ -256,27 +231,33 @@ namespace ModelEditor
         private void ComputeCoefficents(float[][] X, List<float> Y)
         {
             int n = Y.Count;
+            int k = (X[0].Length - 1) / 2;
             float[][] mat = X.Select(a => a.ToArray()).ToArray();
 
             for (int i = 0; i < n; i++)
             {
-                var a = mat[i][i];
-                for (int j = 0; j < n; j++)
+                var a = mat[i][k];
+                for (int j = 0; j < 2 * k + 1; j++)
                 {
                     mat[i][j] /= a;
                 }
                 Y[i] /= a;
 
-                for (int k = 0; k < n; k++)
+                var low = Math.Max(-k, -i);
+                var high = Math.Min(k + 1, n - i);
+                for (int s = low; s < high; s++)
                 {
-                    if (k == i) continue;
+                    if (s == 0) continue;
 
-                    a = mat[k][i];
-                    for (int j = 0; j < n; j++)
+                    var b = mat[i + s][k - s];
+
+                    var lowJ = Math.Max(0, -s);
+                    var highJ = Math.Min(2 * k + 1, 2 * k + 1 - s);
+                    for (int j = lowJ; j < highJ; j++)
                     {
-                        mat[k][j] -= a * mat[i][j];
+                        mat[i + s][j] -= b * mat[i][j + s];
                     }
-                    Y[k] -= a * Y[i];
+                    Y[i + s] -= b * Y[i];
                 }
             }
         }
