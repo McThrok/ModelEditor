@@ -243,6 +243,7 @@ namespace ModelEditor
                 TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
                 BezierMenu.Visibility = item is BezierCurveBase ? Visibility.Visible : Visibility.Collapsed;
                 BezierC2Menu.Visibility = item is BezierCurveC2 ? Visibility.Visible : Visibility.Collapsed;
+                InterpolatingMenu.Visibility = item is InterpolatingCurve ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {

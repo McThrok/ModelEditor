@@ -17,26 +17,43 @@ namespace ModelEditor
             Name = nameof(InterpolatingCurve) + " " + _count++.ToString();
         }
 
+        private bool _chords = false;
+        public bool Chords
+        {
+            get => _chords;
+            set
+            {
+                if (_chords != value)
+                {
+                    _chords = value;
+
+                    InvokePropertyChanged(nameof(Chords));
+                }
+            }
+
+        }
         protected List<Vector3> GetVerts()
         {
-            return Children.Select(x => x.Matrix.Translation).ToList();
+            var verts = Children.Select(x => x.Matrix.Translation).ToList();
+
+            return verts;
         }
         public ObjRenderData GetRenderData()
         {
             var order = 3;
+
             if (Children.Count > order)
             {
                 var dataPoints = GetVerts();
 
                 var knots = GetKnots(order, dataPoints.Count - 1);
-                var parameters = GetParametersRegularized(dataPoints);
+                var parameters = Chords ? GetParametersRegularized(dataPoints) : GetParameters(dataPoints);
                 var verts = Interpolate(dataPoints, order, parameters, knots);
                 var data = GetSplineCurve(verts, knots, order);
 
                 data.Add(GerSplinePolygon(verts, order));
 
                 return data;
-                return new ObjRenderData();
             }
             else
                 return new ObjRenderData();
@@ -142,23 +159,23 @@ namespace ModelEditor
             float[][] MatN;
             MatN = ComputerMatN(n, order, parameters, knots);
 
-            var dX = verts.Select(v => v.X).ToList();
-            var dY = verts.Select(v => v.Y).ToList();
-            var dZ = verts.Select(v => v.Z).ToList();
+            var dX = verts.Select(v => (double)v.X).ToList();
+            var dY = verts.Select(v => (double)v.Y).ToList();
+            var dZ = verts.Select(v => (double)v.Z).ToList();
 
 
             ComputeCoefficents(MatN, dX);
             ComputeCoefficents(MatN, dY);
             ComputeCoefficents(MatN, dZ);
 
-            var controlPoints = Enumerable.Range(0, n + 1).Select(i => new Vector3(dX[i], dY[i], dZ[i])).ToList();
+            var controlPoints = Enumerable.Range(0, n + 1).Select(i => new Vector3((float)dX[i], (float)dY[i], (float)dZ[i])).ToList();
 
             return controlPoints;
         }
 
         private float[][] ComputerMatN(int n, int order, List<float> parameters, List<float> knots)
         {
-            var k = 2;
+            var k = 3;
             var MatN = new float[n + 1][];
 
             for (var i = 0; i < n + 1; i++)
@@ -175,11 +192,9 @@ namespace ModelEditor
             }
 
             MatN[0][k] = MatN[n][k] = 1;
-            var mat2 = ComputerMatNSquare(n, order, parameters, knots);
 
             return MatN;
         }
-
         private float[][] ComputerMatNSquare(int n, int order, List<float> parameters, List<float> knots)
         {
             var MatN = new float[n + 1][];
@@ -228,11 +243,11 @@ namespace ModelEditor
                 return a + b;
             }
         }
-        private void ComputeCoefficents(float[][] X, List<float> Y)
+        private void ComputeCoefficents(float[][] X, List<double> Y)
         {
             int n = Y.Count;
             int k = (X[0].Length - 1) / 2;
-            float[][] mat = X.Select(a => a.ToArray()).ToArray();
+            double[][] mat = X.Select(a => a.Select(b => (double)b).ToArray()).ToArray();
 
             for (int i = 0; i < n; i++)
             {

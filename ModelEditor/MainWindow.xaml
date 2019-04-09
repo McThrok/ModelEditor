@@ -108,6 +108,16 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding SelectedObject.Spline, ElementName=mainWindow, Mode=TwoWay }" />
                     </Grid>
 
+                    <Grid Margin="5" Name="InterpolatingMenu">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Chords parametrization:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <CheckBox Grid.Column="1" IsChecked="{Binding SelectedObject.Chords, ElementName=mainWindow, Mode=TwoWay }" />
+                    </Grid>
+
                     <Grid Margin="5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60" />

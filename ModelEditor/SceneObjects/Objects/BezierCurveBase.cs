@@ -20,7 +20,8 @@ namespace ModelEditor
 
         protected List<Vector3> GetSegment(List<Vector3> verts, int idx, int length)
         {
-            //return GetSegmentPrimitive(verts, idx, length);
+
+            return GetSegmentPrimitive(verts, idx, length);
             if (length == 0) return new List<Vector3>() { };
             if (length == 1) return new List<Vector3>() { verts[idx] };
 
