@@ -136,6 +136,10 @@ namespace ModelEditor
         #endregion
 
         #region topMenu
+        private void Surface_Click(object sender, RoutedEventArgs e)
+        {
+            SelectItem(Engine.Scene.AddBezierSurface(GetVisibleSelectedObj()));
+        }
         private void Bezier0_Click(object sender, RoutedEventArgs e)
         {
             SelectItem(Engine.Scene.AddBezierCurveC0(GetVisibleSelectedObj()));

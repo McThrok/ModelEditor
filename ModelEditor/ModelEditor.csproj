@@ -76,6 +76,7 @@
     <Compile Include="Engine\Engine.cs" />
     <Compile Include="Engine\RayCaster.cs" />
     <Compile Include="SceneObjects\Objects\BezierCurveBase.cs" />
+    <Compile Include="SceneObjects\Objects\BezierSurface.cs" />
     <Compile Include="SceneObjects\Objects\InterpolatingCurve.cs" />
     <Compile Include="SceneObjects\Objects\BezierCurveC2.cs" />
     <Compile Include="SceneObjects\Objects\Camera.cs" />
