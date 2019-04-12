@@ -37,7 +37,7 @@ namespace ModelEditor
             var data = new ObjRenderData();
             if (ShowControlGrid)
                 data.Add(GetControlGrid(verts));
-            //data.Add(GetGrid(verts));
+            data.Add(GetGrid(verts));
 
             return data;
         }
@@ -62,7 +62,6 @@ namespace ModelEditor
                     data.Edges.Add(new Edge(idx, idx + 1));
                 }
             }
-
 
             for (int w = 0; w < width; w++)
             {
@@ -92,17 +91,17 @@ namespace ModelEditor
                 }
             }
 
-            for (int w = 0; w < DrawWidthCount; w++)
-            {
-                var idxW = WidthPatchCount * w / (DrawWidthCount - 1);
-                var tv = 1f * WidthPatchCount * w / (DrawWidthCount - 1) - idxW;
+            //for (int w = 0; w < DrawWidthCount; w++)
+            //{
+            //    var idxW = WidthPatchCount * w / (DrawWidthCount - 1);
+            //    var tv = 1f * WidthPatchCount * w / (DrawWidthCount - 1) - idxW;
 
-                for (int h = 0; h < WidthPatchCount; h++)
-                {
-                    var idxH = h * 3;
-                    data.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
-                }
-            }
+            //    for (int h = 0; h < WidthPatchCount; h++)
+            //    {
+            //        var idxH = h * 3;
+            //        data.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
+            //    }
+            //}
 
             return data;
         }
@@ -288,8 +287,8 @@ namespace ModelEditor
         {
             var startW = -Width / 2;
             var startH = -Height / 2;
-            var stepW = Width / WidthVertexCount;
-            var stepH = Height / HeightVertexCount;
+            var stepW = Width / (WidthVertexCount-1);
+            var stepH = Height / (HeightVertexCount - 1);
 
             for (int h = 0; h < _controlVertices.Count; h++)
             {
