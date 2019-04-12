@@ -25,65 +25,151 @@ namespace ModelEditor
 
         public ObjRenderData GetRenderData()
         {
-            throw new NotImplementedException();
+            var verts = GetVerts();
+
+            var data = new ObjRenderData();
+            if (ShowControlGrid)
+                data.Add(GetControlGrid(verts));
+            data.Add(GetGrid(verts));
+
+            return data;
         }
-
-        private List<Vector3> GetSegment(List<Vector3> verts, int idx, int length)
+        private List<List<Vector3>> GetVerts()
         {
-
-            return GetSegmentPrimitive(verts, idx, length);
+            return _controlVertices.Select(row => row.Select(v => v.Matrix.Translation).ToList()).ToList();
         }
-        private List<Vector3> GetSegmentPrimitive(List<Vector3> verts, int idx, int length)
+        private ObjRenderData GetControlGrid(List<List<Vector3>> verts)
         {
-            if (length == 0) return new List<Vector3>() { };
-            if (length == 1) return new List<Vector3>() { verts[idx] };
+            var data = new ObjRenderData();
 
-            int n = DrawPoints;
-            var result = new List<Vector3>();
-            for (int i = 0; i < n; i++)
+            var width = WidthVertexCount;
+            var height = HeightVertexCount;
+
+            data.Vertices.AddRange(verts.SelectMany(x => x));
+
+            for (int h = 0; h < height; h++)
             {
-
-                var pointA = GetSegmentValue(verts, idx, length, 1f * i / n);
-                var screenPosA = _rayCaster.GetExScreenPositionOf(pointA);
-                result.Add(pointA);
-
+                for (int w = 0; w < width - 1; w++)
+                {
+                    var idx = h * width + w;
+                    data.Edges.Add(new Edge(idx, idx + 1));
+                }
             }
 
-            return result;
+
+            for (int w = 0; w < width; w++)
+            {
+                for (int h = 0; h < height - 1; h++)
+                {
+                    var idx = w * width + h;
+                    data.Edges.Add(new Edge(idx, idx + w));
+                }
+            }
+
+            return data;
+
         }
-        private Vector3 GetSegmentValue(List<Vector3> verts, int idx, int length, float t)
+        private ObjRenderData GetGrid(List<List<Vector3>> verts)
         {
-            if (length == 2)
-                return GetLinear(verts, idx, t);
+            var data = new ObjRenderData();
 
-            if (length == 3)
-                return GetQuadratic(verts, idx, t);
+            for (int h = 0; h < DrawHeightCount; h++)
+            {
+                var idxH = HeightPatchCount * h / (DrawHeightCount - 1);
+                var tu = 1f * HeightPatchCount * h / (DrawHeightCount - 1) - idxH;
 
-            return GetCubic(verts, idx, t);
+                for (int w = 0; w < HeightPatchCount; w++)
+                {
+                    var idxW = w * 3;
+                    data.Vertices.AddRange(GetWidthSegmentPrimitive(verts, idxH, idxW, tu));
+                }
+            }
+
+            for (int w = 0; w < DrawWidthCount; w++)
+            {
+                var idxW = WidthPatchCount * w / (DrawWidthCount - 1);
+                var tv = 1f * WidthPatchCount * w / (DrawWidthCount - 1) - idxW;
+
+                for (int h = 0; h < WidthPatchCount; h++)
+                {
+                    var idxH = h * 3;
+                    data.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
+                }
+            }
+
+            return data;
         }
-        private Vector3 GetCubic(List<Vector3> verts, int idx, float t)
+
+        private List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
         {
-            float c = 1.0f - t;
+            var curve = new List<Vector3>();
+            int n = DrawPoints;
+            for (int i = 0; i < n; i++)
+            {
+                curve.Add(GetValue(verts, idxH, idxW, 1f * i / n, tv));
+            }
 
-            float b0 = c * c * c;
-            float b1 = 3 * t * c * c;
-            float b2 = 3 * t * t * c;
-            float b3 = t * t * t;
+            return curve;
+        }
+        private List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
+        {
+            var curve = new List<Vector3>();
+            int n = DrawPoints;
+            for (int i = 0; i < n; i++)
+            {
+                curve.Add(GetValue(verts, idxH, idxW, tu, 1f * i / n));
+            }
 
-            var point = verts[idx] * b0 + verts[idx + 1] * b1 + verts[idx + 2] * b2 + verts[idx + 3] * b3;
+            return curve;
+        }
+
+        private float[] _u = new float[4];
+        private float[] _v = new float[4];
+        private Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        {
+            float cu = 1.0f - tu;
+            _u[0] = cu * cu * cu;
+            _u[1] = 3 * tu * cu * cu;
+            _u[2] = 3 * tu * tu * cu;
+            _u[3] = tu * tu * tu;
+
+            float cv = 1.0f - tv;
+            _v[0] = cv * cv * cv;
+            _v[1] = 3 * tv * cv * cv;
+            _v[2] = 3 * tv * tv * cv;
+            _v[3] = tv * tv * tu;
+
+            var point = Vector3.Zero;
+            for (int x = 0; x < 4; x++)
+            {
+                for (int y = 0; y < 4; y++)
+                {
+                    point += verts[idxH + x][idxW + y] * _u[x] * _v[y];
+                }
+            }
+
+
             return point;
-        }
-        private int Dist(Vector2Int a, Vector2Int b)
-        {
-
-            var diff = a - b;
-            return Math.Max(Math.Abs(diff.X), Math.Abs(diff.Y));
-
         }
 
         public int DrawPoints { get; set; } = 1000;
-        public int DrawHorizontalCount { get; set; } = 5;
-        public int DrawVerticalCount { get; set; } = 5;
+        public int DrawWidthCount { get; set; } = 5;
+        public int DrawHeightCount { get; set; } = 5;
+
+        private bool _showControlGrid;
+        public bool ShowControlGrid
+        {
+            get => _showControlGrid;
+            set
+            {
+                if (_showControlGrid != value)
+                {
+                    _showControlGrid = value;
+                    InvokePropertyChanged(nameof(ShowControlGrid));
+                }
+            }
+
+        }
 
         private float _height;
         public float Height
@@ -94,7 +180,7 @@ namespace ModelEditor
                 if (_height != value)
                 {
                     _height = value;
-                    UpdateSurfaceSize();
+                    InitVertices();
                     InvokePropertyChanged(nameof(Height));
                 }
             }
@@ -110,86 +196,85 @@ namespace ModelEditor
                 if (_width != value)
                 {
                     _width = value;
-                    UpdateSurfaceSize();
+                    InitVertices();
                     InvokePropertyChanged(nameof(Width));
                 }
             }
 
         }
 
-        private int _horizontalPatchCount;
-        public int HorizontalPatchCount
+        private int _widthPatchCount;
+        public int WidthPatchCount
         {
-            get => _horizontalPatchCount;
+            get => _widthPatchCount;
             set
             {
                 var newValue = value;
                 newValue = Math.Max(1, newValue);
-                if (_horizontalPatchCount != newValue)
+                if (_widthPatchCount != newValue)
                 {
-                    _horizontalPatchCount = newValue;
+                    _widthPatchCount = newValue;
                     InitPositions();
-                    InvokePropertyChanged(nameof(HorizontalPatchCount));
+                    InvokePropertyChanged(nameof(WidthPatchCount));
                 }
             }
 
         }
 
-        private int _verticalPatchCount;
-        public int VerticalPatchCount
+        private int _heightPatchCount;
+        public int HeightPatchCount
         {
-            get => _horizontalPatchCount;
+            get => _heightPatchCount;
             set
             {
                 var newValue = value;
                 newValue = Math.Max(1, newValue);
 
-                if (_verticalPatchCount != newValue)
+                if (_heightPatchCount != newValue)
                 {
-                    _horizontalPatchCount = newValue;
+                    _heightPatchCount = newValue;
                     InitPositions();
-                    InvokePropertyChanged(nameof(VerticalPatchCount));
+                    InvokePropertyChanged(nameof(HeightPatchCount));
                 }
             }
 
         }
 
 
-        public int HorizontalVertexCount
+        public int WidthVertexCount
         {
-            get => 3 * HorizontalPatchCount + 1;
+            get => 3 * WidthPatchCount + 1;
         }
-        public int VerticalVertexCount
+        public int HeightVertexCount
         {
-            get => 3 * VerticalPatchCount + 1;
+            get => 3 * HeightPatchCount + 1;
         }
 
         private void InitPositions()
         {
-            var startX = -Width / 2;
-            var startY = -Height / 2;
-            var stepX = Width / HorizontalVertexCount;
-            var stepY = Height / VerticalVertexCount;
+            var startW = -Width / 2;
+            var startH = -Height / 2;
+            var stepW = Width / WidthVertexCount;
+            var stepH = Height / HeightVertexCount;
 
-            for (int i = 0; i < _controlVertices.Count; i++)
+            for (int h = 0; h < _controlVertices.Count; h++)
             {
-                var row = _controlVertices[i];
-                for (int j = 0; j < row.Count; j++)
+                var row = _controlVertices[h];
+                for (int w = 0; w < row.Count; w++)
                 {
-                    var position = new Vector3(startX + i * stepX, startY + j * stepY, 0);
-                    row[j].Matrix = Matrix4x4.Identity;
-                    row[j].MoveLoc(position);
+                    var position = new Vector3(startH + h * stepH, startW + w * stepW, 0);
+                    row[w].Matrix = Matrix4x4.Identity;
+                    row[w].MoveLoc(position);
                 }
             }
         }
-
         private void InitVertices()
         {
             _controlVertices.Clear();
 
             _controlVertices.AddRange(
-                Enumerable.Range(0, HorizontalVertexCount).Select(
-                    x => Enumerable.Range(0, VerticalVertexCount).Select(
+                Enumerable.Range(0, HeightVertexCount).Select(
+                    x => Enumerable.Range(0, WidthVertexCount).Select(
                         y => CreateControlVertex()).ToList()).ToList());
 
             InitPositions();
