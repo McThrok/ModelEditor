@@ -23,8 +23,10 @@ namespace ModelEditor
 
             _height = 10;
             _width = 10;
-            _widthPatchCount = 2;
             _heightPatchCount = 2;
+            _widthPatchCount = 2;
+            DrawHeightCount = 5;
+            DrawWidthCount = 5;
             InitVertices();
         }
 
@@ -33,8 +35,8 @@ namespace ModelEditor
             var verts = GetVerts();
 
             var data = new ObjRenderData();
-            //if (ShowControlGrid)
-            data.Add(GetControlGrid(verts));
+            if (ShowControlGrid)
+                data.Add(GetControlGrid(verts));
             //data.Add(GetGrid(verts));
 
             return data;
@@ -158,8 +160,6 @@ namespace ModelEditor
         }
 
         public int DrawPoints { get; set; } = 1000;
-        public int DrawWidthCount { get; set; } = 5;
-        public int DrawHeightCount { get; set; } = 5;
 
         private bool _showControlGrid;
         public bool ShowControlGrid
@@ -176,6 +176,36 @@ namespace ModelEditor
 
         }
 
+        private int _drawHeightCount;
+        public int DrawHeightCount
+        {
+            get => _drawHeightCount;
+            set
+            {
+                if (_drawHeightCount != value)
+                {
+                    _drawHeightCount = value;
+                    InvokePropertyChanged(nameof(DrawHeightCount));
+                }
+            }
+
+        }
+
+        private int _drawWidthCount;
+        public int DrawWidthCount
+        {
+            get => _drawWidthCount;
+            set
+            {
+                if (_drawWidthCount != value)
+                {
+                    _drawWidthCount = value;
+                    InvokePropertyChanged(nameof(DrawWidthCount));
+                }
+            }
+
+        }
+
         private float _height;
         public float Height
         {
@@ -185,7 +215,7 @@ namespace ModelEditor
                 if (_height != value)
                 {
                     _height = value;
-                    InitVertices();
+                    InitPositions();
                     InvokePropertyChanged(nameof(Height));
                 }
             }
@@ -201,7 +231,7 @@ namespace ModelEditor
                 if (_width != value)
                 {
                     _width = value;
-                    InitVertices();
+                    InitPositions();
                     InvokePropertyChanged(nameof(Width));
                 }
             }
@@ -219,7 +249,7 @@ namespace ModelEditor
                 if (_widthPatchCount != newValue)
                 {
                     _widthPatchCount = newValue;
-                    InitPositions();
+                    InitVertices();
                     InvokePropertyChanged(nameof(WidthPatchCount));
                 }
             }
@@ -238,13 +268,12 @@ namespace ModelEditor
                 if (_heightPatchCount != newValue)
                 {
                     _heightPatchCount = newValue;
-                    InitPositions();
+                    InitVertices();
                     InvokePropertyChanged(nameof(HeightPatchCount));
                 }
             }
 
         }
-
 
         public int WidthVertexCount
         {
@@ -275,6 +304,7 @@ namespace ModelEditor
         }
         private void InitVertices()
         {
+            HiddenChildren.Clear();
             _controlVertices.Clear();
 
             _controlVertices.AddRange(
