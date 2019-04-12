@@ -20,17 +20,22 @@ namespace ModelEditor
             Holdable = false;
             _rayCaster = rayCaster;
             Name = nameof(BezierSurface) + " " + _count++.ToString();
-        }
 
+            _height = 10;
+            _width = 10;
+            _widthPatchCount = 2;
+            _heightPatchCount = 2;
+            InitVertices();
+        }
 
         public ObjRenderData GetRenderData()
         {
             var verts = GetVerts();
 
             var data = new ObjRenderData();
-            if (ShowControlGrid)
-                data.Add(GetControlGrid(verts));
-            data.Add(GetGrid(verts));
+            //if (ShowControlGrid)
+            data.Add(GetControlGrid(verts));
+            //data.Add(GetGrid(verts));
 
             return data;
         }
@@ -61,8 +66,8 @@ namespace ModelEditor
             {
                 for (int h = 0; h < height - 1; h++)
                 {
-                    var idx = w * width + h;
-                    data.Edges.Add(new Edge(idx, idx + w));
+                    var idx = h * width + w;
+                    data.Edges.Add(new Edge(idx, idx + width));
                 }
             }
 
@@ -262,7 +267,7 @@ namespace ModelEditor
                 var row = _controlVertices[h];
                 for (int w = 0; w < row.Count; w++)
                 {
-                    var position = new Vector3(startH + h * stepH, startW + w * stepW, 0);
+                    var position = new Vector3(startW + w * stepW, startH + h * stepH, 0);
                     row[w].Matrix = Matrix4x4.Identity;
                     row[w].MoveLoc(position);
                 }
