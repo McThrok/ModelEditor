@@ -23,8 +23,8 @@ namespace ModelEditor
 
             _height = 10;
             _width = 10;
-            _heightPatchCount = 2;
-            _widthPatchCount = 2;
+            _heightPatchCount = 1;
+            _widthPatchCount = 1;
             DrawHeightCount = 5;
             DrawWidthCount = 5;
             InitVertices();
@@ -81,27 +81,35 @@ namespace ModelEditor
 
             for (int h = 0; h < DrawHeightCount; h++)
             {
-                var idxH = HeightPatchCount * h / (DrawHeightCount - 1);
-                var tu = 1f * HeightPatchCount * h / (DrawHeightCount - 1) - idxH;
+                var pIdxH = HeightPatchCount * h / (DrawHeightCount - 1);
+                if (h == DrawHeightCount - 1)
+                    pIdxH -= 1;
+
+                var tu = 1f * HeightPatchCount * h / (DrawHeightCount - 1) - pIdxH;
+                var IdxH = pIdxH * 3;
 
                 for (int w = 0; w < HeightPatchCount; w++)
                 {
                     var idxW = w * 3;
-                    data.Vertices.AddRange(GetWidthSegmentPrimitive(verts, idxH, idxW, tu));
+                    data.Vertices.AddRange(GetWidthSegmentPrimitive(verts, IdxH, idxW, tu));
                 }
             }
 
-            //for (int w = 0; w < DrawWidthCount; w++)
-            //{
-            //    var idxW = WidthPatchCount * w / (DrawWidthCount - 1);
-            //    var tv = 1f * WidthPatchCount * w / (DrawWidthCount - 1) - idxW;
+            for (int w = 0; w < DrawWidthCount; w++)
+            {
+                var pIdxW = WidthPatchCount * w / (DrawWidthCount - 1);
+                if (w == DrawWidthCount - 1)
+                    pIdxW -= 1;
 
-            //    for (int h = 0; h < WidthPatchCount; h++)
-            //    {
-            //        var idxH = h * 3;
-            //        data.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
-            //    }
-            //}
+                var tv = 1f * WidthPatchCount * w / (DrawWidthCount - 1) - pIdxW;
+                var idxW = 3 * pIdxW;
+
+                for (int h = 0; h < WidthPatchCount; h++)
+                {
+                    var idxH = h * 3;
+                    data.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
+                }
+            }
 
             return data;
         }
@@ -110,7 +118,7 @@ namespace ModelEditor
         {
             var curve = new List<Vector3>();
             int n = DrawPoints;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n + 1; i++)
             {
                 curve.Add(GetValue(verts, idxH, idxW, 1f * i / n, tv));
             }
@@ -121,7 +129,7 @@ namespace ModelEditor
         {
             var curve = new List<Vector3>();
             int n = DrawPoints;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n + 1; i++)
             {
                 curve.Add(GetValue(verts, idxH, idxW, tu, 1f * i / n));
             }
@@ -143,14 +151,14 @@ namespace ModelEditor
             _v[0] = cv * cv * cv;
             _v[1] = 3 * tv * cv * cv;
             _v[2] = 3 * tv * tv * cv;
-            _v[3] = tv * tv * tu;
+            _v[3] = tv * tv * tv;
 
             var point = Vector3.Zero;
-            for (int x = 0; x < 4; x++)
+            for (int h = 0; h < 4; h++)
             {
-                for (int y = 0; y < 4; y++)
+                for (int w = 0; w < 4; w++)
                 {
-                    point += verts[idxH + x][idxW + y] * _u[x] * _v[y];
+                    point += verts[idxH + h][idxW + w] * _u[h] * _v[w];
                 }
             }
 
@@ -287,7 +295,7 @@ namespace ModelEditor
         {
             var startW = -Width / 2;
             var startH = -Height / 2;
-            var stepW = Width / (WidthVertexCount-1);
+            var stepW = Width / (WidthVertexCount - 1);
             var stepH = Height / (HeightVertexCount - 1);
 
             for (int h = 0; h < _controlVertices.Count; h++)
@@ -308,8 +316,8 @@ namespace ModelEditor
 
             _controlVertices.AddRange(
                 Enumerable.Range(0, HeightVertexCount).Select(
-                    x => Enumerable.Range(0, WidthVertexCount).Select(
-                        y => CreateControlVertex()).ToList()).ToList());
+                    h => Enumerable.Range(0, WidthVertexCount).Select(
+                        w => CreateControlVertex()).ToList()).ToList());
 
             InitPositions();
         }
