@@ -249,11 +249,15 @@ namespace ModelEditor
                 objectMenu.Visibility = Visibility.Visible;
 
                 TorusMenu.Visibility = item is Torus ? Visibility.Visible : Visibility.Collapsed;
+
                 BezierMenu.Visibility = item is BezierCurveBase ? Visibility.Visible : Visibility.Collapsed;
                 BezierC2Menu.Visibility = item is BezierCurveC2 ? Visibility.Visible : Visibility.Collapsed;
                 InterpolatingMenu.Visibility = item is InterpolatingCurve ? Visibility.Visible : Visibility.Collapsed;
+
+                BaseSurfaceMenu.Visibility = item is BezierSurfaceBase ? Visibility.Visible : Visibility.Collapsed;
                 SurfaceMenu.Visibility = item is BezierSurface ? Visibility.Visible : Visibility.Collapsed;
-                
+                CylinderMenu.Visibility = item is BezierCylinder ? Visibility.Visible : Visibility.Collapsed;
+
             }
             else
             {

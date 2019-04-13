@@ -9,50 +9,18 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BezierCylinder : SceneObject, IRenderableObj
+    public abstract class BezierSurfaceBase : SceneObject
     {
-        private static int _count = 0;
-        private List<List<Vertex>> _controlVertices = new List<List<Vertex>>();
-        private readonly RayCaster _rayCaster;
+        protected List<List<Vertex>> _controlVertices = new List<List<Vertex>>();
+        protected readonly RayCaster _rayCaster;
 
-        public BezierCylinder(RayCaster rayCaster)
+        public BezierSurfaceBase(RayCaster rayCaster)
         {
             Holdable = false;
             _rayCaster = rayCaster;
-            Name = nameof(BezierCylinder) + " " + _count++.ToString();
-
-            _height = 10;
-            _range = 10;
-            _heightPatchCount = 2;
-            _widthPatchCount = 5;
-            DrawHeightCount = 5;
-            DrawWidthCount = 5;
-            InitVertices();
         }
 
-        public ObjRenderData GetRenderData()
-        {
-            var verts = GetVerts();
-
-            var data = new ObjRenderData();
-            if (ShowControlGrid)
-                data.Add(GetControlGrid(verts));
-            data.Add(GetGrid(verts));
-
-            return data;
-        }
-        private List<List<Vector3>> GetVerts()
-        {
-            return _controlVertices.Select(row =>
-            {
-                var result = row.Select(v => v.Matrix.Translation).ToList();
-                if (result.Count > 0)
-                    result.Add(result[0]);
-                return result;
-            }).ToList();
-
-        }
-        private ObjRenderData GetControlGrid(List<List<Vector3>> verts)
+        protected ObjRenderData GetControlGrid(List<List<Vector3>> verts)
         {
             var data = new ObjRenderData();
 
@@ -82,8 +50,9 @@ namespace ModelEditor
             return data;
 
         }
-        private ObjRenderData GetGrid(List<List<Vector3>> verts)
+        protected ObjRenderData GetGrid(List<List<Vector3>> verts)
         {
+
             var data = new ObjRenderData();
 
             for (int h = 0; h < DrawHeightCount; h++)
@@ -121,7 +90,7 @@ namespace ModelEditor
             return data;
         }
 
-        private List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
+        protected List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
         {
             var curve = new List<Vector3>();
             int n = DrawPoints;
@@ -132,7 +101,7 @@ namespace ModelEditor
 
             return curve;
         }
-        private List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
+        protected List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
         {
             var curve = new List<Vector3>();
             int n = DrawPoints;
@@ -146,7 +115,7 @@ namespace ModelEditor
 
         private float[] _u = new float[4];
         private float[] _v = new float[4];
-        private Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        protected Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
         {
             float cu = 1.0f - tu;
             _u[0] = cu * cu * cu;
@@ -173,7 +142,7 @@ namespace ModelEditor
             return point;
         }
 
-        public int DrawPoints { get; set; } = 100;
+        public int DrawPoints { get; set; } = 1000;
 
         private bool _showControlGrid;
         public bool ShowControlGrid
@@ -220,38 +189,6 @@ namespace ModelEditor
 
         }
 
-        private float _height;
-        public float Height
-        {
-            get => _height;
-            set
-            {
-                if (_height != value)
-                {
-                    _height = value;
-                    InitPositions();
-                    InvokePropertyChanged(nameof(Height));
-                }
-            }
-
-        }
-
-        private float _range;
-        public float Range
-        {
-            get => _range;
-            set
-            {
-                if (_range != value)
-                {
-                    _range = value;
-                    InitPositions();
-                    InvokePropertyChanged(nameof(Range));
-                }
-            }
-
-        }
-
         private int _widthPatchCount;
         public int WidthPatchCount
         {
@@ -291,36 +228,15 @@ namespace ModelEditor
 
         public int WidthVertexCount
         {
-            get => 3 * WidthPatchCount + 1 - 1;
+            get => 3 * WidthPatchCount + 1;
         }
         public int HeightVertexCount
         {
             get => 3 * HeightPatchCount + 1;
         }
 
-        private void InitPositions()
-        {
-            //var startW = -Width / 2;
-            var startH = -Height / 2;
-            //var stepW = Width / (WidthVertexCount - 1);
-            var stepH = Height / (HeightVertexCount - 1);
-
-            for (int h = 0; h < _controlVertices.Count; h++)
-            {
-                var row = _controlVertices[h];
-                for (int w = 0; w < row.Count; w++)
-                {
-                    var rad = Math.PI * 2 * w / row.Count;
-                    var x = (float)(Range * Math.Cos(rad));
-                    var z = (float)(Range * Math.Sin(rad));
-
-                    var position = new Vector3(x, startH + h * stepH, z);
-                    row[w].Matrix = Matrix4x4.Identity;
-                    row[w].MoveLoc(position);
-                }
-            }
-        }
-        private void InitVertices()
+        protected abstract void InitPositions();
+        protected virtual void InitVertices()
         {
             HiddenChildren.Clear();
             _controlVertices.Clear();
@@ -333,11 +249,12 @@ namespace ModelEditor
             InitPositions();
         }
 
-        private Vertex CreateControlVertex()
+        protected Vertex CreateControlVertex()
         {
             var vert = new Vertex();
             vert.SetParent(this, true);
             return vert;
         }
+
     }
 }
