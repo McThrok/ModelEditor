@@ -121,7 +121,6 @@ namespace ModelEditor
 
         }
 
-
         private SceneObject _selectedObject;
         public SceneObject SelectedObject
         {

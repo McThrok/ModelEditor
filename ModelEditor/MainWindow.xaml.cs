@@ -100,6 +100,7 @@ namespace ModelEditor
 
 
         #region handleInput
+        private bool rectSelect = false;
         private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //bitmapImage.Focus();         // Set Logical Focus
@@ -110,6 +111,14 @@ namespace ModelEditor
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
+        }
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+        }
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonUp(e);
             var obj = Engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapContainer));
             SelectItem(obj);
         }

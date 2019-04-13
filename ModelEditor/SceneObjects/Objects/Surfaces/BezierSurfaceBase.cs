@@ -52,11 +52,11 @@ namespace ModelEditor
         }
         protected ObjRenderData GetGrid(List<List<Vector3>> verts)
         {
-
             var data = new ObjRenderData();
-
+            
             for (int h = 0; h < DrawHeightCount; h++)
             {
+
                 var pIdxH = HeightPatchCount * h / (DrawHeightCount - 1);
                 if (h == DrawHeightCount - 1)
                     pIdxH -= 1;
@@ -93,7 +93,7 @@ namespace ModelEditor
         protected List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
         {
             var curve = new List<Vector3>();
-            int n = DrawPoints;
+            int n = DrawPoints / DrawHeightCount / DrawWidthCount;
             for (int i = 0; i < n + 1; i++)
             {
                 curve.Add(GetValue(verts, idxH, idxW, 1f * i / n, tv));
@@ -104,7 +104,7 @@ namespace ModelEditor
         protected List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
         {
             var curve = new List<Vector3>();
-            int n = DrawPoints;
+            int n = DrawPoints/DrawHeightCount/DrawWidthCount;
             for (int i = 0; i < n + 1; i++)
             {
                 curve.Add(GetValue(verts, idxH, idxW, tu, 1f * i / n));
@@ -142,7 +142,7 @@ namespace ModelEditor
             return point;
         }
 
-        public int DrawPoints { get; set; } = 1000;
+        public int DrawPoints { get; set; } = 5000;
 
         private bool _showControlGrid;
         public bool ShowControlGrid
@@ -235,15 +235,19 @@ namespace ModelEditor
             get => 3 * HeightPatchCount + 1;
         }
 
+        protected bool WrapLast { get; set; }
+
         protected abstract void InitPositions();
-        protected virtual void InitVertices()
+        protected void InitVertices()
         {
             HiddenChildren.Clear();
             _controlVertices.Clear();
 
+            var widthCount = WrapLast ? WidthVertexCount - 1 : WidthVertexCount;
+
             _controlVertices.AddRange(
                 Enumerable.Range(0, HeightVertexCount).Select(
-                    h => Enumerable.Range(0, WidthVertexCount).Select(
+                    h => Enumerable.Range(0, widthCount).Select(
                         w => CreateControlVertex()).ToList()).ToList());
 
             InitPositions();

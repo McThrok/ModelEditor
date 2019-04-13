@@ -83,9 +83,7 @@ namespace ModelEditor
 
         protected override void InitPositions()
         {
-            //var startW = -Width / 2;
             var startH = -Height / 2;
-            //var stepW = Width / (WidthVertexCount - 1);
             var stepH = Height / (HeightVertexCount - 1);
 
             for (int h = 0; h < _controlVertices.Count; h++)
@@ -93,7 +91,7 @@ namespace ModelEditor
                 var row = _controlVertices[h];
                 for (int w = 0; w < row.Count; w++)
                 {
-                    var rad = Math.PI * 2 * w / row.Count;
+                    var rad = Math.PI * 2 * w / (row.Count-1);
                     var x = (float)(Range * Math.Cos(rad));
                     var z = (float)(Range * Math.Sin(rad));
 
@@ -103,17 +101,6 @@ namespace ModelEditor
                 }
             }
         }
-        protected override void InitVertices()
-        {
-            HiddenChildren.Clear();
-            _controlVertices.Clear();
 
-            _controlVertices.AddRange(
-                Enumerable.Range(0, HeightVertexCount).Select(
-                    h => Enumerable.Range(0, WidthVertexCount-1).Select(
-                        w => CreateControlVertex()).ToList()).ToList());
-
-            InitPositions();
-        }
     }
 }
