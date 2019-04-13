@@ -83,11 +83,16 @@ namespace ModelEditor
 
         private void SelectItem(SceneObject obj)
         {
+            if (obj.Id != Engine.Scene.Cursor.Id)
+                Engine.Scene.Cursor.ReleaseObjects();
+
+            Engine.Scene.Cursor.HoldObject(obj);
+
             var found = ExpandAndSelectItem(objectList, obj, true);
             if (!found)
             {
-                ExpandAndSelectItem(objectList, Engine.Scene.SelectedObject, false);
-                Engine.Scene.SelectedObject = obj;
+                ExpandAndSelectItem(objectList, SelectedObject, false);
+                SelectedObject = obj;
             }
         }
         private SceneObject GetVisibleSelectedObj()
@@ -100,12 +105,6 @@ namespace ModelEditor
         private int minSize = 10;
         private bool shiftPressed = false;
 
-        private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            //bitmapImage.Focus();         // Set Logical Focus
-            //Keyboard.Focus(bitmapImage); // Set Keyboard Focus
-            //FocusManager.SetIsFocusScope(bitmapImage, true);
-        }
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
@@ -137,8 +136,6 @@ namespace ModelEditor
                 SelectOne(position);
             else
                 SelectRect(position);
-
-
         }
 
         private void SelectRect(Point position)
@@ -163,6 +160,9 @@ namespace ModelEditor
         {
 
             var obj = Engine?.Input.OnMouseLeftButtonDown(position);
+            if (obj == null)
+                return;
+
             if (!shiftPressed)
             {
                 Engine.Scene.Cursor.ReleaseObjects();
@@ -177,8 +177,6 @@ namespace ModelEditor
                 SelectItem(Engine.Scene.Cursor);
             }
 
-            startPos = null;
-            Engine.Scene.Cursor.SelectionRect = null;
         }
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
@@ -314,6 +312,9 @@ namespace ModelEditor
             var item = SelectedObject;
             if (item != null)
             {
+                if (item.Id != Engine.Scene.Cursor.Id)
+                    Engine.Scene.Cursor.ReleaseObjects();
+
                 Engine.Scene.Cursor.SetTarget(item);
 
                 objectMenu.Visibility = Visibility.Visible;
