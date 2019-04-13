@@ -255,6 +255,5 @@ namespace ModelEditor
             vert.SetParent(this, true);
             return vert;
         }
-
     }
 }

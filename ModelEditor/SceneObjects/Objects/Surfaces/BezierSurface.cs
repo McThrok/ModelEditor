@@ -74,8 +74,6 @@ namespace ModelEditor
 
         }
 
-        private int _widthPatchCount;
-
         protected override void InitPositions()
         {
             var startW = -Width / 2;

@@ -120,8 +120,6 @@
                         <CheckBox Grid.Column="1" IsChecked="{Binding SelectedObject.Chords, ElementName=mainWindow, Mode=TwoWay }" />
                     </Grid>
 
-
-
                     <Grid Margin="5" Name="SurfaceMenu">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="80"/>
@@ -136,7 +134,6 @@
                         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedObject.Height, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Width:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedObject.Width, ElementName=mainWindow}" />
-
                     </Grid>
 
                     <Grid Margin="5" Name="CylinderMenu">
