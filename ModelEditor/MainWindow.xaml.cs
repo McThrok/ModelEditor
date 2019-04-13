@@ -89,9 +89,6 @@ namespace ModelEditor
                 ExpandAndSelectItem(objectList, Engine.Scene.SelectedObject, false);
                 Engine.Scene.SelectedObject = obj;
             }
-            //var tvi = ContainerFromItemRecursive(objectList.ItemContainerGenerator, obj);
-            //if (tvi != null)
-            //    tvi.IsSelected = true;
         }
         private SceneObject GetVisibleSelectedObj()
         {
@@ -100,7 +97,8 @@ namespace ModelEditor
 
 
         #region handleInput
-        private bool rectSelect = false;
+        private Vector2Int? startPos;
+        private int minSize = 10;
         private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //bitmapImage.Focus();         // Set Logical Focus
@@ -111,16 +109,43 @@ namespace ModelEditor
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
+            var start = e.GetPosition(BitmapContainer);
+            startPos = new Vector2Int(Convert.ToInt32(start.X), Convert.ToInt32(start.Y));
+            Engine.Scene.Cursor.SelectionRect = new Int32Rect(startPos.Value.X, startPos.Value.Y, 0, 0);
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+            if (startPos == null)
+                return;
+
+            var start = startPos.Value;
+            var position = e.GetPosition(BitmapContainer);
+            var size = new Vector2Int(Convert.ToInt32(position.X), Convert.ToInt32(position.Y)) - start;
+
+            if (Math.Abs(size.X) > minSize || Math.Abs(size.Y) > minSize)
+                Engine.Scene.Cursor.SelectionRect = new Int32Rect(start.X, start.Y, size.X, size.Y);
+            else
+                Engine.Scene.Cursor.SelectionRect = null;
+
         }
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonUp(e);
-            var obj = Engine?.Input.OnMouseLeftButtonDown(e.GetPosition(BitmapContainer));
-            SelectItem(obj);
+            var position = e.GetPosition(BitmapContainer);
+
+            if (Engine.Scene.Cursor.SelectionRect == null)
+            {
+                var obj = Engine?.Input.OnMouseLeftButtonDown(position);
+                SelectItem(obj);
+            }
+            else
+            {
+                Engine.Scene.Cursor.HoldObjectsInRect(Engine.Scene);
+                SelectItem(Engine.Scene.Cursor);
+            }
+            startPos = null;
+            Engine.Scene.Cursor.SelectionRect = null;
         }
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {

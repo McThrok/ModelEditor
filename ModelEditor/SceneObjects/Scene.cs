@@ -23,10 +23,6 @@ namespace ModelEditor
         {
             Name = "Scene";
             Holdable = false;
-
-            Camera = AddObj(new Camera(), this);
-            ResetCamera();
-            Cursor = AddObj(new Cursor(), this);
         }
 
         public SceneObject AddCube(SceneObject parent)
@@ -41,6 +37,15 @@ namespace ModelEditor
         {
             return AddObj(new Vertex(), parent);
         }
+
+        internal void Init(RayCaster rayCaster)
+        {
+            RayCaster = rayCaster;
+            Camera = AddObj(new Camera(), this);
+            ResetCamera();
+            Cursor = AddObj(new Cursor(RayCaster), this);
+        }
+
         public SceneObject AddEmptyObject(SceneObject parent)
         {
             return AddObj(new EmptyObject(), parent);
@@ -119,14 +124,6 @@ namespace ModelEditor
             Camera.Matrix = Matrix4x4.Identity;
             Camera.SetTarget(Vector3.Zero);
 
-        }
-
-        public void SelectMany(Int32Rect rect)
-        {
-            var group = new GroupObject();
-
-            if (group.Objects.Count > 0)
-                SelectedObject = group;
         }
 
         private SceneObject _selectedObject;

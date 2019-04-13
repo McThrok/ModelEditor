@@ -10,14 +10,17 @@ using System.ComponentModel;
 
 namespace ModelEditor
 {
-    public class Cursor : SceneObject, IRenderableObj
+    public class Cursor : SceneObject, IRenderableObj, IScreenRenderable
     {
+        public Int32Rect? SelectionRect { get; set; } = null;
         public float Tolerance { get; set; } = 3;
         public List<SceneObject> HeldObjects { get; set; } = new List<SceneObject>();
+        protected readonly RayCaster _rayCaster;
 
-        public Cursor()
+        public Cursor(RayCaster rayCaster)
         {
             Name = nameof(Cursor);
+            _rayCaster = rayCaster;
             GlobalMatrixChange += MoveHeldObjects;
         }
 
@@ -71,18 +74,6 @@ namespace ModelEditor
             if (toHeld != null)
                 HeldObjects.Add(toHeld);
         }
-        //public void HoldAllObjects(IEnumerable<SceneObject> objs)
-        //{
-        //    ReleaseObjects();
-
-        //    foreach (var obj in objs)
-        //    {
-        //        if (CanBeHeld(obj, out float dist))
-        //            HeldObjects.Add(obj);
-        //        else
-        //            HoldAllObjects(obj.Children);
-        //    }
-        //}
         private bool CanBeHeld(SceneObject obj, out float distance)
         {
             distance = 0;
@@ -99,7 +90,6 @@ namespace ModelEditor
         {
             HeldObjects.Clear();
         }
-
 
         private Vector2Int _screenPosition;
         public Vector2Int ScreenPosition
@@ -141,6 +131,93 @@ namespace ModelEditor
             edges.Add(new Edge(0, 3));
 
             return edges;
+        }
+
+        public void HoldObjectsInRect(SceneObject sceneObj)
+        {
+            var toCheck = new Stack<SceneObject>();
+            toCheck.Push(sceneObj);
+
+            while (toCheck.Count > 0)
+            {
+                var obj = toCheck.Pop();
+                if (CanBeSelected(obj))
+                {
+                    HeldObjects.Add(obj);
+                }
+                else
+                {
+                    foreach (var item in obj.Children)
+                        toCheck.Push(item);
+
+                    foreach (var item in obj.HiddenChildren)
+                        toCheck.Push(item);
+                }
+            }
+
+        }
+        private bool CanBeSelected(SceneObject obj)
+        {
+            if (!obj.Holdable)
+                return false;
+
+            var pos = _rayCaster.GetScreenPositionOf(obj);
+
+            var rect = FixedRect.Value;
+            var result = rect.X < pos.X && pos.X < rect.X + rect.Width && rect.Y < pos.Y && pos.Y < rect.Y + rect.Height;
+
+            return result;
+        }
+
+        public Int32Rect? FixedRect
+        {
+            get
+            {
+                if (SelectionRect == null)
+                    return null;
+
+                var rect = SelectionRect.Value;
+
+                if (rect.Height < 0)
+                {
+                    rect.Y += rect.Height;
+                    rect.Height *= -1;
+                }
+
+                if (rect.Width < 0)
+                {
+                    rect.X += rect.Width;
+                    rect.Width *= -1;
+                }
+
+                return rect;
+            }
+        }
+
+        public ScreenRenderData GetScreenRenderData()
+        {
+            var data = new ScreenRenderData();
+
+            if (SelectionRect == null)
+                return data;
+
+            var rect = FixedRect.Value;
+            rect.X -= _rayCaster.BitmapWidth / 2;
+            rect.Y -= _rayCaster.BitmapHeight / 2;
+
+            for (int x = 0; x < rect.Width; x++)
+            {
+                data.Pixels.Add(new Vector2Int(rect.X + x, rect.Y));
+                data.Pixels.Add(new Vector2Int(rect.X + x, rect.Y + rect.Height - 1));
+            }
+
+            for (int y = 0; y < rect.Height; y++)
+            {
+                data.Pixels.Add(new Vector2Int(rect.X, rect.Y + y));
+                data.Pixels.Add(new Vector2Int(rect.X + rect.Width - 1, rect.Y + y));
+            }
+
+            return data;
         }
     }
 }
