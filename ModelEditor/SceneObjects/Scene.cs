@@ -61,6 +61,10 @@ namespace ModelEditor
         {
             return AddObj(new BezierSurface(RayCaster), parent);
         }
+        internal SceneObject AddBezierCylinder(SceneObject parent)
+        {
+            return AddObj(new BezierCylinder(RayCaster), parent);
+        }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {
             if (parent == null)

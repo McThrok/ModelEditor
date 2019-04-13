@@ -140,6 +140,10 @@ namespace ModelEditor
         {
             SelectItem(Engine.Scene.AddBezierSurface(GetVisibleSelectedObj()));
         }
+        private void Cylinder_Click(object sender, RoutedEventArgs e)
+        {
+            SelectItem(Engine.Scene.AddBezierCylinder(GetVisibleSelectedObj()));
+        }
         private void Bezier0_Click(object sender, RoutedEventArgs e)
         {
             SelectItem(Engine.Scene.AddBezierCurveC0(GetVisibleSelectedObj()));
