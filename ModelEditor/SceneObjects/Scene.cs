@@ -121,6 +121,14 @@ namespace ModelEditor
 
         }
 
+        public void SelectMany(Int32Rect rect)
+        {
+            var group = new GroupObject();
+
+            if (group.Objects.Count > 0)
+                SelectedObject = group;
+        }
+
         private SceneObject _selectedObject;
         public SceneObject SelectedObject
         {
