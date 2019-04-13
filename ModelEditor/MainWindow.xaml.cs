@@ -95,23 +95,22 @@ namespace ModelEditor
             return objectList.SelectedItem as SceneObject;
         }
 
-
         #region handleInput
         private Vector2Int? startPos;
         private int minSize = 10;
+        private bool shiftPressed = false;
+
         private void BitmapContainer_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //bitmapImage.Focus();         // Set Logical Focus
             //Keyboard.Focus(bitmapImage); // Set Keyboard Focus
             //FocusManager.SetIsFocusScope(bitmapImage, true);
         }
-
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
             var start = e.GetPosition(BitmapContainer);
             startPos = new Vector2Int(Convert.ToInt32(start.X), Convert.ToInt32(start.Y));
-            Engine.Scene.Cursor.SelectionRect = new Int32Rect(startPos.Value.X, startPos.Value.Y, 0, 0);
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
@@ -135,15 +134,49 @@ namespace ModelEditor
             var position = e.GetPosition(BitmapContainer);
 
             if (Engine.Scene.Cursor.SelectionRect == null)
+                SelectOne(position);
+            else
+                SelectRect(position);
+
+
+        }
+
+        private void SelectRect(Point position)
+        {
+            if (!shiftPressed)
             {
-                var obj = Engine?.Input.OnMouseLeftButtonDown(position);
+                Engine.Scene.Cursor.ReleaseObjects();
+            }
+            else
+            {
+                if (SelectedObject != null)
+                    Engine.Scene.Cursor.HoldObject(SelectedObject);
+            }
+
+            Engine.Scene.Cursor.HoldObjectsInRect(Engine.Scene);
+            SelectItem(Engine.Scene.Cursor);
+
+            startPos = null;
+            Engine.Scene.Cursor.SelectionRect = null;
+        }
+        private void SelectOne(Point position)
+        {
+
+            var obj = Engine?.Input.OnMouseLeftButtonDown(position);
+            if (!shiftPressed)
+            {
+                Engine.Scene.Cursor.ReleaseObjects();
                 SelectItem(obj);
             }
             else
             {
-                Engine.Scene.Cursor.HoldObjectsInRect(Engine.Scene);
+                if (SelectedObject != null)
+                    Engine.Scene.Cursor.HoldObject(SelectedObject);
+
+                Engine.Scene.Cursor.HoldObject(obj);
                 SelectItem(Engine.Scene.Cursor);
             }
+
             startPos = null;
             Engine.Scene.Cursor.SelectionRect = null;
         }
@@ -160,11 +193,15 @@ namespace ModelEditor
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
+            if (e.Key == Key.LeftShift)
+                shiftPressed = true;
             Engine?.Input.OnKeyDown(e.Key);
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);
+            if (e.Key == Key.LeftShift)
+                shiftPressed = false;
             Engine?.Input.OnKeyUp(e.Key);
         }
         #endregion
@@ -215,7 +252,7 @@ namespace ModelEditor
             }
             else
             {
-                Engine.Scene.Cursor.HoldObject(Engine.Scene);
+                Engine.Scene.Cursor.HoldClosestObject(Engine.Scene);
                 if (Engine.Scene.Cursor.HeldObjects.Count > 0)
                     holdReleaseBtn.Content = "Release";
             }
@@ -263,7 +300,6 @@ namespace ModelEditor
         #region objMenu
         private void SelectedObjectChange(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-
             if (e.NewValue != null)
             {
                 SelectedObject = e.NewValue as SceneObject;

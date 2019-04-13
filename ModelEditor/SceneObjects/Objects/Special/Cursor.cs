@@ -14,7 +14,7 @@ namespace ModelEditor
     {
         public Int32Rect? SelectionRect { get; set; } = null;
         public float Tolerance { get; set; } = 3;
-        public List<SceneObject> HeldObjects { get; set; } = new List<SceneObject>();
+        public HashSet<SceneObject> HeldObjects { get; set; } = new HashSet<SceneObject>();
         protected readonly RayCaster _rayCaster;
 
         public Cursor(RayCaster rayCaster)
@@ -22,6 +22,7 @@ namespace ModelEditor
             Name = nameof(Cursor);
             _rayCaster = rayCaster;
             GlobalMatrixChange += MoveHeldObjects;
+            Holdable = false;
         }
 
         public void SetTarget(Vector3 position)
@@ -45,10 +46,8 @@ namespace ModelEditor
             foreach (var obj in HeldObjects)
                 obj.GlobalMatrix *= change;
         }
-        public void HoldObject(SceneObject sceneObject)
+        public void HoldClosestObject(SceneObject sceneObject)
         {
-            ReleaseObjects();
-
             Stack<SceneObject> toCheck = new Stack<SceneObject>();
             toCheck.Push(sceneObject);
             float best = float.MaxValue;
@@ -133,6 +132,41 @@ namespace ModelEditor
             return edges;
         }
 
+        public ScreenRenderData GetScreenRenderData()
+        {
+            var data = new ScreenRenderData();
+
+            if (SelectionRect == null)
+                return data;
+
+            var position = GlobalMatrix.Translation;
+            var rect = FixedRect.Value;
+            rect.X -= _rayCaster.BitmapWidth / 2 ;
+            rect.Y -= _rayCaster.BitmapHeight / 2;
+
+            for (int x = 0; x < rect.Width; x++)
+            {
+                data.GobalPixels.Add(new Vector2Int(rect.X + x, rect.Y));
+                data.GobalPixels.Add(new Vector2Int(rect.X + x, rect.Y + rect.Height - 1));
+            }
+
+            for (int y = 0; y < rect.Height; y++)
+            {
+                data.GobalPixels.Add(new Vector2Int(rect.X, rect.Y + y));
+                data.GobalPixels.Add(new Vector2Int(rect.X + rect.Width - 1, rect.Y + y));
+            }
+
+            return data;
+        }
+
+        public void HoldObject(SceneObject sceneObj)
+        {
+            if (sceneObj == null || !sceneObj.Holdable)
+                return;
+
+            HeldObjects.Add(sceneObj);
+        }
+
         public void HoldObjectsInRect(SceneObject sceneObj)
         {
             var toCheck = new Stack<SceneObject>();
@@ -168,7 +202,6 @@ namespace ModelEditor
 
             return result;
         }
-
         public Int32Rect? FixedRect
         {
             get
@@ -192,32 +225,6 @@ namespace ModelEditor
 
                 return rect;
             }
-        }
-
-        public ScreenRenderData GetScreenRenderData()
-        {
-            var data = new ScreenRenderData();
-
-            if (SelectionRect == null)
-                return data;
-
-            var rect = FixedRect.Value;
-            rect.X -= _rayCaster.BitmapWidth / 2;
-            rect.Y -= _rayCaster.BitmapHeight / 2;
-
-            for (int x = 0; x < rect.Width; x++)
-            {
-                data.Pixels.Add(new Vector2Int(rect.X + x, rect.Y));
-                data.Pixels.Add(new Vector2Int(rect.X + x, rect.Y + rect.Height - 1));
-            }
-
-            for (int y = 0; y < rect.Height; y++)
-            {
-                data.Pixels.Add(new Vector2Int(rect.X, rect.Y + y));
-                data.Pixels.Add(new Vector2Int(rect.X + rect.Width - 1, rect.Y + y));
-            }
-
-            return data;
         }
     }
 }

@@ -147,8 +147,18 @@ namespace ModelEditor
         private void Render(IScreenRenderable obj, Matrix4x4 model, RenderFrameData frameData, Color color)
         {
             var data = obj.GetScreenRenderData();
-            var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
 
+            var globalMatrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View);
+            var globalCenter = globalMatrix.Multiply(new Vector4(0, 0, 0, 1));
+            if (globalCenter.Z > 0)
+            {
+                foreach (var pix in data.GobalPixels)
+                {
+                    DrawOnScren(frameData.Context, globalCenter, pix, color, frameData.AddColors);
+                }
+            }
+
+            var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
             var center = matrix.Multiply(new Vector4(0, 0, 0, 1));
             if (center.Z > 0)
             {
