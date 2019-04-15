@@ -39,7 +39,7 @@ namespace ModelEditor
     public class ScreenRenderData
     {
         public List<Vector2Int> Pixels { get; set; } = new List<Vector2Int>();
-        public List<Vector2Int> GobalPixels { get; set; } = new List<Vector2Int>();
+        public List<Vector2Int> CameraPixels { get; set; } = new List<Vector2Int>();
     }
     public struct PixelPosition
     {

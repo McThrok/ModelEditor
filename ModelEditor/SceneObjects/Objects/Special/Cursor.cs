@@ -146,14 +146,14 @@ namespace ModelEditor
 
             for (int x = 0; x < rect.Width; x++)
             {
-                data.GobalPixels.Add(new Vector2Int(rect.X + x, rect.Y));
-                data.GobalPixels.Add(new Vector2Int(rect.X + x, rect.Y + rect.Height - 1));
+                data.CameraPixels.Add(new Vector2Int(rect.X + x, rect.Y));
+                data.CameraPixels.Add(new Vector2Int(rect.X + x, rect.Y + rect.Height - 1));
             }
 
             for (int y = 0; y < rect.Height; y++)
             {
-                data.GobalPixels.Add(new Vector2Int(rect.X, rect.Y + y));
-                data.GobalPixels.Add(new Vector2Int(rect.X + rect.Width - 1, rect.Y + y));
+                data.CameraPixels.Add(new Vector2Int(rect.X, rect.Y + y));
+                data.CameraPixels.Add(new Vector2Int(rect.X + rect.Width - 1, rect.Y + y));
             }
 
             return data;

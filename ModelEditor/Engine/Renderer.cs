@@ -148,14 +148,10 @@ namespace ModelEditor
         {
             var data = obj.GetScreenRenderData();
 
-            var globalMatrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View);
-            var globalCenter = globalMatrix.Multiply(new Vector4(0, 0, 0, 1));
-            if (globalCenter.Z > 0)
+            var cameraCenter = new Vector4(0, 0, 0, 1);
+            foreach (var pix in data.CameraPixels)
             {
-                foreach (var pix in data.GobalPixels)
-                {
-                    DrawOnScren(frameData.Context, globalCenter, pix, color, frameData.AddColors);
-                }
+                DrawOnScren(frameData.Context, cameraCenter, pix, color, frameData.AddColors);
             }
 
             var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
