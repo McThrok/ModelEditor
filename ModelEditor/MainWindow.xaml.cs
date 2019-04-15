@@ -136,6 +136,9 @@ namespace ModelEditor
                 SelectOne(position);
             else
                 SelectRect(position);
+
+            startPos = null;
+            Engine.Scene.Cursor.SelectionRect = null;
         }
 
         private void SelectRect(Point position)
@@ -152,9 +155,6 @@ namespace ModelEditor
 
             Engine.Scene.Cursor.HoldObjectsInRect(Engine.Scene);
             SelectItem(Engine.Scene.Cursor);
-
-            startPos = null;
-            Engine.Scene.Cursor.SelectionRect = null;
         }
         private void SelectOne(Point position)
         {
