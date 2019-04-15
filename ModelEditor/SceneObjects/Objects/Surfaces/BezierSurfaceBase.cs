@@ -55,57 +55,50 @@ namespace ModelEditor
         {
             var data = new ObjRenderData();
 
+            for (int h = 0; h < HeightPatchCount; h++)
+                for (int w = 0; w < WidthPatchCount; w++)
+                    data.Add(GetGridForPatch(verts, h, w));
+
+            return data;
+        }
+        private ObjRenderData GetGridForPatch(List<List<Vector3>> verts, int pIdxH, int pIdxW)
+        {
+            var data = new ObjRenderData();
+
             for (int h = 0; h < DrawHeightCount; h++)
             {
+                var tu = 1f * h / (DrawHeightCount - 1);
 
-                var pIdxH = HeightPatchCount * h / (DrawHeightCount - 1);
-                if (h == DrawHeightCount - 1)
-                    pIdxH -= 1;
-
-                var tu = 1f * HeightPatchCount * h / (DrawHeightCount - 1) - pIdxH;
-                var IdxH = pIdxH * 3;
-
-                var dataPart = new ObjRenderData();
                 for (int w = 0; w < WidthPatchCount; w++)
                 {
-                    var idxW = w * 3;
-                    dataPart.Vertices.AddRange(GetWidthSegmentPrimitive(verts, IdxH, idxW, tu));
-                }
+                    var dataPart = new ObjRenderData();
+                    dataPart.Vertices.AddRange(GetWidthSegmentPrimitive(verts, pIdxH * 3, pIdxW * 3, tu));
 
-                for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
-                {
-                    dataPart.Edges.Add(new Edge(i,  i + 1));
-                }
+                    for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
+                        dataPart.Edges.Add(new Edge(i, i + 1));
 
-                data.Add(dataPart);
+                    data.Add(dataPart);
+                }
             }
 
             for (int w = 0; w < DrawWidthCount; w++)
             {
-                var pIdxW = WidthPatchCount * w / (DrawWidthCount - 1);
-                if (w == DrawWidthCount - 1)
-                    pIdxW -= 1;
+                var tv = 1f * w / (DrawWidthCount - 1);
 
-                var tv = 1f * WidthPatchCount * w / (DrawWidthCount - 1) - pIdxW;
-                var idxW = 3 * pIdxW;
-
-                var dataPart = new ObjRenderData();
                 for (int h = 0; h < HeightPatchCount; h++)
                 {
-                    var idxH = h * 3;
-                    dataPart.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
-                }
+                    var dataPart = new ObjRenderData();
+                    dataPart.Vertices.AddRange(GetHeightSegmentPrimitive(verts, pIdxW * 3, pIdxH * 3, tv));
+                    for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
+                        dataPart.Edges.Add(new Edge(i, i + 1));
 
-                for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
-                {
-                    dataPart.Edges.Add(new Edge(i, i + 1));
+                    data.Add(dataPart);
                 }
-
-                data.Add(dataPart);
             }
 
             return data;
         }
+
 
         protected List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
         {
