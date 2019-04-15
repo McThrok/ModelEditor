@@ -103,7 +103,7 @@ namespace ModelEditor
         protected List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
         {
             var curve = new List<Vector3>();
-            int n = DrawPoints / DrawHeightCount / DrawWidthCount;
+            int n = DrawPoints;
             for (int i = 0; i < n + 1; i++)
             {
                 curve.Add(GetValue(verts, idxH, idxW, 1f * i / n, tv));
@@ -114,7 +114,7 @@ namespace ModelEditor
         protected List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
         {
             var curve = new List<Vector3>();
-            int n = DrawPoints / DrawHeightCount / DrawWidthCount;
+            int n = DrawPoints;
             for (int i = 0; i < n + 1; i++)
             {
                 curve.Add(GetValue(verts, idxH, idxW, tu, 1f * i / n));
@@ -152,7 +152,7 @@ namespace ModelEditor
             return point;
         }
 
-        public int DrawPoints { get; set; } = 1000;
+        public int DrawPoints { get; set; } = 100;
 
         private bool _showControlGrid;
         public bool ShowControlGrid
