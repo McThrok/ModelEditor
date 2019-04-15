@@ -33,7 +33,8 @@ namespace ModelEditor
             var data = new ObjRenderData();
             if (ShowControlGrid)
                 data.Add(GetControlGrid(verts));
-            data.Add(GetGrid(verts));
+            if (ShowGrid)
+                data.Add(GetGrid(verts));
 
             return data;
         }

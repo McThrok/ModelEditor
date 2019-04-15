@@ -17,6 +17,7 @@ namespace ModelEditor
         public BezierSurfaceBase(RayCaster rayCaster)
         {
             Holdable = false;
+            ShowGrid = true;
             _rayCaster = rayCaster;
         }
 
@@ -154,6 +155,21 @@ namespace ModelEditor
                 {
                     _showControlGrid = value;
                     InvokePropertyChanged(nameof(ShowControlGrid));
+                }
+            }
+
+        }
+
+        private bool _showGrid;
+        public bool ShowGrid
+        {
+            get => _showGrid;
+            set
+            {
+                if (_showGrid != value)
+                {
+                    _showGrid = value;
+                    InvokePropertyChanged(nameof(ShowGrid));
                 }
             }
 
