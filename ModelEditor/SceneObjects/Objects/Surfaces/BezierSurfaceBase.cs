@@ -54,7 +54,7 @@ namespace ModelEditor
         protected ObjRenderData GetGrid(List<List<Vector3>> verts)
         {
             var data = new ObjRenderData();
-            
+
             for (int h = 0; h < DrawHeightCount; h++)
             {
 
@@ -65,11 +65,19 @@ namespace ModelEditor
                 var tu = 1f * HeightPatchCount * h / (DrawHeightCount - 1) - pIdxH;
                 var IdxH = pIdxH * 3;
 
+                var dataPart = new ObjRenderData();
                 for (int w = 0; w < WidthPatchCount; w++)
                 {
                     var idxW = w * 3;
-                    data.Vertices.AddRange(GetWidthSegmentPrimitive(verts, IdxH, idxW, tu));
+                    dataPart.Vertices.AddRange(GetWidthSegmentPrimitive(verts, IdxH, idxW, tu));
                 }
+
+                for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
+                {
+                    dataPart.Edges.Add(new Edge(i,  i + 1));
+                }
+
+                data.Add(dataPart);
             }
 
             for (int w = 0; w < DrawWidthCount; w++)
@@ -81,11 +89,19 @@ namespace ModelEditor
                 var tv = 1f * WidthPatchCount * w / (DrawWidthCount - 1) - pIdxW;
                 var idxW = 3 * pIdxW;
 
+                var dataPart = new ObjRenderData();
                 for (int h = 0; h < HeightPatchCount; h++)
                 {
                     var idxH = h * 3;
-                    data.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
+                    dataPart.Vertices.AddRange(GetHeightSegmentPrimitive(verts, idxW, idxH, tv));
                 }
+
+                for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
+                {
+                    dataPart.Edges.Add(new Edge(i, i + 1));
+                }
+
+                data.Add(dataPart);
             }
 
             return data;
@@ -105,7 +121,7 @@ namespace ModelEditor
         protected List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
         {
             var curve = new List<Vector3>();
-            int n = DrawPoints/DrawHeightCount/DrawWidthCount;
+            int n = DrawPoints / DrawHeightCount / DrawWidthCount;
             for (int i = 0; i < n + 1; i++)
             {
                 curve.Add(GetValue(verts, idxH, idxW, tu, 1f * i / n));
@@ -143,7 +159,7 @@ namespace ModelEditor
             return point;
         }
 
-        public int DrawPoints { get; set; } = 5000;
+        public int DrawPoints { get; set; } = 1000;
 
         private bool _showControlGrid;
         public bool ShowControlGrid
