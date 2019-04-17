@@ -21,21 +21,39 @@ namespace ModelEditor
 
         public void Add(ObjRenderData data)
         {
-            if (data == null)
-                return;
+            if (data != null)
+                Add(data.Vertices, data.Edges);
+        }
 
-            int vCount = Vertices.Count;
-            var eCount = data.Edges.Count;
+        public void Add(List<Vector3> vertices, List<Edge> edges)
+        {
+            int count = Vertices.Count;
+
+            var eCount = edges.Count;
+            var vCount = vertices.Count;
 
             Vertices.Capacity += vCount;
-            for (int i = 0; i < eCount; i++)
-                Vertices.Add(data.Vertices[i]);
+            for (int i = 0; i < vCount; i++)
+                Vertices.Add(vertices[i]);
 
             Edges.Capacity += eCount;
             for (int i = 0; i < eCount; i++)
-                Edges.Add(new Edge(data.Edges[i].IdxA + vCount, data.Edges[i].IdxB + vCount));
+                Edges.Add(new Edge(edges[i].IdxA + count, edges[i].IdxB + count));
         }
 
+
+        public void AddLine(List<Vector3> vertices)
+        {
+            int count = Vertices.Count;
+            var vCount = vertices.Count;
+
+            Vertices.Capacity += vCount;
+            for (int i = 0; i < vCount; i++)
+                Vertices.Add(vertices[i]);
+
+            for (int i = 0; i < vCount - 1; i++)
+                Edges.Add(new Edge(count+i, count+ i + 1));
+        }
     }
 
     public interface IScreenRenderable

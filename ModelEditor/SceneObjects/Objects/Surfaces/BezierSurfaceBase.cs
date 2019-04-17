@@ -40,7 +40,7 @@ namespace ModelEditor
             }
 
             count = 0;
-            for (int h = 0; h < verts.Count-1; h++)
+            for (int h = 0; h < verts.Count - 1; h++)
             {
                 var row = verts[h];
                 for (int w = 0; w < row.Count; w++)
@@ -57,65 +57,39 @@ namespace ModelEditor
         {
             var data = new ObjRenderData();
 
-            for (int h = 0; h < HeightPatchCount; h++)
-                for (int w = 0; w < WidthPatchCount; w++)
+            var H = HeightPatchCount;
+            var W = WidthPatchCount;
+
+            for (int h = 0; h < H; h++)
+                for (int w = 0; w < W; w++)
                     data.Add(GetGridForPatch(verts, h, w));
 
             return data;
         }
-        protected ObjRenderData GetGrid2(List<List<Vector3>> verts)
-        {
-            var data = new ObjRenderData();
 
-            for (int h = 0; h < HeightPatchCount; h++)
-                for (int w = 0; w < WidthPatchCount; w++)
-                    GetGridForPatch(verts, h, w);
-
-            return data;
-        }
-        protected ObjRenderData GetGrid3(List<List<Vector3>> verts)
-        {
-            var data = new ObjRenderData();
-
-            for (int h = 0; h < HeightPatchCount; h++)
-                for (int w = 0; w < WidthPatchCount; w++)
-                    data.Add2(GetGridForPatch(verts, h, w));
-
-            return data;
-        }
         private ObjRenderData GetGridForPatch(List<List<Vector3>> verts, int pIdxH, int pIdxW)
         {
             var data = new ObjRenderData();
 
-            for (int h = 0; h < DrawHeightCount; h++)
+            var dh = DrawHeightCount;
+            var pw = WidthPatchCount;
+            for (int h = 0; h < dh; h++)
             {
-                var tu = 1f * h / (DrawHeightCount - 1);
+                var tu = 1f * h / (dh - 1);
 
-                for (int w = 0; w < WidthPatchCount; w++)
-                {
-                    var dataPart = new ObjRenderData();
-                    dataPart.Vertices.AddRange(GetWidthSegmentPrimitive(verts, pIdxH * 3, pIdxW * 3, tu));
-
-                    for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
-                        dataPart.Edges.Add(new Edge(i, i + 1));
-
-                    data.Add(dataPart);
-                }
+                for (int w = 0; w < pw; w++)
+                    data.AddLine(GetWidthSegmentPrimitive(verts, pIdxH * 3, pIdxW * 3, tu));
             }
 
-            for (int w = 0; w < DrawWidthCount; w++)
+            var dw = DrawWidthCount;
+            var ph = HeightPatchCount;
+
+            for (int w = 0; w < dw; w++)
             {
-                var tv = 1f * w / (DrawWidthCount - 1);
+                var tv = 1f * w / (dw - 1);
 
-                for (int h = 0; h < HeightPatchCount; h++)
-                {
-                    var dataPart = new ObjRenderData();
-                    dataPart.Vertices.AddRange(GetHeightSegmentPrimitive(verts, pIdxW * 3, pIdxH * 3, tv));
-                    for (int i = 0; i < dataPart.Vertices.Count - 1; i++)
-                        dataPart.Edges.Add(new Edge(i, i + 1));
-
-                    data.Add(dataPart);
-                }
+                for (int h = 0; h < ph; h++)
+                    data.AddLine(GetHeightSegmentPrimitive(verts, pIdxW * 3, pIdxH * 3, tv));
             }
 
             return data;
@@ -145,33 +119,33 @@ namespace ModelEditor
             return curve;
         }
 
-        private float[] _u = new float[4];
-        private float[] _v = new float[4];
         protected Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
         {
-            float cu = 1.0f - tu;
-            _u[0] = cu * cu * cu;
-            _u[1] = 3 * tu * cu * cu;
-            _u[2] = 3 * tu * tu * cu;
-            _u[3] = tu * tu * tu;
-
-            float cv = 1.0f - tv;
-            _v[0] = cv * cv * cv;
-            _v[1] = 3 * tv * cv * cv;
-            _v[2] = 3 * tv * tv * cv;
-            _v[3] = tv * tv * tv;
-
             var point = Vector3.Zero;
             for (int h = 0; h < 4; h++)
             {
                 for (int w = 0; w < 4; w++)
                 {
-                    point += verts[idxH + h][idxW + w] * _u[h] * _v[w];
+                    point += verts[idxH + h][idxW + w] * GetB(h,tu) * GetB(w,tv);
                 }
             }
 
-
             return point;
+        }
+        private float GetB(int i, float t)
+        {
+            float c = 1.0f - t;
+
+            if (i == 0)
+                return c * c * c;
+            if (i == 1)
+                return 3 * t * c * c;
+            if (i == 2)
+                return 3 * t * t * c;
+            if (i == 3)
+                return t * t * t;
+
+            return 0;
         }
 
         public int DrawPoints { get; set; } = 100;
