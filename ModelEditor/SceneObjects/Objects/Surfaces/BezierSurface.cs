@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Numerics;
+using System.Diagnostics;
 
 namespace ModelEditor
 {
@@ -30,13 +31,30 @@ namespace ModelEditor
         {
             var verts = GetVerts();
 
-            var data = new ObjRenderData();
-            if (ShowControlGrid)
-                data.Add(GetControlGrid(verts));
-            if (ShowGrid)
-                data.Add(GetGrid(verts));
+            var data1 = new ObjRenderData();
+            var data2 = new ObjRenderData();
+            var data3 = new ObjRenderData();
+            //if (ShowControlGrid)
+            data1.Add(GetControlGrid(verts));
+            data2.Add(GetControlGrid(verts));
+            data3.Add(GetControlGrid(verts));
+            //if (ShowGrid)
 
-            return data;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            data2.Add(GetGrid(verts));
+            sw.Stop();
+            var a = sw.Elapsed.TotalMilliseconds;
+            sw.Restart();
+            data3.Add(GetGrid3(verts));
+            sw.Stop();
+            var b = sw.Elapsed.TotalMilliseconds;
+            sw.Restart();
+            data1.Add(GetGrid2(verts));
+            sw.Stop();
+            var c = sw.Elapsed.TotalMilliseconds;
+
+            return data1;
         }
         private List<List<Vector3>> GetVerts()
         {

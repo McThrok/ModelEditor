@@ -24,9 +24,16 @@ namespace ModelEditor
             if (data == null)
                 return;
 
-            int count = Vertices.Count;
-            Vertices.AddRange(data.Vertices);
-            Edges.AddRange(data.Edges.Select(x => new Edge(x.IdxA + count, x.IdxB + count)));
+            int vCount = Vertices.Count;
+            var eCount = data.Edges.Count;
+
+            Vertices.Capacity += vCount;
+            for (int i = 0; i < eCount; i++)
+                Vertices.Add(data.Vertices[i]);
+
+            Edges.Capacity += eCount;
+            for (int i = 0; i < eCount; i++)
+                Edges.Add(new Edge(data.Edges[i].IdxA + vCount, data.Edges[i].IdxB + vCount));
         }
 
     }

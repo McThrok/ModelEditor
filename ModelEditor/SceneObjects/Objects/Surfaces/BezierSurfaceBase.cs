@@ -63,6 +63,26 @@ namespace ModelEditor
 
             return data;
         }
+        protected ObjRenderData GetGrid2(List<List<Vector3>> verts)
+        {
+            var data = new ObjRenderData();
+
+            for (int h = 0; h < HeightPatchCount; h++)
+                for (int w = 0; w < WidthPatchCount; w++)
+                    GetGridForPatch(verts, h, w);
+
+            return data;
+        }
+        protected ObjRenderData GetGrid3(List<List<Vector3>> verts)
+        {
+            var data = new ObjRenderData();
+
+            for (int h = 0; h < HeightPatchCount; h++)
+                for (int w = 0; w < WidthPatchCount; w++)
+                    data.Add2(GetGridForPatch(verts, h, w));
+
+            return data;
+        }
         private ObjRenderData GetGridForPatch(List<List<Vector3>> verts, int pIdxH, int pIdxW)
         {
             var data = new ObjRenderData();
