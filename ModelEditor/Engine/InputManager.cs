@@ -26,7 +26,7 @@ namespace ModelEditor
     public class InputManager
     {
         private readonly Scene _scene;
-        private readonly WriteableBitmap _wb;
+        private readonly BitmapBuffer _bb;
         private readonly Panel _bitmapConatiner;
         private readonly RayCaster _rayCaster;
 
@@ -35,10 +35,10 @@ namespace ModelEditor
         private Point? _lastMousePosition;
         private bool _ctrlPressed = false;
 
-        public InputManager(Panel bitmapConatiner, WriteableBitmap writeableBitmap, Scene scene, RayCaster rayCaster)
+        public InputManager(Panel bitmapConatiner, BitmapBuffer bb, Scene scene, RayCaster rayCaster)
         {
             _bitmapConatiner = bitmapConatiner;
-            _wb = writeableBitmap;
+            _bb = bb;
             _scene = scene;
             _rayCaster = rayCaster;
 
@@ -126,7 +126,7 @@ namespace ModelEditor
 
         public SceneObject OnMouseLeftButtonDown(Point pos)
         {
-            if (pos.X < 0 || pos.Y < 0 || pos.X >= _wb.PixelWidth || pos.Y >= _wb.PixelHeight)
+            if (pos.X < 0 || pos.Y < 0 || pos.X >= _bb.Width || pos.Y >= _bb.Height)
                 return null;
 
             var toCheck = new Stack<SceneObject>();
@@ -167,7 +167,7 @@ namespace ModelEditor
         public void OnMouseRightButtonDown(Point position)
         {
             var pos = position;
-            if (pos.X >= 0 && pos.Y >= 0 && pos.X < _wb.PixelWidth && pos.Y < _wb.PixelHeight)
+            if (pos.X >= 0 && pos.Y >= 0 && pos.X < _bb.Width && pos.Y < _bb.Height)
                 _lastMousePosition = pos;
         }
         public void OnMouseRightButtonUp()

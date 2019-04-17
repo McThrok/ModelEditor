@@ -95,7 +95,6 @@ namespace ModelEditor
             return data;
         }
 
-
         protected List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
         {
             var curve = new List<Vector3>();

@@ -12,7 +12,6 @@ namespace ModelEditor
 {
     public class RenderFrameData
     {
-        public BitmapContext Context { get; set; }
         public Matrix4x4 ProjMatrix { get; set; }
         public Matrix4x4 View { get; set; }
         public Color DefaultColor { get; set; }
@@ -45,7 +44,7 @@ namespace ModelEditor
         public float EyeDistance { get; set; }
         public float ViewportDistance { get; set; }
 
-        private WriteableBitmap _wb;
+        private BitmapBuffer _bb;
         private Scene _scene;
 
         private Color _drawColor = Colors.White;
@@ -59,16 +58,16 @@ namespace ModelEditor
         private float _near = 0.1f;
         private float _far = 100f;
 
-        public Renderer(WriteableBitmap wb, Scene scene)
+        public Renderer(BitmapBuffer bb, Scene scene)
         {
-            _wb = wb;
+            _bb = bb;
             _scene = scene;
-            _aspect = 1f * _wb.PixelWidth / _wb.PixelHeight;
+            _aspect = 1f * _bb.Width / _bb.Height;
         }
 
         public void RenderFrame()
         {
-            _wb.Clear(Colors.Black);
+            _bb.Clear(Colors.Black);
             if (Anaglyphic)
             {
                 Render(GetLeftAnaglyphProjectionMatrix(), _drawLeftColor, false);
@@ -83,19 +82,15 @@ namespace ModelEditor
         {
             var view = GetViewMatrix();
 
-            using (var context = _wb.GetBitmapContext())
-            {
                 var frameData = new RenderFrameData()
                 {
                     AddColors = addColors,
                     DefaultColor = color,
                     ProjMatrix = projMatrix,
                     View = view,
-                    Context = context
                 };
 
                 RenderRec(_scene, Matrix4x4.Identity, frameData);
-            }
         }
         private void RenderRec(SceneObject obj, Matrix4x4 parentMatrix, RenderFrameData frameData)
         {
@@ -132,7 +127,7 @@ namespace ModelEditor
                 var v = matrix.Multiply(vert.ToVector4());
 
                 if (v.Z > 0)
-                    DrawVertex(frameData.Context, v, color, frameData.AddColors);
+                    DrawVertex(v, color, frameData.AddColors);
             }
 
             foreach (var edge in data.Edges)
@@ -141,7 +136,7 @@ namespace ModelEditor
                 var vertB = matrix.Multiply(data.Vertices[edge.IdxB].ToVector4());
 
                 if (vertA.Z > 0 && vertB.Z > 0)
-                    DrawLine(frameData.Context, vertA, vertB, color, frameData.AddColors);
+                    DrawLine(vertA, vertB, color, frameData.AddColors);
             }
         }
         private void Render(IScreenRenderable obj, Matrix4x4 model, RenderFrameData frameData, Color color)
@@ -151,7 +146,7 @@ namespace ModelEditor
             var cameraCenter = new Vector4(0, 0, 0, 1);
             foreach (var pix in data.CameraPixels)
             {
-                DrawOnScren(frameData.Context, cameraCenter, pix, color, frameData.AddColors);
+                DrawOnScren(cameraCenter, pix, color, frameData.AddColors);
             }
 
             var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
@@ -160,7 +155,7 @@ namespace ModelEditor
             {
                 foreach (var pix in data.Pixels)
                 {
-                    DrawOnScren(frameData.Context, center, pix, color, frameData.AddColors);
+                    DrawOnScren(center, pix, color, frameData.AddColors);
                 }
             }
         }
@@ -187,27 +182,27 @@ namespace ModelEditor
             return col;
         }
 
-        private void DrawOnScren(BitmapContext ctx, Vector4 center, Vector2Int pix, Color col, bool addColors)
+        private void DrawOnScren(Vector4 center, Vector2Int pix, Color col, bool addColors)
         {
             var V = new Point(center.X / center.W, center.Y / center.W);
 
-            var width = _wb.PixelWidth;
-            var height = _wb.PixelHeight;
+            var width = _bb.Width;
+            var height = _bb.Height;
 
             var x = Convert.ToInt32((V.X + 1) / 2 * width) + pix.X;
             var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height) + pix.Y;
 
             if (x > 0 && x < width && y > 0 && y < height)
-                ctx.MySetPixel(x, y, col, addColors);
+                _bb.MySetPixel(x, y, col, addColors);
         }
-        private void DrawLine(BitmapContext ctx, Vector4 vertA, Vector4 vertB, Color col, bool addColors)
+        private void DrawLine(Vector4 vertA, Vector4 vertB, Color col, bool addColors)
         {
             var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
             var B = new Point(vertB.X / vertB.W, vertB.Y / vertB.W);
 
 
-            var width = _wb.PixelWidth;
-            var height = _wb.PixelHeight;
+            var width = _bb.Width;
+            var height = _bb.Height;
 
             try
             {
@@ -216,18 +211,18 @@ namespace ModelEditor
                 var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
                 var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
 
-                ctx.MyDrawLine(x1, y1, x2, y2, col, addColors);
+                _bb.MyDrawLine(x1, y1, x2, y2, col, addColors);
             }
             catch (Exception e)
             {
             }
         }
-        private void DrawVertex(BitmapContext ctx, Vector4 vert, Color col, bool addColors)
+        private void DrawVertex(Vector4 vert, Color col, bool addColors)
         {
             var v = new Point(vert.X / vert.W, vert.Y / vert.W);
 
-            var width = _wb.PixelWidth;
-            var height = _wb.PixelHeight;
+            var width = _bb.Width;
+            var height = _bb.Height;
 
             try
             {
@@ -235,7 +230,7 @@ namespace ModelEditor
                 var y = Convert.ToInt32((1 - (v.Y + 1) / 2) * height);
 
                 if (x > 0 && x < width && y > 0 && y < height)
-                    ctx.MySetPixel(x, y, col, addColors);
+                    _bb.MySetPixel(x, y, col, addColors);
             }
             catch (Exception e)
             {
@@ -258,8 +253,8 @@ namespace ModelEditor
         {
             return MyMatrix4x4.CreateAnaglyphicPerspectiveFieldOfView(_fov, _aspect, _near, _far, -EyeDistance / 2, ViewportDistance);
         }
-        public int BitmapWidth => _wb.PixelWidth;
-        public int BitmapHeight => _wb.PixelHeight;
+        public int BitmapWidth => _bb.Width;
+        public int BitmapHeight => _bb.Height;
 
         public RenderAccessor GetRenderAccessor()
         {

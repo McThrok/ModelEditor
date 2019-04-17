@@ -10,25 +10,93 @@ using System.Windows.Media;
 
 namespace ModelEditor
 {
-    public static class WBExtension
+    public class BitmapBuffer
     {
-        private const byte INSIDE = 0; // 0000
-        private const byte LEFT = 1;   // 0001
-        private const byte RIGHT = 2;  // 0010
-        private const byte BOTTOM = 4; // 0100
-        private const byte TOP = 8;    // 1000
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public byte[] Source { get; private set; }
+        private readonly int _stride = 4;
 
-        public unsafe static void MySetPixel(this BitmapContext context, int x, int y, Color color, bool addColors)
+        public BitmapBuffer(int width, int height)
         {
-            int col = WriteableBitmapExtensions.ConvertColor(color);
-            int idx = y * context.Width + x;
-            context.Pixels[idx] = addColors ? AddColors(context.Pixels[idx], col) : col;
+            Width = width;
+            Height = height;
+            Source = new byte[width * height * 4];
         }
-        public unsafe static void MyDrawLine(this BitmapContext context, int x1, int y1, int x2, int y2, Color col, bool addColors)
+
+        public void Clear(Color color)
+        {
+            int n = Width * Height;
+            for (int i = 0; i < n; i++)
+                SetColor(i, color);
+        }
+
+        public void SetColor(int idx, Color color)
+        {
+            Source[4 * idx] = color.B;
+            Source[4 * idx + 1] = color.G;
+            Source[4 * idx + 2] = color.R;
+            Source[4 * idx + 3] = color.A;
+        }
+        public void SetPixel(int idx, int color)
+        {
+            SetColor(idx, ConvertColor(color));
+        }
+        public int GetPixel(int idx)
+        {
+            return ConvertColor(GetColor(idx));
+        }
+        public Color GetColor(int idx)
+        {
+            var i = 4 * idx;
+            return Color.FromArgb(Source[i + 3], Source[i + 2], Source[i + 1], Source[i]);
+        }
+
+        private Color ConvertColor(int c)
+        {
+            var a = (byte)(c >> 24);
+
+            // Prevent division by zero
+            int ai = a;
+            if (ai == 0)
+            {
+                ai = 1;
+            }
+
+            // Scale inverse alpha to use cheap integer mul bit shift
+            ai = ((255 << 8) / ai);
+            return Color.FromArgb(a,
+                                  (byte)((((c >> 16) & 0xFF) * ai) >> 8),
+                                  (byte)((((c >> 8) & 0xFF) * ai) >> 8),
+                                  (byte)((((c & 0xFF) * ai) >> 8)));
+        }
+        private int ConvertColor(Color color)
+        {
+            var col = 0;
+
+            if (color.A != 0)
+            {
+                var a = color.A + 1;
+                col = (color.A << 24)
+                  | ((byte)((color.R * a) >> 8) << 16)
+                  | ((byte)((color.G * a) >> 8) << 8)
+                  | ((byte)((color.B * a) >> 8));
+            }
+
+            return col;
+        }
+
+        public unsafe void MySetPixel(int x, int y, Color color, bool addColors)
+        {
+            int col = ConvertColor(color);
+            int idx = y * Width + x;
+            SetPixel(idx, addColors ? AddColors(GetPixel(idx), col) : col);
+        }
+        public unsafe void MyDrawLine(int x1, int y1, int x2, int y2, Color col, bool addColors)
         {
             int color = WriteableBitmapExtensions.ConvertColor(col);
-            int pixelWidth = context.Width;
-            int pixelHeight = context.Height;
+            int pixelWidth = Width;
+            int pixelHeight = Height;
             // Get clip coordinates
             int clipX1 = 0;
             int clipX2 = pixelWidth;
@@ -37,8 +105,6 @@ namespace ModelEditor
 
             // Perform cohen-sutherland clipping if either point is out of the viewport
             if (!CohenSutherlandLineClip(new Rect(clipX1, clipY1, clipX2 - clipX1, clipY2 - clipY1), ref x1, ref y1, ref x2, ref y2)) return;
-
-            var pixels = context.Pixels;
 
             // Distance start and end point
             int dx = x2 - x1;
@@ -162,7 +228,7 @@ namespace ModelEditor
                 int k = incy < 0 ? 1 - pixelWidth : 1 + pixelWidth;
                 for (int x = x1; x <= x2; ++x)
                 {
-                    pixels[index] = addColors ? AddColors(pixels[index], color) : color;
+                    SetPixel(index, addColors ? AddColors(GetPixel(index), color) : color);
                     ys += incy;
                     y = ys >> PRECISION_SHIFT;
                     if (y != previousY)
@@ -276,23 +342,31 @@ namespace ModelEditor
                 for (int y = y1; y <= y2; ++y)
                 {
                     var idx = indexBaseValue + (index >> PRECISION_SHIFT);
-                    pixels[idx] = addColors ? AddColors(pixels[idx], color) : color;
+                    SetPixel(idx, addColors ? AddColors(GetPixel(idx), color) : color);
                     index += inc;
                 }
             }
         }
 
-        private static float ClipToInt(float d)
+        private int AddColors(int col1, int col2)
         {
-            if (d > int.MaxValue)
-                return int.MaxValue;
+            var c1 = GetColor(col1);
+            var c2 = GetColor(col2);
 
-            if (d < int.MinValue)
-                return int.MinValue;
-
-            return d;
+            var result = Color.FromArgb((byte)(Math.Min(255, c1.A + c2.A)),
+                                        (byte)(Math.Min(255, c1.R + c2.R)),
+                                        (byte)(Math.Min(255, c1.G + c2.G)),
+                                        (byte)(Math.Min(255, c1.B + c2.B)));
+            return WriteableBitmapExtensions.ConvertColor(result);
         }
-        private static bool CohenSutherlandLineClip(Rect extents, ref int xi0, ref int yi0, ref int xi1, ref int yi1)
+
+        private const byte INSIDE = 0; // 0000
+        private const byte LEFT = 1;   // 0001
+        private const byte RIGHT = 2;  // 0010
+        private const byte BOTTOM = 4; // 0100
+        private const byte TOP = 8;    // 1000
+
+        private bool CohenSutherlandLineClip(Rect extents, ref int xi0, ref int yi0, ref int xi1, ref int yi1)
         {
             double x0 = xi0;
             double y0 = yi0;
@@ -309,7 +383,7 @@ namespace ModelEditor
 
             return isValid;
         }
-        private static bool CohenSutherlandLineClip(Rect extents, ref double x0, ref double y0, ref double x1, ref double y1)
+        private bool CohenSutherlandLineClip(Rect extents, ref double x0, ref double y0, ref double x1, ref double y1)
         {
             // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
             byte outcode0 = ComputeOutCode(extents, x0, y0);
@@ -390,7 +464,7 @@ namespace ModelEditor
 
             return isValid;
         }
-        private static byte ComputeOutCode(Rect extents, double x, double y)
+        private byte ComputeOutCode(Rect extents, double x, double y)
         {
             // initialized as being inside of clip window
             byte code = INSIDE;
@@ -406,37 +480,5 @@ namespace ModelEditor
 
             return code;
         }
-
-        private static int AddColors(int col1, int col2)
-        {
-            var c1 = GetColor(col1);
-            var c2 = GetColor(col2);
-
-            var result = Color.FromArgb((byte)(Math.Min(255, c1.A + c2.A)),
-                                        (byte)(Math.Min(255, c1.R + c2.R)),
-                                        (byte)(Math.Min(255, c1.G + c2.G)),
-                                        (byte)(Math.Min(255, c1.B + c2.B)));
-            return WriteableBitmapExtensions.ConvertColor(result);
-        }
-
-        private static Color GetColor(int c)
-        {
-            var a = (byte)(c >> 24);
-
-            // Prevent division by zero
-            int ai = a;
-            if (ai == 0)
-            {
-                ai = 1;
-            }
-
-            // Scale inverse alpha to use cheap integer mul bit shift
-            ai = ((255 << 8) / ai);
-            return Color.FromArgb(a,
-                                  (byte)((((c >> 16) & 0xFF) * ai) >> 8),
-                                  (byte)((((c >> 8) & 0xFF) * ai) >> 8),
-                                  (byte)((((c & 0xFF) * ai) >> 8)));
-        }
-        
     }
 }
