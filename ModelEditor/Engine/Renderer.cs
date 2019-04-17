@@ -97,14 +97,10 @@ namespace ModelEditor
             var model = obj.Matrix * parentMatrix;
             var color = GetColor(obj, frameData.DefaultColor);
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             if (obj is IRenderableObj renderableObj)
             {
                 Render(renderableObj, model, frameData, color);
             }
-            sw.Stop();
-            var a = sw.ElapsedMilliseconds;
 
             if (obj is IScreenRenderable screenRenderable)
             {
@@ -119,10 +115,6 @@ namespace ModelEditor
             foreach (var child in obj.HiddenChildren)
             {
                 RenderRec(child, model, frameData);
-            }
-            if (obj is BezierSurfaceBase)
-            {
-
             }
         }
         private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData, Color color)
@@ -207,7 +199,6 @@ namespace ModelEditor
         {
             var A = new Point(vertA.X / vertA.W, vertA.Y / vertA.W);
             var B = new Point(vertB.X / vertB.W, vertB.Y / vertB.W);
-
 
             var width = _bb.Width;
             var height = _bb.Height;

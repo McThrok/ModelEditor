@@ -52,7 +52,7 @@ namespace ModelEditor
                 Vertices.Add(vertices[i]);
 
             for (int i = 0; i < vCount - 1; i++)
-                Edges.Add(new Edge(count+i, count+ i + 1));
+                Edges.Add(new Edge(count + i, count + i + 1));
         }
     }
 
