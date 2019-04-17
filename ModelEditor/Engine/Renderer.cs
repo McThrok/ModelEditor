@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Numerics;
 using System.Windows.Media;
+using System.Diagnostics;
 
 namespace ModelEditor
 {

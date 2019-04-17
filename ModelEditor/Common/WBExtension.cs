@@ -21,7 +21,7 @@ namespace ModelEditor
         {
             Width = width;
             Height = height;
-            Source = new byte[width * height * 4];
+            Source = new byte[width * height * _stride];
         }
 
         public void Clear(Color color)
@@ -33,10 +33,10 @@ namespace ModelEditor
 
         public void SetColor(int idx, Color color)
         {
-            Source[4 * idx] = color.B;
-            Source[4 * idx + 1] = color.G;
-            Source[4 * idx + 2] = color.R;
-            Source[4 * idx + 3] = color.A;
+            Source[_stride * idx] = color.B;
+            Source[_stride * idx + 1] = color.G;
+            Source[_stride * idx + 2] = color.R;
+            Source[_stride * idx + 3] = color.A;
         }
         public void SetPixel(int idx, int color)
         {
@@ -48,7 +48,7 @@ namespace ModelEditor
         }
         public Color GetColor(int idx)
         {
-            var i = 4 * idx;
+            var i = _stride * idx;
             return Color.FromArgb(Source[i + 3], Source[i + 2], Source[i + 1], Source[i]);
         }
 
@@ -104,7 +104,7 @@ namespace ModelEditor
             int clipY2 = pixelHeight;
 
             // Perform cohen-sutherland clipping if either point is out of the viewport
-            if (!CohenSutherlandLineClip(new Rect(clipX1, clipY1, clipX2 - clipX1, clipY2 - clipY1), ref x1, ref y1, ref x2, ref y2)) return;
+            //if (!MyCohenSutherlandLineClip(new Rect(clipX1, clipY1, clipX2 - clipX1, clipY2 - clipY1), ref x1, ref y1, ref x2, ref y2)) return;
 
             // Distance start and end point
             int dx = x2 - x1;
@@ -360,125 +360,128 @@ namespace ModelEditor
             return WriteableBitmapExtensions.ConvertColor(result);
         }
 
-        private const byte INSIDE = 0; // 0000
-        private const byte LEFT = 1;   // 0001
-        private const byte RIGHT = 2;  // 0010
-        private const byte BOTTOM = 4; // 0100
-        private const byte TOP = 8;    // 1000
 
-        private bool CohenSutherlandLineClip(Rect extents, ref int xi0, ref int yi0, ref int xi1, ref int yi1)
-        {
-            double x0 = xi0;
-            double y0 = yi0;
-            double x1 = xi1;
-            double y1 = yi1;
+        //private byte ComputeOutCode(Rect extents, double x, double y)
+        //{
+        //    // initialized as being inside of clip window
+        //    byte code = INSIDE;
 
-            var isValid = CohenSutherlandLineClip(extents, ref x0, ref y0, ref x1, ref y1);
+        //    if (x < extents.Left)           // to the left of clip window
+        //        code |= LEFT;
+        //    else if (x > extents.Right)     // to the right of clip window
+        //        code |= RIGHT;
+        //    if (y > extents.Bottom)         // below the clip window
+        //        code |= BOTTOM;
+        //    else if (y < extents.Top)       // above the clip window
+        //        code |= TOP;
 
-            // Update the clipped line
-            xi0 = (int)x0;
-            yi0 = (int)y0;
-            xi1 = (int)x1;
-            yi1 = (int)y1;
+        //    return code;
+        //}
 
-            return isValid;
-        }
-        private bool CohenSutherlandLineClip(Rect extents, ref double x0, ref double y0, ref double x1, ref double y1)
-        {
-            // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
-            byte outcode0 = ComputeOutCode(extents, x0, y0);
-            byte outcode1 = ComputeOutCode(extents, x1, y1);
+        //private const byte INSIDE = 0; // 0000
+        //private const byte LEFT = 1;   // 0001
+        //private const byte RIGHT = 2;  // 0010
+        //private const byte BOTTOM = 4; // 0100
+        //private const byte TOP = 8;    // 1000
 
-            // No clipping if both points lie inside viewport
-            if (outcode0 == INSIDE && outcode1 == INSIDE)
-                return true;
+        //private bool CohenSutherlandLineClip(Rect extents, ref int xi0, ref int yi0, ref int xi1, ref int yi1)
+        //{
+        //    double x0 = xi0;
+        //    double y0 = yi0;
+        //    double x1 = xi1;
+        //    double y1 = yi1;
 
-            bool isValid = false;
+        //    var isValid = CohenSutherlandLineClip(extents, ref x0, ref y0, ref x1, ref y1);
 
-            while (true)
-            {
-                // Bitwise OR is 0. Trivially accept and get out of loop
-                if ((outcode0 | outcode1) == 0)
-                {
-                    isValid = true;
-                    break;
-                }
-                // Bitwise AND is not 0. Trivially reject and get out of loop
-                else if ((outcode0 & outcode1) != 0)
-                {
-                    break;
-                }
-                else
-                {
-                    // failed both tests, so calculate the line segment to clip
-                    // from an outside point to an intersection with clip edge
-                    double x, y;
+        //    // Update the clipped line
+        //    xi0 = (int)x0;
+        //    yi0 = (int)y0;
+        //    xi1 = (int)x1;
+        //    yi1 = (int)y1;
 
-                    // At least one endpoint is outside the clip rectangle; pick it.
-                    byte outcodeOut = (outcode0 != 0) ? outcode0 : outcode1;
+        //    return isValid;
+        //}
+        //private bool CohenSutherlandLineClip(Rect extents, ref double x0, ref double y0, ref double x1, ref double y1)
+        //{
+        //    // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
+        //    byte outcode0 = ComputeOutCode(extents, x0, y0);
+        //    byte outcode1 = ComputeOutCode(extents, x1, y1);
 
-                    // Now find the intersection point;
-                    // use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
-                    if ((outcodeOut & TOP) != 0)
-                    {   // point is above the clip rectangle
-                        x = x0 + (x1 - x0) * (extents.Top - y0) / (y1 - y0);
-                        y = extents.Top;
-                    }
-                    else if ((outcodeOut & BOTTOM) != 0)
-                    { // point is below the clip rectangle
-                        x = x0 + (x1 - x0) * (extents.Bottom - y0) / (y1 - y0);
-                        y = extents.Bottom;
-                    }
-                    else if ((outcodeOut & RIGHT) != 0)
-                    {  // point is to the right of clip rectangle
-                        y = y0 + (y1 - y0) * (extents.Right - x0) / (x1 - x0);
-                        x = extents.Right;
-                    }
-                    else if ((outcodeOut & LEFT) != 0)
-                    {   // point is to the left of clip rectangle
-                        y = y0 + (y1 - y0) * (extents.Left - x0) / (x1 - x0);
-                        x = extents.Left;
-                    }
-                    else
-                    {
-                        x = double.NaN;
-                        y = double.NaN;
-                    }
+        //    // No clipping if both points lie inside viewport
+        //    if (outcode0 == INSIDE && outcode1 == INSIDE)
+        //        return true;
 
-                    // Now we move outside point to intersection point to clip
-                    // and get ready for next pass.
-                    if (outcodeOut == outcode0)
-                    {
-                        x0 = x;
-                        y0 = y;
-                        outcode0 = ComputeOutCode(extents, x0, y0);
-                    }
-                    else
-                    {
-                        x1 = x;
-                        y1 = y;
-                        outcode1 = ComputeOutCode(extents, x1, y1);
-                    }
-                }
-            }
+        //    bool isValid = false;
 
-            return isValid;
-        }
-        private byte ComputeOutCode(Rect extents, double x, double y)
-        {
-            // initialized as being inside of clip window
-            byte code = INSIDE;
+        //    while (true)
+        //    {
+        //        // Bitwise OR is 0. Trivially accept and get out of loop
+        //        if ((outcode0 | outcode1) == 0)
+        //        {
+        //            isValid = true;
+        //            break;
+        //        }
+        //        // Bitwise AND is not 0. Trivially reject and get out of loop
+        //        else if ((outcode0 & outcode1) != 0)
+        //        {
+        //            break;
+        //        }
+        //        else
+        //        {
+        //            // failed both tests, so calculate the line segment to clip
+        //            // from an outside point to an intersection with clip edge
+        //            double x, y;
 
-            if (x < extents.Left)           // to the left of clip window
-                code |= LEFT;
-            else if (x > extents.Right)     // to the right of clip window
-                code |= RIGHT;
-            if (y > extents.Bottom)         // below the clip window
-                code |= BOTTOM;
-            else if (y < extents.Top)       // above the clip window
-                code |= TOP;
+        //            // At least one endpoint is outside the clip rectangle; pick it.
+        //            byte outcodeOut = (outcode0 != 0) ? outcode0 : outcode1;
 
-            return code;
-        }
+        //            // Now find the intersection point;
+        //            // use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
+        //            if ((outcodeOut & TOP) != 0)
+        //            {   // point is above the clip rectangle
+        //                x = x0 + (x1 - x0) * (extents.Top - y0) / (y1 - y0);
+        //                y = extents.Top;
+        //            }
+        //            else if ((outcodeOut & BOTTOM) != 0)
+        //            { // point is below the clip rectangle
+        //                x = x0 + (x1 - x0) * (extents.Bottom - y0) / (y1 - y0);
+        //                y = extents.Bottom;
+        //            }
+        //            else if ((outcodeOut & RIGHT) != 0)
+        //            {  // point is to the right of clip rectangle
+        //                y = y0 + (y1 - y0) * (extents.Right - x0) / (x1 - x0);
+        //                x = extents.Right;
+        //            }
+        //            else if ((outcodeOut & LEFT) != 0)
+        //            {   // point is to the left of clip rectangle
+        //                y = y0 + (y1 - y0) * (extents.Left - x0) / (x1 - x0);
+        //                x = extents.Left;
+        //            }
+        //            else
+        //            {
+        //                x = double.NaN;
+        //                y = double.NaN;
+        //            }
+
+        //            // Now we move outside point to intersection point to clip
+        //            // and get ready for next pass.
+        //            if (outcodeOut == outcode0)
+        //            {
+        //                x0 = x;
+        //                y0 = y;
+        //                outcode0 = ComputeOutCode(extents, x0, y0);
+        //            }
+        //            else
+        //            {
+        //                x1 = x;
+        //                y1 = y;
+        //                outcode1 = ComputeOutCode(extents, x1, y1);
+        //            }
+        //        }
+        //    }
+
+        //    return isValid;
+        //}
+
     }
 }

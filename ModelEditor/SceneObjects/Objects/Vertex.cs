@@ -13,7 +13,7 @@ namespace ModelEditor
     {
         private static int _count = 0;
         private ScreenRenderData _screenRenderData;
-        private int _range = 3;
+        private int _range = 1;
 
         public Vertex()
         {
@@ -32,8 +32,7 @@ namespace ModelEditor
                 {
                     for (int j = -_range; j < _range + 1; j++)
                     {
-                        if (i * i + j * j < _range * _range)
-                            _screenRenderData.Pixels.Add(new Vector2Int(i, j));
+                        _screenRenderData.Pixels.Add(new Vector2Int(i, j));
                     }
                 }
             }

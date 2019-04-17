@@ -26,7 +26,6 @@ namespace ModelEditor
             var data = new ObjRenderData();
             data.Vertices = verts.SelectMany(x => x).ToList();
 
-
             var count = 0;
             for (int h = 0; h < verts.Count; h++)
             {
@@ -147,7 +146,7 @@ namespace ModelEditor
             return 0;
         }
 
-        public int DrawPoints { get; set; } = 100;
+        public int DrawPoints => 3000/ DrawHeightCount/ DrawWidthCount/ WidthPatchCount/ HeightPatchCount;
 
         private bool _showControlGrid;
         public bool ShowControlGrid
