@@ -11,10 +11,6 @@ namespace ModelEditor
 {
     public static class MyMatrix4x4
     {
-        public static Matrix4x4 Compose(params Matrix4x4[] matrices)
-        {
-            return matrices.Aggregate(Matrix4x4.Identity, (composition, matrix) => composition.Multiply(matrix));
-        }
         public static Matrix4x4 Transform(Vector3 translation, Vector3 rotation,Vector3 scale)
         {
             return Matrix4x4.CreateScale(scale) * CreateRotation(rotation) * Matrix4x4.CreateTranslation(translation);

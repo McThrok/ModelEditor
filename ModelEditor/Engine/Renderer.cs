@@ -14,7 +14,7 @@ namespace ModelEditor
     public class RenderFrameData
     {
         public Matrix4x4 ProjMatrix { get; set; }
-        public Matrix4x4 View { get; set; }
+        public Matrix4x4 ViewProjMatrix { get; set; }
         public Color DefaultColor { get; set; }
         public bool AddColors { get; set; }
     }
@@ -83,25 +83,28 @@ namespace ModelEditor
         {
             var view = GetViewMatrix();
 
-                var frameData = new RenderFrameData()
-                {
-                    AddColors = addColors,
-                    DefaultColor = color,
-                    ProjMatrix = projMatrix,
-                    View = view,
-                };
+            var frameData = new RenderFrameData()
+            {
+                AddColors = addColors,
+                DefaultColor = color,
+                ViewProjMatrix = view * projMatrix,
+            };
 
-                RenderRec(_scene, Matrix4x4.Identity, frameData);
+            RenderRec(_scene, Matrix4x4.Identity, frameData);
         }
         private void RenderRec(SceneObject obj, Matrix4x4 parentMatrix, RenderFrameData frameData)
         {
             var model = obj.Matrix * parentMatrix;
             var color = GetColor(obj, frameData.DefaultColor);
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             if (obj is IRenderableObj renderableObj)
             {
                 Render(renderableObj, model, frameData, color);
             }
+            sw.Stop();
+            var a = sw.ElapsedMilliseconds;
 
             if (obj is IScreenRenderable screenRenderable)
             {
@@ -117,11 +120,15 @@ namespace ModelEditor
             {
                 RenderRec(child, model, frameData);
             }
+            if (obj is BezierSurfaceBase)
+            {
+
+            }
         }
         private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData, Color color)
         {
             var data = obj.GetRenderData();
-            var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+            var matrix = model * frameData.ViewProjMatrix;
 
             foreach (var vert in data.Vertices)
             {
@@ -150,7 +157,7 @@ namespace ModelEditor
                 DrawOnScren(cameraCenter, pix, color, frameData.AddColors);
             }
 
-            var matrix = MyMatrix4x4.Compose(frameData.ProjMatrix, frameData.View, model);
+            var matrix = model * frameData.ViewProjMatrix;
             var center = matrix.Multiply(new Vector4(0, 0, 0, 1));
             if (center.Z > 0)
             {

@@ -121,7 +121,7 @@ namespace ModelEditor
             var rotationY = Matrix4x4.CreateRotationY(_cameraRotation.Y);
             var move = Matrix4x4.CreateTranslation(translation);
 
-            _scene.Camera.Matrix = MyMatrix4x4.Compose(move, rotationY, rotationX);
+            _scene.Camera.Matrix = rotationX * rotationY * move;
         }
 
         public SceneObject OnMouseLeftButtonDown(Point pos)

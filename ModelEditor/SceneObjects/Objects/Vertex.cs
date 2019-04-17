@@ -13,7 +13,7 @@ namespace ModelEditor
     {
         private static int _count = 0;
         private ScreenRenderData _screenRenderData;
-        private int _range = 1;
+        private int _range = 2;
 
         public Vertex()
         {
