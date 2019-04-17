@@ -24,32 +24,34 @@ namespace ModelEditor
         protected ObjRenderData GetControlGrid(List<List<Vector3>> verts)
         {
             var data = new ObjRenderData();
+            data.Vertices = verts.SelectMany(x => x).ToList();
 
-            var width = WidthVertexCount;
-            var height = HeightVertexCount;
 
-            data.Vertices.AddRange(verts.SelectMany(x => x));
-
-            for (int h = 0; h < height; h++)
+            var count = 0;
+            for (int h = 0; h < verts.Count; h++)
             {
-                for (int w = 0; w < width - 1; w++)
+                var row = verts[h];
+                for (int w = 0; w < row.Count - 1; w++)
                 {
-                    var idx = h * width + w;
+                    var idx = count + w;
                     data.Edges.Add(new Edge(idx, idx + 1));
                 }
+                count += row.Count;
             }
 
-            for (int w = 0; w < width; w++)
+            count = 0;
+            for (int h = 0; h < verts.Count-1; h++)
             {
-                for (int h = 0; h < height - 1; h++)
+                var row = verts[h];
+                for (int w = 0; w < row.Count; w++)
                 {
-                    var idx = h * width + w;
-                    data.Edges.Add(new Edge(idx, idx + width));
+                    var idx = count + w;
+                    data.Edges.Add(new Edge(idx, idx + row.Count));
                 }
+                count += row.Count;
             }
 
             return data;
-
         }
         protected ObjRenderData GetGrid(List<List<Vector3>> verts)
         {

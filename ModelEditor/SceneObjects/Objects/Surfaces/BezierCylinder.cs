@@ -20,7 +20,7 @@ namespace ModelEditor
             _height = 10;
             _range = 10;
             HeightPatchCount = 2;
-            WidthPatchCount = 5;
+            WidthPatchCount = 2;
             DrawHeightCount = 5;
             DrawWidthCount = 5;
             InitVertices();
@@ -33,7 +33,8 @@ namespace ModelEditor
             var data = new ObjRenderData();
             if (ShowControlGrid)
                 data.Add(GetControlGrid(verts));
-            data.Add(GetGrid(verts));
+            if (ShowGrid)
+                data.Add(GetGrid(verts));
 
             return data;
         }
