@@ -75,7 +75,13 @@ namespace ModelEditor
                 Input.Update(_deltaTime);
                 var rendering = Task.Run(() =>
                  {
-                     Renderer.RenderFrame();
+                     try
+                     {
+                         Renderer.RenderFrame();
+                     }
+                     catch (Exception e)
+                     {
+                     }
                  });
                 _writableBitmap.FromByteArray(_bitmapBuffer.Source);
 

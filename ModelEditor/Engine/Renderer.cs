@@ -189,11 +189,17 @@ namespace ModelEditor
             var width = _bb.Width;
             var height = _bb.Height;
 
-            var x = Convert.ToInt32((V.X + 1) / 2 * width) + pix.X;
-            var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height) + pix.Y;
+            try
+            {
+                var x = Convert.ToInt32((V.X + 1) / 2 * width) + pix.X;
+                var y = Convert.ToInt32((1 - (V.Y + 1) / 2) * height) + pix.Y;
 
-            if (x > 0 && x < width && y > 0 && y < height)
-                _bb.MySetPixel(x, y, col, addColors);
+                if (x > 0 && x < width && y > 0 && y < height)
+                    _bb.MySetPixel(x, y, col, addColors);
+            }
+            catch (Exception e)
+            {
+            }
         }
         private void DrawLine(Vector4 vertA, Vector4 vertB, Color col, bool addColors)
         {

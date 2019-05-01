@@ -20,8 +20,8 @@ namespace ModelEditor
 
             _height = 10;
             _width = 10;
-            HeightPatchCount = 10;
-            WidthPatchCount = 10;
+            HeightPatchCount = 2;
+            WidthPatchCount = 2;
             DrawHeightCount = 4;
             DrawWidthCount = 4;
             InitVertices();
