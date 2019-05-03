@@ -37,8 +37,10 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <Button Margin="5" Height="20" Click="Vertex_Click">Add Vertex</Button>
-                <Button Margin="5" Height="20" Click="Surface_Click">Add Bezier Surface</Button>
-                <Button Margin="5" Height="20" Click="Cylinder_Click">Add Bezier Cylinder</Button>
+                <Button Margin="5" Height="20" Click="Surface2_Click">Add Bezier Surface C2</Button>
+                <Button Margin="5" Height="20" Click="Cylinder2_Click">Add Bezier Cylinder C2</Button>
+                <Button Margin="5" Height="20" Click="Surface0_Click">Add Bezier Surface C0</Button>
+                <Button Margin="5" Height="20" Click="Cylinder0_Click">Add Bezier Cylinder C0</Button>
                 <Button Margin="5" Height="20" Click="Bezier0_Click">Add Bezier Curve C0</Button>
                 <Button Margin="5" Height="20" Click="Bezier2_Click">Add Bezier Curve C2</Button>
                 <Button Margin="5" Height="20" Click="InterpolatingCurve">Add Interpolating Curve</Button>

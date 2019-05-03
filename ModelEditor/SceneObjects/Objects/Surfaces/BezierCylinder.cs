@@ -9,13 +9,13 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BezierCylinder : BezierSurfaceBase, IRenderableObj
+    public class BezierCylinderC0 : BezierSurfaceBaseC0, IRenderableObj
     {
         private static int _count = 0;
 
-        public BezierCylinder(RayCaster rayCaster) : base(rayCaster)
+        public BezierCylinderC0(RayCaster rayCaster) : base(rayCaster)
         {
-            Name = nameof(BezierCylinder) + " " + _count++.ToString();
+            Name = nameof(BezierCylinderC0) + " " + _count++.ToString();
 
             _height = 10;
             _range = 10;

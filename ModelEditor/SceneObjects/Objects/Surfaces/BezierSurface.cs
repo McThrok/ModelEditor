@@ -10,13 +10,13 @@ using System.Diagnostics;
 
 namespace ModelEditor
 {
-    public class BezierSurface : BezierSurfaceBase, IRenderableObj
+    public class BezierSurfaceC0 : BezierSurfaceBaseC0, IRenderableObj
     {
         private static int _count = 0;
 
-        public BezierSurface(RayCaster rayCaster) : base(rayCaster)
+        public BezierSurfaceC0(RayCaster rayCaster) : base(rayCaster)
         {
-            Name = nameof(BezierSurface) + " " + _count++.ToString();
+            Name = nameof(BezierSurfaceC0) + " " + _count++.ToString();
 
             _height = 10;
             _width = 10;

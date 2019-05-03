@@ -64,11 +64,11 @@ namespace ModelEditor
         }
         internal SceneObject AddBezierSurface(SceneObject parent)
         {
-            return AddObj(new BezierSurface(RayCaster), parent);
+            return AddObj(new BezierSurfaceC0(RayCaster), parent);
         }
         internal SceneObject AddBezierCylinder(SceneObject parent)
         {
-            return AddObj(new BezierCylinder(RayCaster), parent);
+            return AddObj(new BezierCylinderC0(RayCaster), parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {

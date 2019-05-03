@@ -9,12 +9,12 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public abstract class BezierSurfaceBase : SceneObject
+    public abstract class BezierSurfaceBaseC0 : SceneObject
     {
         protected List<List<Vertex>> _controlVertices = new List<List<Vertex>>();
         protected readonly RayCaster _rayCaster;
 
-        public BezierSurfaceBase(RayCaster rayCaster)
+        public BezierSurfaceBaseC0(RayCaster rayCaster)
         {
             Holdable = false;
             ShowGrid = true;
