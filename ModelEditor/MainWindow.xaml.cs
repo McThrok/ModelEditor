@@ -207,19 +207,19 @@ namespace ModelEditor
         #region topMenu
         private void Surface0_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierSurface(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierSurfaceC0(GetVisibleSelectedObj()));
         }
         private void Cylinder0_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCylinder(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCylinderC0(GetVisibleSelectedObj()));
         }
         private void Surface2_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierSurface(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierSurfaceC2(GetVisibleSelectedObj()));
         }
         private void Cylinder2_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCylinder(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCylinderC0(GetVisibleSelectedObj()));
         }
         private void Bezier0_Click(object sender, RoutedEventArgs e)
         {

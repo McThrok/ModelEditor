@@ -76,9 +76,11 @@
     <Compile Include="Engine\Engine.cs" />
     <Compile Include="Engine\RayCaster.cs" />
     <Compile Include="SceneObjects\Objects\Curves\BezierCurveBase.cs" />
-    <Compile Include="SceneObjects\Objects\Surfaces\BezierCylinder.cs" />
-    <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceBase.cs" />
-    <Compile Include="SceneObjects\Objects\Surfaces\BezierSurface.cs" />
+    <Compile Include="SceneObjects\Objects\Surfaces\BezierCylinderC0.cs" />
+    <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceBaseC2.cs" />
+    <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceBaseC0.cs" />
+    <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceC2.cs" />
+    <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceC0.cs" />
     <Compile Include="SceneObjects\Objects\Curves\InterpolatingCurve.cs" />
     <Compile Include="SceneObjects\Objects\Curves\BezierCurveC2.cs" />
     <Compile Include="SceneObjects\Objects\Special\Camera.cs" />

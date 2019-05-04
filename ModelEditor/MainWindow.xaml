@@ -46,6 +46,8 @@
                 <Button Margin="5" Height="20" Click="InterpolatingCurve">Add Interpolating Curve</Button>
                 <Button Margin="5" Height="20" Click="Empty_Click">Add Empty Object</Button>
                 <Button Margin="5,5,30,5" Height="20" Click="Torus_Click">Add Torus</Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" >
 
                 <Button Margin="5" Height="20" Click="Delete_Click">Delete</Button>
                 <Button Margin="5,5,30,5" Height="20" Click="DeleteFlat_Click">Flat delete</Button>
