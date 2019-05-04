@@ -109,11 +109,67 @@ namespace ModelEditor
             return curve;
 
         }
+        public Vector3 GetSplineValue(float t, Vector3[] points, List<float> knots)
+        {
+            int degree = 3;
+            var left = knots[degree];
+            var right = knots[knots.Count - 1 - degree];
+            t = t * (right - left) + left;
+
+            int s;
+            for (s = degree; s < knots.Count - 1 - degree; s++)
+            {
+                if (t >= knots[s] && t <= knots[s + 1])
+                {
+                    break;
+                }
+            }
+
+            var verts = points.ToList();
+            for (int l = 1; l <= degree + 1; l++)
+            {
+                for (int i = s; i > s - degree - 1 + l; i--)
+                {
+                    float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+                    verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
+                }
+            }
+
+            return verts[s];
+        }
+
+        public Vector3 GetSplineValue(float t, List<Vector3> points, List<float> knots)
+        {
+            int degree = 3;
+            var left = knots[degree];
+            var right = knots[knots.Count - 1 - degree];
+            t = t * (right - left) + left;
+
+            int s;
+            for (s = degree; s < knots.Count - 1 - degree; s++)
+            {
+                if (t >= knots[s] && t <= knots[s + 1])
+                {
+                    break;
+                }
+            }
+
+            var verts = points.ToList();
+            for (int l = 1; l <= degree + 1; l++)
+            {
+                for (int i = s; i > s - degree - 1 + l; i--)
+                {
+                    float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+                    verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
+                }
+            }
+
+            return verts[s];
+        }
 
         public Vector3 GetSplineValue(Vector3[] points, float t)
         {
             int degree = 3;
-
 
             var left = degree;
             var right = points.Length;
@@ -146,7 +202,6 @@ namespace ModelEditor
         public Vector3 GetSplineValue(List<Vector3> points, float t)
         {
             int degree = 3;
-
 
             var left = degree;
             var right = points.Count;
@@ -287,9 +342,6 @@ namespace ModelEditor
                 Enumerable.Range(0, HeightCount).Select(
                     h => Enumerable.Range(0, WidthCount).Select(
                         w => CreateControlVertex()).ToList()).ToList());
-
-            _tmpW = new Vector3[WidthCount];
-            _tmpH = new Vector3[HeightCount];
 
             InitPositions();
         }

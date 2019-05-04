@@ -92,6 +92,9 @@ namespace ModelEditor
                     row[w].MoveLoc(position);
                 }
             }
+
+            _tmpW = new Vector3[WidthCount];
+            _tmpH = new Vector3[HeightCount];
         }
     }
 }

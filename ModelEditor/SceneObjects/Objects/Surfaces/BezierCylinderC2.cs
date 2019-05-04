@@ -40,11 +40,13 @@ namespace ModelEditor
         }
         private List<List<Vector3>> GetVerts()
         {
+            int degree = 3;
             return _controlVertices.Select(row =>
             {
                 var result = row.Select(v => v.Matrix.Translation).ToList();
-                if (result.Count > 0)
-                    result.Add(result[0]);
+                if (result.Count > degree)
+                    for (int i = 0; i < degree + 1; i++)
+                        result.Add(result[i]);
                 return result;
             }).ToList();
 
@@ -92,7 +94,7 @@ namespace ModelEditor
                 var row = _controlVertices[h];
                 for (int w = 0; w < row.Count; w++)
                 {
-                    var rad = Math.PI * 2 * w / (row.Count-1);
+                    var rad = Math.PI * 2 * w / (row.Count);
                     var x = (float)(Range * Math.Cos(rad));
                     var z = (float)(Range * Math.Sin(rad));
 
@@ -101,6 +103,10 @@ namespace ModelEditor
                     row[w].MoveLoc(position);
                 }
             }
+
+            int degree = 3;
+            _tmpW = new Vector3[WidthCount + degree + 1];
+            _tmpH = new Vector3[HeightCount];
         }
 
     }
