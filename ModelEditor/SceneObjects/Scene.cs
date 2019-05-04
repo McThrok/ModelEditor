@@ -58,21 +58,25 @@ namespace ModelEditor
         {
             return AddObj(new BezierCurveC2(RayCaster), parent);
         }
-        internal SceneObject AddInterpolatingCurve(SceneObject parent)
+        public SceneObject AddInterpolatingCurve(SceneObject parent)
         {
             return AddObj(new InterpolatingCurve(RayCaster), parent);
         }
-        internal SceneObject AddBezierSurfaceC0(SceneObject parent)
+        public SceneObject AddBezierSurfaceC0(SceneObject parent)
         {
             return AddObj(new BezierSurfaceC0(RayCaster), parent);
         }
-        internal SceneObject AddBezierCylinderC0(SceneObject parent)
+        public SceneObject AddBezierCylinderC0(SceneObject parent)
         {
             return AddObj(new BezierCylinderC0(RayCaster), parent);
         }
-        internal SceneObject AddBezierSurfaceC2(SceneObject parent)
+        public SceneObject AddBezierSurfaceC2(SceneObject parent)
         {
             return AddObj(new BezierSurfaceC2(RayCaster), parent);
+        }
+        public SceneObject AddBezierCylinderC2(SceneObject parent)
+        {
+            return AddObj(new BezierCylinderC2(RayCaster), parent);
         }
         private T AddObj<T>(T obj, SceneObject parent) where T : SceneObject
         {

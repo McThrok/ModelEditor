@@ -219,7 +219,7 @@ namespace ModelEditor
         }
         private void Cylinder2_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCylinderC0(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCylinderC2(GetVisibleSelectedObj()));
         }
         private void Bezier0_Click(object sender, RoutedEventArgs e)
         {
@@ -333,9 +333,13 @@ namespace ModelEditor
                 BezierC2Menu.Visibility = item is BezierCurveC2 ? Visibility.Visible : Visibility.Collapsed;
                 InterpolatingMenu.Visibility = item is InterpolatingCurve ? Visibility.Visible : Visibility.Collapsed;
 
-                BaseSurfaceMenu.Visibility = item is BezierSurfaceBaseC0 ? Visibility.Visible : Visibility.Collapsed;
-                SurfaceMenu.Visibility = item is BezierSurfaceC0 ? Visibility.Visible : Visibility.Collapsed;
-                CylinderMenu.Visibility = item is BezierCylinderC0 ? Visibility.Visible : Visibility.Collapsed;
+                BaseSurfaceC0Menu.Visibility = item is BezierSurfaceBaseC0 ? Visibility.Visible : Visibility.Collapsed;
+                SurfaceC0Menu.Visibility = item is BezierSurfaceC0 ? Visibility.Visible : Visibility.Collapsed;
+                CylinderC0Menu.Visibility = item is BezierCylinderC0 ? Visibility.Visible : Visibility.Collapsed;
+
+                BaseSurfaceC2Menu.Visibility = item is BezierSurfaceBaseC2 ? Visibility.Visible : Visibility.Collapsed;
+                SurfaceC2Menu.Visibility = item is BezierSurfaceC2 ? Visibility.Visible : Visibility.Collapsed;
+                CylinderC2Menu.Visibility = item is BezierCylinderC2 ? Visibility.Visible : Visibility.Collapsed;
 
             }
             else

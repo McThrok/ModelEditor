@@ -87,17 +87,15 @@ namespace ModelEditor
                 _tmpW[i] = GetSplineValue(nodes, tu);
             }
         }
-
         protected void FillTmpH(List<List<Vector3>> verts, float tv)
         {
             int n = _tmpH.Length;
             for (int i = 0; i < n; i++)
             {
-                var nodes = verts[i].ToList();
+                var nodes = verts[i];
                 _tmpH[i] = GetSplineValue(nodes, tv);
             }
         }
-
 
         protected List<Vector3> GetLine(Vector3[] points)
         {
@@ -111,7 +109,6 @@ namespace ModelEditor
             return curve;
 
         }
-
 
         public Vector3 GetSplineValue(Vector3[] points, float t)
         {
@@ -242,38 +239,38 @@ namespace ModelEditor
 
         }
 
-        private int _myWidth;
-        public int MyWidth
+        private int _widthCount;
+        public int WidthCount
         {
-            get => _myWidth;
+            get => _widthCount;
             set
             {
                 var newValue = value;
                 newValue = Math.Max(1, newValue);
-                if (_myWidth != newValue)
+                if (_widthCount != newValue)
                 {
-                    _myWidth = newValue;
+                    _widthCount = newValue;
                     InitVertices();
-                    InvokePropertyChanged(nameof(MyWidth));
+                    InvokePropertyChanged(nameof(WidthCount));
                 }
             }
 
         }
 
-        private int _myHeight;
-        public int MyHeight
+        private int _heightCount;
+        public int HeightCount
         {
-            get => _myHeight;
+            get => _heightCount;
             set
             {
                 var newValue = value;
                 newValue = Math.Max(1, newValue);
 
-                if (_myHeight != newValue)
+                if (_heightCount != newValue)
                 {
-                    _myHeight = newValue;
+                    _heightCount = newValue;
                     InitVertices();
-                    InvokePropertyChanged(nameof(MyHeight));
+                    InvokePropertyChanged(nameof(HeightCount));
                 }
             }
 
@@ -287,12 +284,12 @@ namespace ModelEditor
             _controlVertices.Clear();
 
             _controlVertices.AddRange(
-                Enumerable.Range(0, MyHeight).Select(
-                    h => Enumerable.Range(0, MyWidth).Select(
+                Enumerable.Range(0, HeightCount).Select(
+                    h => Enumerable.Range(0, WidthCount).Select(
                         w => CreateControlVertex()).ToList()).ToList());
 
-            _tmpW = new Vector3[MyWidth];
-            _tmpH = new Vector3[MyHeight];
+            _tmpW = new Vector3[WidthCount];
+            _tmpH = new Vector3[HeightCount];
 
             InitPositions();
         }
