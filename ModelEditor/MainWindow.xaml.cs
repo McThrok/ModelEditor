@@ -18,6 +18,8 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
 using System.Windows.Controls.Primitives;
+using Microsoft.Win32;
+using System.IO;
 
 namespace ModelEditor
 {
@@ -262,6 +264,24 @@ namespace ModelEditor
                 if (Engine.Scene.Cursor.HeldObjects.Count > 0)
                     holdReleaseBtn.Content = "Release";
             }
+        }
+
+        private void Save_click(object sender, RoutedEventArgs e)
+        {
+            var data = Engine.Scene.GetSaveData();
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.RestoreDirectory = true;
+            saveFileDialog.Filter = "Text file (*.txt)|*.txt";
+            if (saveFileDialog.ShowDialog() == true)
+                File.AppendAllLines(saveFileDialog.FileName, data);
+        }
+        private void Load_click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.Filter = "Text file (*.txt)|*.txt";
+            if (openFileDialog.ShowDialog() == true)
+                Engine.Scene.LoadModel(File.ReadAllLines(openFileDialog.FileName));
         }
 
         private void FocuCamera(object sender, RoutedEventArgs e)

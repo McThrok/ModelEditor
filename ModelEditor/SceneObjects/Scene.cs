@@ -91,6 +91,46 @@ namespace ModelEditor
             return obj;
         }
 
+        public void LoadModel(string[] data)
+        {
+            for (int i = 0; i < data.Length; i++)
+            {
+                string[] header = data[2 * i].Split(' ');
+                string elementName = header[0];
+                int n = int.Parse(header[1]);
+                for (int j = 0; j < n; j++, i++)
+                {
+                    SceneObject obj = null;
+                    switch (elementName)
+                    {
+                        case "curvec0": obj = new BezierCurveC0(RayCaster, data[i]); break;
+                        case "curvec2": obj = new BezierCurveC2(RayCaster, data[i]); break;
+                        case "curveInt": obj = new InterpolatingCurve(RayCaster, data[i]); break;
+                        case "surfacec0": obj = new BezierSurfaceC0(RayCaster, data[i]); break;
+                        case "surfacec2": obj = new BezierSurfaceC2(RayCaster, data[i]); break;
+                        case "tubec0": obj = new BezierCylinderC0(RayCaster, data[i]); break;
+                        case "tubec2": obj = new BezierCylinderC2(RayCaster, data[i]); break;
+                        default: throw new InvalidOperationException("wrong object name");
+                    }
+
+                    if (obj != null)
+                        obj.SetParent(this);
+                }
+            }
+        }
+
+        public string[] GetSaveData()
+        {
+            List<string> data = new List<string>();
+
+            foreach (var child in Children)
+            {
+                data.AddRange(child.GetData());
+            }
+
+            return data.ToArray();
+        }
+
         private Vector3 GetRandomPosition()
         {
             return new Vector3(GetRandomCoordinate(), GetRandomCoordinate(), GetRandomCoordinate());

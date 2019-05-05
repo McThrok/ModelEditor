@@ -55,7 +55,10 @@
                 <Button Margin="5" Height="20" Click="FocuCamera">Focus camera</Button>
                 <Button Margin="5,5,30,5" Height="20" Click="ResetCamera">Reset camera</Button>
 
-                <Button Name="holdReleaseBtn" Margin="5" Height="20" Click="HoldRelease_click">Hold</Button>
+                <Button Name="holdReleaseBtn" Margin="5,5,30,5" Height="20" Click="HoldRelease_click">Hold</Button>
+
+                <Button Margin="5" Height="20" Click="Save_click">Save model</Button>
+                <Button Margin="5" Height="20" Click="Load_click">Load model</Button>
             </StackPanel>
         </StackPanel>
 

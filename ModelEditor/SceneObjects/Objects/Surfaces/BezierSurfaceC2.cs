@@ -25,6 +25,9 @@ namespace ModelEditor
             DrawWidthCount = 5;
             InitVertices();
         }
+        public BezierSurfaceC2(RayCaster rayCaster, string data) : this(rayCaster)
+        {
+        }
 
         public ObjRenderData GetRenderData()
         {

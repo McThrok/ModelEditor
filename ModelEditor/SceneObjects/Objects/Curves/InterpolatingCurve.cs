@@ -16,6 +16,9 @@ namespace ModelEditor
         {
             Name = nameof(InterpolatingCurve) + " " + _count++.ToString();
         }
+        public InterpolatingCurve(RayCaster rayCaster, string data) : this(rayCaster)
+        {
+        }
 
         private bool _chords = false;
         public bool Chords

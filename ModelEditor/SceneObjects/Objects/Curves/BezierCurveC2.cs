@@ -20,6 +20,9 @@ namespace ModelEditor
             Name = nameof(BezierCurveC2) + " " + _count++.ToString();
             base.Children.CollectionChanged += Children_CollectionChanged;
         }
+        public BezierCurveC2(RayCaster rayCaster, string data) : this(rayCaster)
+        {
+        }
 
         private bool _spline = false;
         public bool Spline

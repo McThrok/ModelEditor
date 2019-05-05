@@ -25,6 +25,9 @@ namespace ModelEditor
             DrawWidthCount = 5;
             InitVertices();
         }
+        public BezierCylinderC0(RayCaster rayCaster, string data) : this(rayCaster)
+        {
+        }
 
         public ObjRenderData GetRenderData()
         {

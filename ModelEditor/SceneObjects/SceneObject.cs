@@ -75,6 +75,11 @@ namespace ModelEditor
         }
         #endregion
 
+        public virtual string[] GetData()
+        {
+            return null;
+        }
+
         public void SetParent(SceneObject newParent, bool hidden = false)
         {
             var global = GlobalMatrix;

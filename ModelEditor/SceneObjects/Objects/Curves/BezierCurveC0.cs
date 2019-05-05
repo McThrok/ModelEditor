@@ -16,6 +16,9 @@ namespace ModelEditor
         {
             Name = nameof(BezierCurveC0) + " " + _count++.ToString();
         }
+        public BezierCurveC0(RayCaster rayCaster, string data) : this(rayCaster)
+        {
+        }
 
         protected List<Vector3> GetVerts()
         {
