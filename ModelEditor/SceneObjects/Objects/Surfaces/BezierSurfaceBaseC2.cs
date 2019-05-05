@@ -233,7 +233,7 @@ namespace ModelEditor
         //    return result;
         //}
 
-        public int DrawPoints => 3000 / DrawHeightCount / DrawWidthCount;
+        public int DrawPoints => 3000 / (int)Math.Sqrt(DrawHeightCount * DrawWidthCount);
 
         private bool _showControlGrid;
         public bool ShowControlGrid
