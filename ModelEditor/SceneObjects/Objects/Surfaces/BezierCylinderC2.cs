@@ -126,9 +126,9 @@ namespace ModelEditor
 
 
             int w = WidthCount;
-            _knotsW = new int[w +degree+1 ];
+            _knotsW = new int[w + 2 * degree + 1];
 
-            for (int i = 0; i < w + degree+1; i++)
+            for (int i = 0; i < w + 2 * degree + 1; i++)
                 _knotsW[i] = i;
         }
     }
