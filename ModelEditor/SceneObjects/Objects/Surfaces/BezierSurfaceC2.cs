@@ -92,9 +92,39 @@ namespace ModelEditor
                     row[w].MoveLoc(position);
                 }
             }
-
+        }
+        protected override void InitKnots()
+        {
+            int degree = 3;
             _tmpW = new Vector3[WidthCount];
             _tmpH = new Vector3[HeightCount];
+
+
+            int h = HeightCount;
+            _knotsH = new int[h + degree + 1];
+
+            for (int i = 0; i < degree; i++)
+                _knotsH[i] = 0;
+
+            for (int i = 0; i < h - degree + 1; i++)
+                _knotsH[degree + i] = i;
+
+            for (int i = 0; i < degree; i++)
+                _knotsH[h + 1 + i] = h - degree;
+
+
+            int w = WidthCount;
+            _knotsW = new int[w + degree + 1];
+
+            for (int i = 0; i < degree; i++)
+                _knotsW[i] = 0;
+
+            for (int i = 0; i < w - degree + 1; i++)
+                _knotsW[degree + i] = i;
+
+            for (int i = 0; i < degree; i++)
+                _knotsW[w + 1 + i] = w - degree;
+
         }
     }
 }

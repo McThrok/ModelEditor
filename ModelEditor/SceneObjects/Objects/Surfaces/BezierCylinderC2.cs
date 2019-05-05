@@ -45,7 +45,7 @@ namespace ModelEditor
             {
                 var result = row.Select(v => v.Matrix.Translation).ToList();
                 if (result.Count > degree)
-                    for (int i = 0; i < degree + 1; i++)
+                    for (int i = 0; i < degree; i++)
                         result.Add(result[i]);
                 return result;
             }).ToList();
@@ -104,10 +104,32 @@ namespace ModelEditor
                 }
             }
 
-            int degree = 3;
-            _tmpW = new Vector3[WidthCount + degree + 1];
-            _tmpH = new Vector3[HeightCount];
         }
+        protected override void InitKnots()
+        {
+            int degree = 3;
+            _tmpW = new Vector3[WidthCount + degree];
+            _tmpH = new Vector3[HeightCount];
 
+
+            int h = HeightCount;
+            _knotsH = new int[h + degree + 1];
+
+            for (int i = 0; i < degree; i++)
+                _knotsH[i] = 0;
+
+            for (int i = 0; i < h - degree + 1; i++)
+                _knotsH[degree + i] = i;
+
+            for (int i = 0; i < degree; i++)
+                _knotsH[h + 1 + i] = h - degree;
+
+
+            int w = WidthCount;
+            _knotsW = new int[w +degree+1 ];
+
+            for (int i = 0; i < w + degree+1; i++)
+                _knotsW[i] = i;
+        }
     }
 }
