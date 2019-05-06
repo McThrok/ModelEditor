@@ -279,7 +279,7 @@ namespace ModelEditor
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.RestoreDirectory = true;
-            openFileDialog.Filter = "MG files (*.mg1)|*.mg1";
+            openFileDialog.Filter = "MG files (*.mg1)|*.mg1|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
                 Engine.Scene.LoadModel(File.ReadAllLines(openFileDialog.FileName));
         }
