@@ -77,7 +77,7 @@ namespace ModelEditor
 
         public virtual string[] GetData()
         {
-            return null;
+            return new string[0];
         }
 
         public void SetParent(SceneObject newParent, bool hidden = false)
@@ -170,11 +170,17 @@ namespace ModelEditor
             }
         }
 
-        public string GetPosition()
+        public string PositionToString()
         {
-            return GlobalMatrix.Translation.X + ";" +
-                GlobalMatrix.Translation.Y + ";" +
-                GlobalMatrix.Translation.Z + ";";
+            var translation = GlobalMatrix.Translation;
+            return translation.X + ";" + translation.Y + ";" + translation.Z;
+        }
+        public void StringToPosition (string data)
+        {
+            var parts = data.Split(';');
+            var position = new Vector3(float.Parse(parts[0]), float.Parse(parts[1]), float.Parse(parts[2]));
+            this.GlobalMatrix = Matrix4x4.Identity;
+            Move(position);
         }
 
         private bool _recalculateTransform = true;

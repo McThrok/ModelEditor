@@ -25,7 +25,7 @@ namespace ModelEditor
             DrawWidthCount = 5;
             InitVertices();
         }
-        public BezierCylinderC2(RayCaster rayCaster, string data) : this(rayCaster)
+        public BezierCylinderC2(RayCaster rayCaster, string data) : base(rayCaster, data)
         {
         }
 
@@ -148,7 +148,7 @@ namespace ModelEditor
                 for (int j = 0; j < row.Count; j++)
                 {
                     var vert = row[j];
-                    data[1] += " " + vert.GetPosition();
+                    data[1] += " " + vert.PositionToString();
                 }
             }
 

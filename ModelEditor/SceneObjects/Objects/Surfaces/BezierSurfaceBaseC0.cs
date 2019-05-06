@@ -21,6 +21,28 @@ namespace ModelEditor
             _rayCaster = rayCaster;
         }
 
+        public BezierSurfaceBaseC0(RayCaster rayCaster, string data) : this(rayCaster)
+        {
+            var parts = data.Split(' ');
+            Name = parts[0];
+            int h = int.Parse(parts[1]);
+            int w = int.Parse(parts[2]);
+            HeightPatchCount = h;
+            WidthPatchCount = w;
+
+            for (int i = 0; i < h; i++)
+            {
+                _controlVertices.Add(new List<Vertex>(w));
+                for (int j = 0; j < w; j++)
+                {
+                    var vert = new Vertex();
+                    vert.Parent = this;
+                    vert.StringToPosition(parts[i * w + h + 2]);
+                    _controlVertices[i].Add(vert);
+                }
+            }
+        }
+
         protected ObjRenderData GetControlGrid(List<List<Vector3>> verts)
         {
             var data = new ObjRenderData();
@@ -292,7 +314,7 @@ namespace ModelEditor
                 for (int j = 0; j < row.Count; j++)
                 {
                     var vert = row[j];
-                    data[1] += " " + vert.GetPosition();
+                    data[1] += " " + vert.PositionToString();
                 }
             }
 

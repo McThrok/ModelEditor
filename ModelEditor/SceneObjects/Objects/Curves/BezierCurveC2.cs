@@ -22,6 +22,15 @@ namespace ModelEditor
         }
         public BezierCurveC2(RayCaster rayCaster, string data) : this(rayCaster)
         {
+            var parts = data.Split(' ');
+            Name = parts[0];
+            Spline = parts[1] == "1";
+            for (int i = 2; i < parts.Length; i++)
+            {
+                var vert = new Vertex();
+                vert.Parent = this;
+                vert.StringToPosition(parts[i]);
+            }
         }
 
         private bool _spline = false;
@@ -448,7 +457,7 @@ namespace ModelEditor
             for (int i = 0; i < Children.Count; i++)
             {
                 var vert = Children[i];
-                data[1] += " " + vert.GetPosition();
+                data[1] += " " + vert.PositionToString();
             }
 
             return data;
