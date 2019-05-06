@@ -101,7 +101,7 @@ namespace ModelEditor
         public override string[] GetData()
         {
             var data = new string[2];
-            data[0] = "surfacec0";
+            data[0] = "surfaceC0";
             data[1] = Name.Replace(' ', '_');
             data[1] += " " + HeightPatchCount;
             data[1] += " " + WidthPatchCount;

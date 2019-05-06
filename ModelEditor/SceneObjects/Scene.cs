@@ -103,13 +103,13 @@ namespace ModelEditor
                     SceneObject obj = null;
                     switch (elementName)
                     {
-                        case "curvec0": obj = new BezierCurveC0(RayCaster, data[i]); break;
-                        case "curvec2": obj = new BezierCurveC2(RayCaster, data[i]); break;
-                        case "curveint": obj = new InterpolatingCurve(RayCaster, data[i]); break;
-                        case "surfacec0": obj = new BezierSurfaceC0(RayCaster, data[i]); break;
-                        case "surfacec2": obj = new BezierSurfaceC2(RayCaster, data[i]); break;
-                        case "tubec0": obj = new BezierCylinderC0(RayCaster, data[i]); break;
-                        case "tubec2": obj = new BezierCylinderC2(RayCaster, data[i]); break;
+                        case "curveC0": obj = new BezierCurveC0(RayCaster, data[i]); break;
+                        case "curveC2": obj = new BezierCurveC2(RayCaster, data[i]); break;
+                        case "curveInt": obj = new InterpolatingCurve(RayCaster, data[i]); break;
+                        case "surfaceC0": obj = new BezierSurfaceC0(RayCaster, data[i]); break;
+                        case "surfaceC2": obj = new BezierSurfaceC2(RayCaster, data[i]); break;
+                        case "tubeC0": obj = new BezierCylinderC0(RayCaster, data[i]); break;
+                        case "tubeC2": obj = new BezierCylinderC2(RayCaster, data[i]); break;
                         default: throw new InvalidOperationException("wrong object name");
                     }
 

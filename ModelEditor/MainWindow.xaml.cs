@@ -273,7 +273,7 @@ namespace ModelEditor
             saveFileDialog.RestoreDirectory = true;
             saveFileDialog.Filter = "Text file (*.txt)|*.txt";
             if (saveFileDialog.ShowDialog() == true)
-                File.AppendAllLines(saveFileDialog.FileName, data);
+                File.WriteAllLines(saveFileDialog.FileName, data);
         }
         private void Load_click(object sender, RoutedEventArgs e)
         {

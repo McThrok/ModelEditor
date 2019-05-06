@@ -170,10 +170,11 @@ namespace ModelEditor
             }
         }
 
-        public string PositionToString()
+        public string PositionToString(bool withName = false)
         {
             var translation = GlobalMatrix.Translation;
-            return translation.X + ";" + translation.Y + ";" + translation.Z;
+            var result = translation.X + ";" + translation.Y + ";" + translation.Z;
+            return result;
         }
         public void StringToPosition (string data)
         {

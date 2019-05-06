@@ -24,7 +24,6 @@ namespace ModelEditor
         {
             var parts = data.Split(' ');
             Name = parts[0];
-            Spline = parts[1] == "1";
             for (int i = 2; i < parts.Length; i++)
             {
                 var vert = new Vertex();
@@ -451,9 +450,8 @@ namespace ModelEditor
         public override string[] GetData()
         {
             var data = new string[2];
-            data[0] = "curvec2";
+            data[0] = "curveC2";
             data[1] = Name.Replace(' ','_');
-            data[1] += " " + (Spline ? "1" : "0");
             for (int i = 0; i < Children.Count; i++)
             {
                 var vert = Children[i];
