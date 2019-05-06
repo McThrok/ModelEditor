@@ -271,7 +271,7 @@ namespace ModelEditor
             var data = Engine.Scene.GetSaveData();
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.RestoreDirectory = true;
-            saveFileDialog.Filter = "Text file (*.txt)|*.txt";
+            saveFileDialog.Filter = "MG files (*.mg1)|*.mg1";
             if (saveFileDialog.ShowDialog() == true)
                 File.WriteAllLines(saveFileDialog.FileName, data);
         }
@@ -279,7 +279,7 @@ namespace ModelEditor
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.RestoreDirectory = true;
-            openFileDialog.Filter = "Text file (*.txt)|*.txt";
+            openFileDialog.Filter = "MG files (*.mg1)|*.mg1";
             if (openFileDialog.ShowDialog() == true)
                 Engine.Scene.LoadModel(File.ReadAllLines(openFileDialog.FileName));
         }

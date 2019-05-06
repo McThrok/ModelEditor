@@ -27,6 +27,8 @@ namespace ModelEditor
         }
         public BezierCylinderC2(RayCaster rayCaster, string data) : base(rayCaster, data)
         {
+            DrawHeightCount = 5;
+            DrawWidthCount = 5;
         }
 
         public ObjRenderData GetRenderData()
@@ -138,7 +140,7 @@ namespace ModelEditor
         public override string[] GetData()
         {
             var data = new string[2];
-            data[0] = "tubeC2";
+            data[0] = "tubeC2 1";
             data[1] = Name.Replace(' ', '_');
             data[1] += " " + HeightPatchCount;
             data[1] += " " + WidthPatchCount;

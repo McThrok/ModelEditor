@@ -332,7 +332,7 @@ namespace ModelEditor
         public override string[] GetData()
         {
             var data = new string[2];
-            data[0] = "curveint";
+            data[0] = "curveInt 1";
             data[1] = Name.Replace(' ', '_');
             data[1] += " " +( Chords ? "1" : "0");
             for (int i = 0; i < Children.Count; i++)

@@ -28,20 +28,19 @@ namespace ModelEditor
         {
             var parts = data.Split(' ');
             Name = parts[0];
-            int h = int.Parse(parts[1]);
-            int w = int.Parse(parts[2]);
-            HeightPatchCount = h;
-            WidthPatchCount = w;
+            HeightPatchCount = int.Parse(parts[1]);
+            WidthPatchCount = int.Parse(parts[2]);
+            int h = HeightCount;
+            int w = WidthCount;
+
+            InitVertices();
 
             for (int i = 0; i < h; i++)
             {
-                _controlVertices.Add(new List<Vertex>(w));
                 for (int j = 0; j < w; j++)
                 {
-                    var vert = new Vertex();
-                    vert.Parent = this;
-                    vert.StringToPosition(parts[i * w + h + 2]);
-                    _controlVertices[i].Add(vert);
+                    var vert = _controlVertices[i][j];
+                    vert.StringToPosition(parts[i * w + j + 3]);
                 }
             }
         }
