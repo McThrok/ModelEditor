@@ -19,8 +19,8 @@ namespace ModelEditor
 
             _height = 10;
             _range = 10;
-            HeightCount = 5;
-            WidthCount = 5;
+            HeightPatchCount = 2;
+            WidthPatchCount = 2;
             DrawHeightCount = 5;
             DrawWidthCount = 5;
             InitVertices();
@@ -133,6 +133,26 @@ namespace ModelEditor
 
             for (int i = 0; i < w + 2 * degree + 1; i++)
                 _knotsW[i] = i;
+        }
+
+        public override string[] GetData()
+        {
+            var data = new string[2];
+            data[0] = "tubec2";
+            data[1] = Name.Replace(' ', '_');
+            data[1] += " " + HeightPatchCount;
+            data[1] += " " + WidthPatchCount;
+            for (int i = 0; i < _controlVertices.Count; i++)
+            {
+                var row = _controlVertices[i];
+                for (int j = 0; j < row.Count; j++)
+                {
+                    var vert = row[j];
+                    data[1] += " " + vert.GetPosition();
+                }
+            }
+
+            return data;
         }
     }
 }

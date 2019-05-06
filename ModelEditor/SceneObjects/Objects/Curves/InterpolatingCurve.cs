@@ -319,5 +319,20 @@ namespace ModelEditor
                 }
             }
         }
+
+        public override string[] GetData()
+        {
+            var data = new string[2];
+            data[0] = "curveint";
+            data[1] = Name.Replace(' ', '_');
+            data[1] += " " +( Chords ? "1" : "0");
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var vert = Children[i];
+                data[1] += " " + vert.GetPosition();
+            }
+
+            return data;
+        }
     }
 }

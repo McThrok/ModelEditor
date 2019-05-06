@@ -105,7 +105,7 @@ namespace ModelEditor
                     {
                         case "curvec0": obj = new BezierCurveC0(RayCaster, data[i]); break;
                         case "curvec2": obj = new BezierCurveC2(RayCaster, data[i]); break;
-                        case "curveInt": obj = new InterpolatingCurve(RayCaster, data[i]); break;
+                        case "curveint": obj = new InterpolatingCurve(RayCaster, data[i]); break;
                         case "surfacec0": obj = new BezierSurfaceC0(RayCaster, data[i]); break;
                         case "surfacec2": obj = new BezierSurfaceC2(RayCaster, data[i]); break;
                         case "tubec0": obj = new BezierCylinderC0(RayCaster, data[i]); break;

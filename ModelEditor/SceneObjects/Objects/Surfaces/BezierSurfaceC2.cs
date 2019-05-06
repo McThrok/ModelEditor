@@ -19,8 +19,8 @@ namespace ModelEditor
 
             _height = 10;
             _width = 10;
-            HeightCount = 5;
-            WidthCount = 5;
+            HeightPatchCount = 2;
+            WidthPatchCount = 2;
             DrawHeightCount = 5;
             DrawWidthCount = 5;
             InitVertices();
@@ -127,7 +127,26 @@ namespace ModelEditor
 
             for (int i = 0; i < degree; i++)
                 _knotsW[w + 1 + i] = w - degree;
+        }
 
+        public override string[] GetData()
+        {
+            var data = new string[2];
+            data[0] = "surfacec2";
+            data[1] = Name.Replace(' ', '_');
+            data[1] += " " + HeightPatchCount;
+            data[1] += " " + WidthPatchCount;
+            for (int i = 0; i < _controlVertices.Count; i++)
+            {
+                var row = _controlVertices[i];
+                for (int j = 0; j < row.Count; j++)
+                {
+                    var vert = row[j];
+                    data[1] += " " + vert.GetPosition();
+                }
+            }
+
+            return data;
         }
     }
 }

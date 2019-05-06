@@ -124,7 +124,7 @@ namespace ModelEditor
             {
                 for (int w = 0; w < 4; w++)
                 {
-                    point += verts[idxH + h][idxW + w] * GetB(h,tu) * GetB(w,tv);
+                    point += verts[idxH + h][idxW + w] * GetB(h, tu) * GetB(w, tv);
                 }
             }
 
@@ -146,7 +146,7 @@ namespace ModelEditor
             return 0;
         }
 
-        public int DrawPoints => 3000/ DrawHeightCount/ DrawWidthCount/ WidthPatchCount/ HeightPatchCount;
+        public int DrawPoints => 3000 / DrawHeightCount / DrawWidthCount / WidthPatchCount / HeightPatchCount;
 
         private bool _showControlGrid;
         public bool ShowControlGrid
@@ -277,6 +277,26 @@ namespace ModelEditor
             var vert = new Vertex();
             vert.SetParent(this, true);
             return vert;
+        }
+
+        public override string[] GetData()
+        {
+            var data = new string[2];
+            data[0] = "tubec0";
+            data[1] = Name.Replace(' ', '_');
+            data[1] += " " + HeightPatchCount;
+            data[1] += " " + WidthPatchCount;
+            for (int i = 0; i < _controlVertices.Count; i++)
+            {
+                var row = _controlVertices[i];
+                for (int j = 0; j < row.Count; j++)
+                {
+                    var vert = row[j];
+                    data[1] += " " + vert.GetPosition();
+                }
+            }
+
+            return data;
         }
     }
 }

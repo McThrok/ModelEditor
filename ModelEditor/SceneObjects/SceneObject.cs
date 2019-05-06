@@ -170,6 +170,13 @@ namespace ModelEditor
             }
         }
 
+        public string GetPosition()
+        {
+            return GlobalMatrix.Translation.X + ";" +
+                GlobalMatrix.Translation.Y + ";" +
+                GlobalMatrix.Translation.Z + ";";
+        }
+
         private bool _recalculateTransform = true;
         private Transform _transform;
         public Transform Transform

@@ -438,5 +438,20 @@ namespace ModelEditor
 
             return vert;
         }
+
+        public override string[] GetData()
+        {
+            var data = new string[2];
+            data[0] = "curvec2";
+            data[1] = Name.Replace(' ','_');
+            data[1] += " " + (Spline ? "1" : "0");
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var vert = Children[i];
+                data[1] += " " + vert.GetPosition();
+            }
+
+            return data;
+        }
     }
 }

@@ -238,9 +238,9 @@
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Control Grid:" VerticalAlignment="Center" TextAlignment="Center" />
                         <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding SelectedObject.ShowControlGrid, ElementName=mainWindow, Mode=TwoWay }" />
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Width count:" VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedObject.WidthCount, ElementName=mainWindow}" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedObject.WidthPatchCount, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Height count:" VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedObject.HeightCount, ElementName=mainWindow}" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedObject.HeightPatchCount, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Draw height:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedObject.DrawHeightCount, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Draw width:" VerticalAlignment="Center" TextAlignment="Center" />

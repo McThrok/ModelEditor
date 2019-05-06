@@ -47,6 +47,19 @@ namespace ModelEditor
             return data;
         }
 
+        public override string[] GetData()
+        {
+            var data = new string[2];
+            data[0] = "curvec0";
+            data[1] = Name.Replace(' ', '_');
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var vert = Children[i];
+                data[1] += " " + vert.GetPosition();
+            }
+
+            return data;
+        }
     }
 }
 

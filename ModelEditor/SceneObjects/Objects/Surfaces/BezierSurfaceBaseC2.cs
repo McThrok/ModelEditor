@@ -60,7 +60,7 @@ namespace ModelEditor
         {
             var data = new ObjRenderData();
 
-            var dh = DrawHeightCount;
+            var dh = DrawHeightCount * HeightPatchCount;
             for (int h = 0; h < dh; h++)
             {
                 var tu = 1f * h / (dh - 1);
@@ -68,7 +68,7 @@ namespace ModelEditor
                 data.AddLine(GetLine(_tmpW, _knotsW));
             }
 
-            var dw = DrawWidthCount;
+            var dw = DrawWidthCount * WidthPatchCount;
             for (int w = 0; w < dw; w++)
             {
                 var tv = 1f * w / (dw - 1);
@@ -295,43 +295,51 @@ namespace ModelEditor
 
         }
 
-        private int _widthCount;
+        private int _widthPatchCount;
+        public int WidthPatchCount
+        {
+            get => _widthPatchCount;
+            set
+            {
+                var newValue = value;
+                newValue = Math.Max(1, newValue);
+                if (_widthPatchCount != newValue)
+                {
+                    _widthPatchCount = newValue;
+                    InitVertices();
+                    InvokePropertyChanged(nameof(WidthPatchCount));
+                }
+            }
+
+        }
+
+        private int _heightPatchCount;
+        public int HeightPatchCount
+        {
+            get => _heightPatchCount;
+            set
+            {
+                var newValue = value;
+                newValue = Math.Max(1, newValue);
+
+                if (_heightPatchCount != newValue)
+                {
+                    _heightPatchCount = newValue;
+                    InitVertices();
+                    InvokePropertyChanged(nameof(HeightPatchCount));
+                }
+            }
+
+        }
+
         public int WidthCount
         {
-            get => _widthCount;
-            set
-            {
-                var newValue = value;
-                newValue = Math.Max(1, newValue);
-                if (_widthCount != newValue)
-                {
-                    _widthCount = newValue;
-                    InitVertices();
-                    InvokePropertyChanged(nameof(WidthCount));
-                }
-            }
-
+            get => 3 * WidthPatchCount + 1;
         }
-
-        private int _heightCount;
         public int HeightCount
         {
-            get => _heightCount;
-            set
-            {
-                var newValue = value;
-                newValue = Math.Max(1, newValue);
-
-                if (_heightCount != newValue)
-                {
-                    _heightCount = newValue;
-                    InitVertices();
-                    InvokePropertyChanged(nameof(HeightCount));
-                }
-            }
-
+            get => 3 * HeightPatchCount + 1;
         }
-
 
         protected abstract void InitPositions();
         protected abstract void InitKnots();
