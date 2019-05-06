@@ -17,8 +17,8 @@ namespace ModelEditor
         {
             Name = nameof(BezierCylinderC2) + " " + _count++.ToString();
 
-            _height = 10;
-            _range = 10;
+            _height = 5;
+            _range = 5;
             HeightPatchCount = 2;
             WidthPatchCount = 2;
             DrawHeightCount = 5;

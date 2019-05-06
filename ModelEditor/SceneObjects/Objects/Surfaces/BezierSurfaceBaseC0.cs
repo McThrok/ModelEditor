@@ -25,148 +25,147 @@ namespace ModelEditor
         {
             var parts = data.Split(' ');
             Name = parts[0];
-            int h = int.Parse(parts[1]);
-            int w = int.Parse(parts[2]);
-            HeightPatchCount = h;
-            WidthPatchCount = w;
+            HeightPatchCount = int.Parse(parts[1]);
+            WidthPatchCount = int.Parse(parts[2]);
+            int h = HeightVertexCount;
+            int w = WidthVertexCount;
+
+            InitVertices();
 
             for (int i = 0; i < h; i++)
             {
-                _controlVertices.Add(new List<Vertex>(w));
                 for (int j = 0; j < w; j++)
                 {
-                    var vert = new Vertex();
-                    vert.Parent = this;
-                    vert.StringToPosition(parts[i * w + h + 2]);
-                    _controlVertices[i].Add(vert);
+                    var vert = _controlVertices[i][j];
+                    vert.StringToPosition(parts[i * w + j + 3]);
                 }
             }
         }
 
-            protected ObjRenderData GetControlGrid(List<List<Vector3>> verts)
+        protected ObjRenderData GetControlGrid(List<List<Vector3>> verts)
+        {
+            var data = new ObjRenderData();
+            data.Vertices = verts.SelectMany(x => x).ToList();
+
+            var count = 0;
+            for (int h = 0; h < verts.Count; h++)
             {
-                var data = new ObjRenderData();
-                data.Vertices = verts.SelectMany(x => x).ToList();
-
-                var count = 0;
-                for (int h = 0; h < verts.Count; h++)
+                var row = verts[h];
+                for (int w = 0; w < row.Count - 1; w++)
                 {
-                    var row = verts[h];
-                    for (int w = 0; w < row.Count - 1; w++)
-                    {
-                        var idx = count + w;
-                        data.Edges.Add(new Edge(idx, idx + 1));
-                    }
-                    count += row.Count;
+                    var idx = count + w;
+                    data.Edges.Add(new Edge(idx, idx + 1));
                 }
-
-                count = 0;
-                for (int h = 0; h < verts.Count - 1; h++)
-                {
-                    var row = verts[h];
-                    for (int w = 0; w < row.Count; w++)
-                    {
-                        var idx = count + w;
-                        data.Edges.Add(new Edge(idx, idx + row.Count));
-                    }
-                    count += row.Count;
-                }
-
-                return data;
-            }
-            protected ObjRenderData GetGrid(List<List<Vector3>> verts)
-            {
-                var data = new ObjRenderData();
-
-                var H = HeightPatchCount;
-                var W = WidthPatchCount;
-
-                for (int h = 0; h < H; h++)
-                    for (int w = 0; w < W; w++)
-                        data.Add(GetGridForPatch(verts, h, w));
-
-                return data;
+                count += row.Count;
             }
 
-            private ObjRenderData GetGridForPatch(List<List<Vector3>> verts, int pIdxH, int pIdxW)
+            count = 0;
+            for (int h = 0; h < verts.Count - 1; h++)
             {
-                var data = new ObjRenderData();
-
-                var dh = DrawHeightCount;
-                var pw = WidthPatchCount;
-                for (int h = 0; h < dh; h++)
+                var row = verts[h];
+                for (int w = 0; w < row.Count; w++)
                 {
-                    var tu = 1f * h / (dh - 1);
-
-                    for (int w = 0; w < pw; w++)
-                        data.AddLine(GetWidthSegmentPrimitive(verts, pIdxH * 3, pIdxW * 3, tu));
+                    var idx = count + w;
+                    data.Edges.Add(new Edge(idx, idx + row.Count));
                 }
-
-                var dw = DrawWidthCount;
-                var ph = HeightPatchCount;
-
-                for (int w = 0; w < dw; w++)
-                {
-                    var tv = 1f * w / (dw - 1);
-
-                    for (int h = 0; h < ph; h++)
-                        data.AddLine(GetHeightSegmentPrimitive(verts, pIdxW * 3, pIdxH * 3, tv));
-                }
-
-                return data;
+                count += row.Count;
             }
 
-            protected List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
+            return data;
+        }
+        protected ObjRenderData GetGrid(List<List<Vector3>> verts)
+        {
+            var data = new ObjRenderData();
+
+            var H = HeightPatchCount;
+            var W = WidthPatchCount;
+
+            for (int h = 0; h < H; h++)
+                for (int w = 0; w < W; w++)
+                    data.Add(GetGridForPatch(verts, h, w));
+
+            return data;
+        }
+
+        private ObjRenderData GetGridForPatch(List<List<Vector3>> verts, int pIdxH, int pIdxW)
+        {
+            var data = new ObjRenderData();
+
+            var dh = DrawHeightCount;
+            var pw = WidthPatchCount;
+            for (int h = 0; h < dh; h++)
             {
-                var curve = new List<Vector3>();
-                int n = DrawPoints;
-                for (int i = 0; i < n + 1; i++)
+                var tu = 1f * h / (dh - 1);
+
+                for (int w = 0; w < pw; w++)
+                    data.AddLine(GetWidthSegmentPrimitive(verts, pIdxH * 3, pIdxW * 3, tu));
+            }
+
+            var dw = DrawWidthCount;
+            var ph = HeightPatchCount;
+
+            for (int w = 0; w < dw; w++)
+            {
+                var tv = 1f * w / (dw - 1);
+
+                for (int h = 0; h < ph; h++)
+                    data.AddLine(GetHeightSegmentPrimitive(verts, pIdxW * 3, pIdxH * 3, tv));
+            }
+
+            return data;
+        }
+
+        protected List<Vector3> GetHeightSegmentPrimitive(List<List<Vector3>> verts, int idxW, int idxH, float tv)
+        {
+            var curve = new List<Vector3>();
+            int n = DrawPoints;
+            for (int i = 0; i < n + 1; i++)
+            {
+                curve.Add(GetValue(verts, idxH, idxW, 1f * i / n, tv));
+            }
+
+            return curve;
+        }
+        protected List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
+        {
+            var curve = new List<Vector3>();
+            int n = DrawPoints;
+            for (int i = 0; i < n + 1; i++)
+            {
+                curve.Add(GetValue(verts, idxH, idxW, tu, 1f * i / n));
+            }
+
+            return curve;
+        }
+
+        protected Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        {
+            var point = Vector3.Zero;
+            for (int h = 0; h < 4; h++)
+            {
+                for (int w = 0; w < 4; w++)
                 {
-                    curve.Add(GetValue(verts, idxH, idxW, 1f * i / n, tv));
+                    point += verts[idxH + h][idxW + w] * GetB(h, tu) * GetB(w, tv);
                 }
-
-                return curve;
-            }
-            protected List<Vector3> GetWidthSegmentPrimitive(List<List<Vector3>> verts, int idxH, int idxW, float tu)
-            {
-                var curve = new List<Vector3>();
-                int n = DrawPoints;
-                for (int i = 0; i < n + 1; i++)
-                {
-                    curve.Add(GetValue(verts, idxH, idxW, tu, 1f * i / n));
-                }
-
-                return curve;
             }
 
-            protected Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
-            {
-                var point = Vector3.Zero;
-                for (int h = 0; h < 4; h++)
-                {
-                    for (int w = 0; w < 4; w++)
-                    {
-                        point += verts[idxH + h][idxW + w] * GetB(h, tu) * GetB(w, tv);
-                    }
-                }
+            return point;
+        }
+        private float GetB(int i, float t)
+        {
+            float c = 1.0f - t;
 
-                return point;
-            }
-            private float GetB(int i, float t)
-            {
-                float c = 1.0f - t;
+            if (i == 0)
+                return c * c * c;
+            if (i == 1)
+                return 3 * t * c * c;
+            if (i == 2)
+                return 3 * t * t * c;
+            if (i == 3)
+                return t * t * t;
 
-                if (i == 0)
-                    return c * c * c;
-                if (i == 1)
-                    return 3 * t * c * c;
-                if (i == 2)
-                    return 3 * t * t * c;
-                if (i == 3)
-                    return t * t * t;
-
-                return 0;
-            }
+            return 0;
+        }
 
         public int DrawPoints => 3000 / DrawHeightCount / DrawWidthCount / WidthPatchCount / HeightPatchCount;
 

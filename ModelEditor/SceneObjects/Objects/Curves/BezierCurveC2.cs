@@ -24,10 +24,10 @@ namespace ModelEditor
         {
             var parts = data.Split(' ');
             Name = parts[0];
-            for (int i = 2; i < parts.Length; i++)
+            for (int i = 1; i < parts.Length; i++)
             {
                 var vert = new Vertex();
-                vert.Parent = this;
+                vert.SetParent(this);
                 vert.StringToPosition(parts[i]);
             }
         }

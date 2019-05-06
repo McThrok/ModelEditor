@@ -23,7 +23,7 @@ namespace ModelEditor
             for (int i = 1; i < parts.Length; i++)
             {
                 var vert = new Vertex();
-                vert.Parent = this;
+                vert.SetParent(this);
                 vert.StringToPosition(parts[i]);
             }
         }
