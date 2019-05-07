@@ -108,27 +108,27 @@ namespace ModelEditor
             int h = HeightCount;
             _knotsH = new int[h + degree + 1];
 
-            for (int i = 0; i < degree; i++)
-                _knotsH[i] = 0;
+            //for (int i = 0; i < degree; i++)
+            //    _knotsH[i] = 0;
 
-            for (int i = 0; i < h - degree + 1; i++)
-                _knotsH[degree + i] = i;
+            for (int i = 0; i < h + degree + 1; i++)
+                _knotsH[ i] = i;
 
-            for (int i = 0; i < degree; i++)
-                _knotsH[h + 1 + i] = h - degree;
+            //for (int i = 0; i < degree; i++)
+            //    _knotsH[h + 1 + i] = h - degree;
 
 
             int w = WidthCount;
             _knotsW = new int[w + degree + 1];
 
-            for (int i = 0; i < degree; i++)
-                _knotsW[i] = 0;
+            //for (int i = 0; i < degree; i++)
+            //    _knotsW[i] = 0;
 
-            for (int i = 0; i < w - degree + 1; i++)
-                _knotsW[degree + i] = i;
+            for (int i = 0; i < w + degree + 1; i++)
+                _knotsW[ i] = i;
 
-            for (int i = 0; i < degree; i++)
-                _knotsW[w + 1 + i] = w - degree;
+            //for (int i = 0; i < degree; i++)
+            //    _knotsW[w + 1 + i] = w - degree;
         }
 
         public override string[] GetData()

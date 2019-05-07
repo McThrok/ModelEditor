@@ -120,14 +120,18 @@ namespace ModelEditor
             int h = HeightCount;
             _knotsH = new int[h + degree + 1];
 
-            for (int i = 0; i < degree; i++)
-                _knotsH[i] = 0;
+            //for (int i = 0; i < degree; i++)
+            //    _knotsH[i] = 0;
 
-            for (int i = 0; i < h - degree + 1; i++)
-                _knotsH[degree + i] = i;
+            //for (int i = 0; i < h - degree + 1; i++)
+            //    _knotsH[degree + i] = i;
 
-            for (int i = 0; i < degree; i++)
-                _knotsH[h + 1 + i] = h - degree;
+            for (int i = 0; i < h + degree + 1; i++)
+                _knotsH[i] = i;
+
+
+            //for (int i = 0; i < degree; i++)
+            //    _knotsH[h + 1 + i] = h - degree;
 
 
             int w = WidthCount;

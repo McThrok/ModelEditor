@@ -20,8 +20,8 @@ namespace ModelEditor
         {
             var parts = data.Split(' ');
             Name = parts[0];
-            Chords = parts[1] == "1";
-            for (int i = 2; i < parts.Length; i++)
+            //Chords = parts[1] == "1";
+            for (int i = 1; i < parts.Length; i++)
             {
                 var vert = new Vertex();
                 vert.SetParent(this);
@@ -334,7 +334,7 @@ namespace ModelEditor
             var data = new string[2];
             data[0] = "curveInt 1";
             data[1] = Name.Replace(' ', '_');
-            data[1] += " " +( Chords ? "1" : "0");
+            //data[1] += " " +( Chords ? "1" : "0");
             for (int i = 0; i < Children.Count; i++)
             {
                 var vert = Children[i];

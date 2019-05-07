@@ -13,12 +13,18 @@ namespace ModelEditor
     {
         private static int _count = 0;
         private ScreenRenderData _screenRenderData;
-        private int _range = 2;
+        private int _range = 1;
 
         public Vertex()
         {
             Name = nameof(Vertex) + _count++.ToString();
             Holdable = true;
+        }
+        public Vertex(string data)
+        {
+            var parts = data.Split(' ');
+            Name = parts[0];
+            StringToPosition(parts[1]);
         }
 
         public ScreenRenderData GetScreenRenderData()
@@ -38,6 +44,16 @@ namespace ModelEditor
             }
 
             return _screenRenderData;
+        }
+
+        public override string[] GetData()
+        {
+            var data = new string[2];
+            data[0] = "point 1";
+            data[1] = Name.Replace(' ', '_');
+            data[1] += " " + PositionToString();
+
+            return data;
         }
     }
 }

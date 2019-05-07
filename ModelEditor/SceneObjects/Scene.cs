@@ -102,16 +102,18 @@ namespace ModelEditor
                 {
                     i += 1;
                     SceneObject obj = null;
+                    var d = data[i + j].Replace('.', ',');
                     switch (elementName)
                     {
-                        case "curveC0": obj = new BezierCurveC0(RayCaster, data[i + j]); break;
-                        case "curveC2": obj = new BezierCurveC2(RayCaster, data[i + j]); break;
-                        case "curveInt": obj = new InterpolatingCurve(RayCaster, data[i + j]); break;
-                        case "surfaceC0": obj = new BezierSurfaceC0(RayCaster, data[i + j]); break;
-                        case "surfaceC2": obj = new BezierSurfaceC2(RayCaster, data[i + j]); break;
-                        case "tubeC0": obj = new BezierCylinderC0(RayCaster, data[i + j]); break;
-                        case "tubeC2": obj = new BezierCylinderC2(RayCaster, data[i + j]); break;
-                        default: throw new InvalidOperationException("wrong object name");
+                        case "curveC0": obj = new BezierCurveC0(RayCaster, d); break;
+                        case "curveC2": obj = new BezierCurveC2(RayCaster, d); break;
+                        case "curveInt": obj = new InterpolatingCurve(RayCaster, d); break;
+                        case "surfaceC0": obj = new BezierSurfaceC0(RayCaster, d); break;
+                        case "surfaceC2": obj = new BezierSurfaceC2(RayCaster, d); break;
+                        case "tubeC0": obj = new BezierCylinderC0(RayCaster, d); break;
+                        case "tubeC2": obj = new BezierCylinderC2(RayCaster, d); break;
+                        case "point": obj = new Vertex(d); break;
+                        default: break;
                     }
 
                     if (obj != null)
@@ -126,7 +128,12 @@ namespace ModelEditor
 
             foreach (var child in Children)
             {
-                data.AddRange(child.GetData());
+                var d = child.GetData();
+                for (int i = 0; i < d.Length; i++)
+                {
+                    d[i].Replace(',', '.');
+                }
+                data.AddRange(d);
             }
 
             return data.ToArray();
