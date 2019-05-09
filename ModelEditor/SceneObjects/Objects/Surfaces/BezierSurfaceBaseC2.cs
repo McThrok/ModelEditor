@@ -262,7 +262,6 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(ShowGrid));
                 }
             }
-
         }
 
         private int _drawHeightCount;
@@ -277,7 +276,6 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(DrawHeightCount));
                 }
             }
-
         }
 
         private int _drawWidthCount;
@@ -292,7 +290,6 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(DrawWidthCount));
                 }
             }
-
         }
 
         private int _widthPatchCount;
@@ -310,7 +307,6 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(WidthPatchCount));
                 }
             }
-
         }
 
         private int _heightPatchCount;
@@ -329,7 +325,6 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(HeightPatchCount));
                 }
             }
-
         }
 
         public int WidthCount
@@ -341,21 +336,7 @@ namespace ModelEditor
             get => 3 * HeightPatchCount + 1;
         }
 
-        protected abstract void InitPositions();
-        protected abstract void InitKnots();
-        protected void InitVertices()
-        {
-            HiddenChildren.Clear();
-            _controlVertices.Clear();
-
-            _controlVertices.AddRange(
-                Enumerable.Range(0, HeightCount).Select(
-                    h => Enumerable.Range(0, WidthCount).Select(
-                        w => CreateControlVertex()).ToList()).ToList());
-
-            InitPositions();
-            InitKnots();
-        }
+        protected abstract void InitVertices();
 
         protected Vertex CreateControlVertex()
         {

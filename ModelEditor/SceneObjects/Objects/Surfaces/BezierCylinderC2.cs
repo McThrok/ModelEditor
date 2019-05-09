@@ -35,7 +35,7 @@ namespace ModelEditor
             HeightPatchCount = int.Parse(parts[1]);
             WidthPatchCount = int.Parse(parts[2]);
             int h = HeightCount;
-            int w = WidthCount - 1;
+            int w = RangeCount;
 
             InitVertices();
 
@@ -46,8 +46,6 @@ namespace ModelEditor
                     var vert = _controlVertices[i][j];
                     vert.StringToPosition(parts[i * w + j + 3]);
                 }
-                var vertQ = _controlVertices[i][w];
-                vertQ.StringToPosition(parts[i * w + 3]);
             }
         }
 
@@ -69,9 +67,11 @@ namespace ModelEditor
             return _controlVertices.Select(row =>
             {
                 var result = row.Select(v => v.Matrix.Translation).ToList();
-                if (result.Count > degree)
-                    for (int i = 0; i < degree; i++)
-                        result.Add(result[i]);
+                if (result.Count > 0)
+                {
+                    for (int i = 0; i < degree + 1; i++)
+                        result.Add(result[i % result.Count]);
+                }
                 return result;
             }).ToList();
 
@@ -109,10 +109,29 @@ namespace ModelEditor
 
         }
 
-        protected override void InitPositions()
+        public int RangeCount
+        {
+            get => WidthPatchCount == 1 ? WidthCount : WidthCount - 1;
+        }
+
+        protected override void InitVertices()
+        {
+            HiddenChildren.Clear();
+            _controlVertices.Clear();
+
+            _controlVertices.AddRange(
+                Enumerable.Range(0, HeightCount).Select(
+                    h => Enumerable.Range(0, RangeCount).Select(
+                        w => CreateControlVertex()).ToList()).ToList());
+
+            InitPositions();
+            InitKnots();
+
+        }
+        protected void InitPositions()
         {
             var startH = -Height / 2;
-            var stepH = Height / (HeightCount - 1);
+            var stepH = Height / (HeightCount + 1);
 
             for (int h = 0; h < _controlVertices.Count; h++)
             {
@@ -130,7 +149,7 @@ namespace ModelEditor
             }
 
         }
-        protected override void InitKnots()
+        protected void InitKnots()
         {
             int degree = 3;
             _tmpW = new Vector3[WidthCount + degree];
@@ -160,7 +179,7 @@ namespace ModelEditor
             for (int i = 0; i < _controlVertices.Count; i++)
             {
                 var row = _controlVertices[i];
-                for (int j = 0; j < row.Count - 1; j++)
+                for (int j = 0; j < row.Count; j++)
                 {
                     var vert = row[j];
                     data[1] += " " + vert.PositionToString();

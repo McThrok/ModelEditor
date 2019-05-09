@@ -46,8 +46,7 @@ namespace ModelEditor
                     var vert = _controlVertices[i][j];
                     vert.StringToPosition(parts[i * w + j + 3]);
                 }
-                var vertQ = _controlVertices[i][w];
-                vertQ.StringToPosition(parts[i * w + 3]);
+
             }
         }
 
@@ -68,8 +67,8 @@ namespace ModelEditor
             return _controlVertices.Select(row =>
             {
                 var result = row.Select(v => v.Matrix.Translation).ToList();
-                //if (result.Count > 0)
-                //    result.Add(result[0]);
+                if (result.Count > 0)
+                    result.Add(result[0]);
                 return result;
             }).ToList();
 
@@ -138,7 +137,7 @@ namespace ModelEditor
             for (int i = 0; i < _controlVertices.Count; i++)
             {
                 var row = _controlVertices[i];
-                for (int j = 0; j < row.Count - 1; j++)
+                for (int j = 0; j < row.Count; j++)
                 {
                     var vert = row[j];
                     data[1] += " " + vert.PositionToString();

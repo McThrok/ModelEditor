@@ -79,7 +79,6 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(Height));
                 }
             }
-
         }
 
         private float _width;
@@ -95,10 +94,23 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(Width));
                 }
             }
-
         }
 
-        protected override void InitPositions()
+        protected override void InitVertices()
+        {
+            HiddenChildren.Clear();
+            _controlVertices.Clear();
+
+            _controlVertices.AddRange(
+                Enumerable.Range(0, HeightCount).Select(
+                    h => Enumerable.Range(0, WidthCount).Select(
+                        w => CreateControlVertex()).ToList()).ToList());
+
+            InitPositions();
+            InitKnots();
+
+        }
+        protected void InitPositions()
         {
             var startW = -Width / 2;
             var startH = -Height / 2;
@@ -116,7 +128,7 @@ namespace ModelEditor
                 }
             }
         }
-        protected override void InitKnots()
+        protected void InitKnots()
         {
             int degree = 3;
             _tmpW = new Vector3[WidthCount];
@@ -127,13 +139,13 @@ namespace ModelEditor
             _knotsH = new int[h + degree + 1];
 
             for (int i = 0; i < h + degree + 1; i++)
-                _knotsH[ i] = i;
+                _knotsH[i] = i;
 
             int w = WidthCount;
             _knotsW = new int[w + degree + 1];
 
             for (int i = 0; i < w + degree + 1; i++)
-                _knotsW[ i] = i;
+                _knotsW[i] = i;
         }
 
         public override string[] GetData()
