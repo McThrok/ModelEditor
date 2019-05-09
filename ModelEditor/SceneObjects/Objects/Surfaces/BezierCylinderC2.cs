@@ -25,10 +25,30 @@ namespace ModelEditor
             DrawWidthCount = 5;
             InitVertices();
         }
-        public BezierCylinderC2(RayCaster rayCaster, string data) : base(rayCaster, data)
+        public BezierCylinderC2(RayCaster rayCaster, string data) : base(rayCaster)
         {
             DrawHeightCount = 5;
             DrawWidthCount = 5;
+
+            var parts = data.Split(' ');
+            Name = parts[0];
+            HeightPatchCount = int.Parse(parts[1]);
+            WidthPatchCount = int.Parse(parts[2]);
+            int h = HeightCount;
+            int w = WidthCount - 1;
+
+            InitVertices();
+
+            for (int i = 0; i < h; i++)
+            {
+                for (int j = 0; j < w; j++)
+                {
+                    var vert = _controlVertices[i][j];
+                    vert.StringToPosition(parts[i * w + j + 3]);
+                }
+                var vertQ = _controlVertices[i][w];
+                vertQ.StringToPosition(parts[i * w + 3]);
+            }
         }
 
         public ObjRenderData GetRenderData()
@@ -120,19 +140,8 @@ namespace ModelEditor
             int h = HeightCount;
             _knotsH = new int[h + degree + 1];
 
-            //for (int i = 0; i < degree; i++)
-            //    _knotsH[i] = 0;
-
-            //for (int i = 0; i < h - degree + 1; i++)
-            //    _knotsH[degree + i] = i;
-
             for (int i = 0; i < h + degree + 1; i++)
                 _knotsH[i] = i;
-
-
-            //for (int i = 0; i < degree; i++)
-            //    _knotsH[h + 1 + i] = h - degree;
-
 
             int w = WidthCount;
             _knotsW = new int[w + 2 * degree + 1];
@@ -151,7 +160,7 @@ namespace ModelEditor
             for (int i = 0; i < _controlVertices.Count; i++)
             {
                 var row = _controlVertices[i];
-                for (int j = 0; j < row.Count; j++)
+                for (int j = 0; j < row.Count - 1; j++)
                 {
                     var vert = row[j];
                     data[1] += " " + vert.PositionToString();

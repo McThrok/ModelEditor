@@ -25,10 +25,28 @@ namespace ModelEditor
             DrawWidthCount = 5;
             InitVertices();
         }
-        public BezierSurfaceC2(RayCaster rayCaster, string data) : base(rayCaster, data)
+        public BezierSurfaceC2(RayCaster rayCaster, string data) : base(rayCaster)
         {
             DrawHeightCount = 5;
             DrawWidthCount = 5;
+
+            var parts = data.Split(' ');
+            Name = parts[0];
+            HeightPatchCount = int.Parse(parts[1]);
+            WidthPatchCount = int.Parse(parts[2]);
+            int h = HeightCount;
+            int w = WidthCount;
+
+            InitVertices();
+
+            for (int i = 0; i < h; i++)
+            {
+                for (int j = 0; j < w; j++)
+                {
+                    var vert = _controlVertices[i][j];
+                    vert.StringToPosition(parts[i * w + j + 3]);
+                }
+            }
         }
 
         public ObjRenderData GetRenderData()
@@ -108,27 +126,14 @@ namespace ModelEditor
             int h = HeightCount;
             _knotsH = new int[h + degree + 1];
 
-            //for (int i = 0; i < degree; i++)
-            //    _knotsH[i] = 0;
-
             for (int i = 0; i < h + degree + 1; i++)
                 _knotsH[ i] = i;
-
-            //for (int i = 0; i < degree; i++)
-            //    _knotsH[h + 1 + i] = h - degree;
-
 
             int w = WidthCount;
             _knotsW = new int[w + degree + 1];
 
-            //for (int i = 0; i < degree; i++)
-            //    _knotsW[i] = 0;
-
             for (int i = 0; i < w + degree + 1; i++)
                 _knotsW[ i] = i;
-
-            //for (int i = 0; i < degree; i++)
-            //    _knotsW[w + 1 + i] = w - degree;
         }
 
         public override string[] GetData()
