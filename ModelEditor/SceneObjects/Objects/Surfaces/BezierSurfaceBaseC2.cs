@@ -327,11 +327,11 @@ namespace ModelEditor
             }
         }
 
-        public int WidthCount
+        public int WidthVertexCount
         {
             get => 3 * WidthPatchCount + 1;
         }
-        public int HeightCount
+        public int HeightVertexCount
         {
             get => 3 * HeightPatchCount + 1;
         }

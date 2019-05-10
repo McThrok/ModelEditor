@@ -35,7 +35,7 @@ namespace ModelEditor
             HeightPatchCount = int.Parse(parts[1]);
             WidthPatchCount = int.Parse(parts[2]);
             int h = HeightVertexCount;
-            int w = WidthVertexCount - 1;
+            int w = RangeVertexCount;
 
             InitVertices();
 
@@ -46,7 +46,6 @@ namespace ModelEditor
                     var vert = _controlVertices[i][j];
                     vert.StringToPosition(parts[i * w + j + 3]);
                 }
-
             }
         }
 
@@ -87,7 +86,6 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(Height));
                 }
             }
-
         }
 
         private float _range;
@@ -103,10 +101,27 @@ namespace ModelEditor
                     InvokePropertyChanged(nameof(Range));
                 }
             }
-
         }
 
-        protected override void InitPositions()
+        public int RangeVertexCount
+        {
+            get => WidthVertexCount - 1;
+        }
+
+        protected override void InitVertices()
+        {
+            HiddenChildren.Clear();
+            _controlVertices.Clear();
+
+            _controlVertices.AddRange(
+                Enumerable.Range(0, HeightVertexCount).Select(
+                    h => Enumerable.Range(0, RangeVertexCount).Select(
+                        w => CreateControlVertex()).ToList()).ToList());
+
+            InitPositions();
+        }
+
+        protected void InitPositions()
         {
             var startH = -Height / 2;
             var stepH = Height / (HeightVertexCount - 1);
@@ -116,7 +131,7 @@ namespace ModelEditor
                 var row = _controlVertices[h];
                 for (int w = 0; w < row.Count; w++)
                 {
-                    var rad = Math.PI * 2 * w / (row.Count - 1);
+                    var rad = Math.PI * 2 * w / row.Count;
                     var x = (float)(Range * Math.Cos(rad));
                     var z = (float)(Range * Math.Sin(rad));
 

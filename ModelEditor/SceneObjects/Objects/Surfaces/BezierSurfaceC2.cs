@@ -34,8 +34,8 @@ namespace ModelEditor
             Name = parts[0];
             HeightPatchCount = int.Parse(parts[1]);
             WidthPatchCount = int.Parse(parts[2]);
-            int h = HeightCount;
-            int w = WidthCount;
+            int h = HeightVertexCount;
+            int w = WidthVertexCount;
 
             InitVertices();
 
@@ -102,8 +102,8 @@ namespace ModelEditor
             _controlVertices.Clear();
 
             _controlVertices.AddRange(
-                Enumerable.Range(0, HeightCount).Select(
-                    h => Enumerable.Range(0, WidthCount).Select(
+                Enumerable.Range(0, HeightVertexCount).Select(
+                    h => Enumerable.Range(0, WidthVertexCount).Select(
                         w => CreateControlVertex()).ToList()).ToList());
 
             InitPositions();
@@ -114,8 +114,8 @@ namespace ModelEditor
         {
             var startW = -Width / 2;
             var startH = -Height / 2;
-            var stepW = Width / (WidthCount - 1);
-            var stepH = Height / (HeightCount - 1);
+            var stepW = Width / (WidthVertexCount - 1);
+            var stepH = Height / (HeightVertexCount - 1);
 
             for (int h = 0; h < _controlVertices.Count; h++)
             {
@@ -131,17 +131,17 @@ namespace ModelEditor
         protected void InitKnots()
         {
             int degree = 3;
-            _tmpW = new Vector3[WidthCount];
-            _tmpH = new Vector3[HeightCount];
+            _tmpW = new Vector3[WidthVertexCount];
+            _tmpH = new Vector3[HeightVertexCount];
 
 
-            int h = HeightCount;
+            int h = HeightVertexCount;
             _knotsH = new int[h + degree + 1];
 
             for (int i = 0; i < h + degree + 1; i++)
                 _knotsH[i] = i;
 
-            int w = WidthCount;
+            int w = WidthVertexCount;
             _knotsW = new int[w + degree + 1];
 
             for (int i = 0; i < w + degree + 1; i++)

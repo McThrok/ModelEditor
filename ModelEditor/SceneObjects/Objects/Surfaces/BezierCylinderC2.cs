@@ -34,8 +34,8 @@ namespace ModelEditor
             Name = parts[0];
             HeightPatchCount = int.Parse(parts[1]);
             WidthPatchCount = int.Parse(parts[2]);
-            int h = HeightCount;
-            int w = RangeCount;
+            int h = HeightVertexCount;
+            int w = RangeVertexCount;
 
             InitVertices();
 
@@ -109,9 +109,9 @@ namespace ModelEditor
 
         }
 
-        public int RangeCount
+        public int RangeVertexCount
         {
-            get => WidthPatchCount == 1 ? WidthCount : WidthCount - 1;
+            get =>  WidthVertexCount - 1;
         }
 
         protected override void InitVertices()
@@ -120,8 +120,8 @@ namespace ModelEditor
             _controlVertices.Clear();
 
             _controlVertices.AddRange(
-                Enumerable.Range(0, HeightCount).Select(
-                    h => Enumerable.Range(0, RangeCount).Select(
+                Enumerable.Range(0, HeightVertexCount).Select(
+                    h => Enumerable.Range(0, RangeVertexCount).Select(
                         w => CreateControlVertex()).ToList()).ToList());
 
             InitPositions();
@@ -131,7 +131,7 @@ namespace ModelEditor
         protected void InitPositions()
         {
             var startH = -Height / 2;
-            var stepH = Height / (HeightCount + 1);
+            var stepH = Height / (HeightVertexCount - 1);
 
             for (int h = 0; h < _controlVertices.Count; h++)
             {
@@ -152,17 +152,17 @@ namespace ModelEditor
         protected void InitKnots()
         {
             int degree = 3;
-            _tmpW = new Vector3[WidthCount + degree];
-            _tmpH = new Vector3[HeightCount];
+            _tmpW = new Vector3[WidthVertexCount + degree];
+            _tmpH = new Vector3[HeightVertexCount];
 
 
-            int h = HeightCount;
+            int h = HeightVertexCount;
             _knotsH = new int[h + degree + 1];
 
             for (int i = 0; i < h + degree + 1; i++)
                 _knotsH[i] = i;
 
-            int w = WidthCount;
+            int w = WidthVertexCount;
             _knotsW = new int[w + 2 * degree + 1];
 
             for (int i = 0; i < w + 2 * degree + 1; i++)

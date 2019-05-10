@@ -99,7 +99,20 @@ namespace ModelEditor
 
         }
 
-        protected override void InitPositions()
+        protected override void InitVertices()
+        {
+            HiddenChildren.Clear();
+            _controlVertices.Clear();
+
+            _controlVertices.AddRange(
+                Enumerable.Range(0, HeightVertexCount).Select(
+                    h => Enumerable.Range(0, WidthVertexCount).Select(
+                        w => CreateControlVertex()).ToList()).ToList());
+
+            InitPositions();
+        }
+
+        protected void InitPositions()
         {
             var startW = -Width / 2;
             var startH = -Height / 2;

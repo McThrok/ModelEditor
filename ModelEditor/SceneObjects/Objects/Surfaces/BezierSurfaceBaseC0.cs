@@ -256,21 +256,7 @@ namespace ModelEditor
 
         protected bool WrapLast { get; set; }
 
-        protected abstract void InitPositions();
-        protected void InitVertices()
-        {
-            HiddenChildren.Clear();
-            _controlVertices.Clear();
-
-            var widthCount = WrapLast ? WidthVertexCount - 1 : WidthVertexCount;
-
-            _controlVertices.AddRange(
-                Enumerable.Range(0, HeightVertexCount).Select(
-                    h => Enumerable.Range(0, widthCount).Select(
-                        w => CreateControlVertex()).ToList()).ToList());
-
-            InitPositions();
-        }
+        protected abstract void InitVertices();
 
         protected Vertex CreateControlVertex()
         {
