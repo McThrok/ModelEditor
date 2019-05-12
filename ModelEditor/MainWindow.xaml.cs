@@ -251,19 +251,13 @@ namespace ModelEditor
         {
             Engine.Scene.Delete(GetVisibleSelectedObj());
         }
-        private void HoldRelease_click(object sender, RoutedEventArgs e)
+        private void Hold_click(object sender, RoutedEventArgs e)
         {
-            if (Engine.Scene.Cursor.HeldObjects.Count > 0)
-            {
-                Engine.Scene.Cursor.ReleaseObjects();
-                holdReleaseBtn.Content = "Hold";
-            }
-            else
-            {
-                Engine.Scene.Cursor.HoldClosestObject(Engine.Scene);
-                if (Engine.Scene.Cursor.HeldObjects.Count > 0)
-                    holdReleaseBtn.Content = "Release";
-            }
+            Engine.Scene.Cursor.HoldClosestObject(Engine.Scene);
+        }
+        private void Release_click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.Cursor.ReleaseObjects();
         }
 
         private void Save_click(object sender, RoutedEventArgs e)
