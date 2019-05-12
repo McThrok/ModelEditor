@@ -259,6 +259,17 @@ namespace ModelEditor
         {
             Engine.Scene.Cursor.ReleaseObjects();
         }
+        private void Link_click(object sender, RoutedEventArgs e)
+        {
+            var objs = Engine.Scene.Cursor.HeldObjects;
+            if (objs.Count != 2)
+                return;
+
+            if (!(objs.ToList()[0] is Vertex vertA) || !(objs.ToList()[1] is Vertex vertB))
+                return;
+
+            BezierSurfaceC0.LinkVertices(vertA, vertB);
+        }
 
         private void Save_click(object sender, RoutedEventArgs e)
         {

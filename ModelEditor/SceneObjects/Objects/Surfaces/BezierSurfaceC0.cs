@@ -13,6 +13,7 @@ namespace ModelEditor
     public class BezierSurfaceC0 : BezierSurfaceBaseC0, IRenderableObj
     {
         private static int _count = 0;
+        public Dictionary<Vertex, Vertex> Linked { get; private set; } = new Dictionary<Vertex, Vertex>();
 
         public BezierSurfaceC0(RayCaster rayCaster) : base(rayCaster)
         {
@@ -150,7 +151,27 @@ namespace ModelEditor
             return data;
         }
 
-        public float GetMatrixDiff(Matrix4x4 a, Matrix4x4 b)
+        public Vector2Int GetIndices(Vertex vert)
+        {
+            for (int i = 0; i < _controlVertices.Count; i++)
+            {
+                var row = _controlVertices[i];
+                for (int j = 0; j < row.Count; j++)
+                {
+                    if (row[j].Id == vert.Id)
+                        return new Vector2Int(i, j);
+                }
+            }
+
+            return Vector2Int.Empty;
+        }
+        public bool IsOnEdge(Vertex vert)
+        {
+            var idx = GetIndices(vert);
+            return idx.X % 3 == 0 && idx.Y % 3 == 0;
+        }
+
+        public static float GetMatrixDiff(Matrix4x4 a, Matrix4x4 b)
         {
             var mat = b - a;
             var diff = Math.Abs(mat.M11) + Math.Abs(mat.M12) + Math.Abs(mat.M13) + Math.Abs(mat.M14)
@@ -160,32 +181,37 @@ namespace ModelEditor
 
             return diff;
         }
-        public void Link()
+        public static void LinkVertices(Vertex a, Vertex b)
         {
-            _co
-        }
+            if (!(a.Parent is BezierSurfaceC0 surfA) || !(b.Parent is BezierSurfaceC0 surfB))
+                return;
 
-        public Vertex GetVert(int h, int w)
-        {
-            return _controlVertices[h][w];
-        }
+            if (surfA.Id == surfB.Id)
+                return;
 
-        public void LinkVertices(Vertex a, Vertex b)
-        {
+            if (surfA.Linked.Keys.Any(k => k.Id == a.Id) || surfB.Linked.Keys.Any(k => k.Id == b.Id))
+                return;
+
+            if (surfA.IsOnEdge(a) && surfB.IsOnEdge(b))
+                return;
+
+            surfA.Linked.Add(a, b);
+            surfB.Linked.Add(b, a);
+
             var eps = 0.000001;
 
             a.GlobalMatrixChange += (s, e) =>
             {
-                var diff = GetMatrixDiff(a.GlobalMatrix, e.NewMatrix);
+                var diff = GetMatrixDiff(b.GlobalMatrix, e.NewMatrix);
                 if (diff > eps)
-                    a.GlobalMatrix = e.NewMatrix;
+                    b.GlobalMatrix = e.NewMatrix;
             };
 
             b.GlobalMatrixChange += (s, e) =>
             {
-                var diff = GetMatrixDiff(b.GlobalMatrix, e.NewMatrix);
+                var diff = GetMatrixDiff(a.GlobalMatrix, e.NewMatrix);
                 if (diff > eps)
-                    b.GlobalMatrix = e.NewMatrix;
+                    a.GlobalMatrix = e.NewMatrix;
             };
 
             var pos = (a.GlobalMatrix.Translation + b.GlobalMatrix.Translation) / 2;
