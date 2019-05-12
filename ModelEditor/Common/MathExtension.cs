@@ -137,7 +137,6 @@ namespace ModelEditor
             return angle;
         }
 
-
         public static float ToRadians(this float v)
         {
             return (float)(Math.PI * v / 180);

@@ -28,8 +28,8 @@ namespace ModelEditor
         }
         public BezierSurfaceC0(RayCaster rayCaster, string data) : base(rayCaster)
         {
-            DrawHeightCount = 5;
-            DrawWidthCount = 5;
+            DrawHeightCount = 4;
+            DrawWidthCount = 4;
 
             var parts = data.Split(' ');
             Name = parts[0];
@@ -58,8 +58,8 @@ namespace ModelEditor
             if (ShowControlGrid)
                 data.Add(GetControlGrid(verts));
             if (ShowGrid)
-            data.Add(GetGrid(verts));
-          
+                data.Add(GetGrid(verts));
+
             return data;
         }
         private List<List<Vector3>> GetVerts()
@@ -111,7 +111,6 @@ namespace ModelEditor
 
             InitPositions();
         }
-
         protected void InitPositions()
         {
             var startW = -Width / 2;
@@ -149,6 +148,51 @@ namespace ModelEditor
             }
 
             return data;
+        }
+
+        public float GetMatrixDiff(Matrix4x4 a, Matrix4x4 b)
+        {
+            var mat = b - a;
+            var diff = Math.Abs(mat.M11) + Math.Abs(mat.M12) + Math.Abs(mat.M13) + Math.Abs(mat.M14)
+                    + Math.Abs(mat.M21) + Math.Abs(mat.M22) + Math.Abs(mat.M23) + Math.Abs(mat.M24)
+                    + Math.Abs(mat.M31) + Math.Abs(mat.M32) + Math.Abs(mat.M33) + Math.Abs(mat.M34)
+                    + Math.Abs(mat.M41) + Math.Abs(mat.M42) + Math.Abs(mat.M43) + Math.Abs(mat.M44);
+
+            return diff;
+        }
+        public void Link()
+        {
+            _co
+        }
+
+        public Vertex GetVert(int h, int w)
+        {
+            return _controlVertices[h][w];
+        }
+
+        public void LinkVertices(Vertex a, Vertex b)
+        {
+            var eps = 0.000001;
+
+            a.GlobalMatrixChange += (s, e) =>
+            {
+                var diff = GetMatrixDiff(a.GlobalMatrix, e.NewMatrix);
+                if (diff > eps)
+                    a.GlobalMatrix = e.NewMatrix;
+            };
+
+            b.GlobalMatrixChange += (s, e) =>
+            {
+                var diff = GetMatrixDiff(b.GlobalMatrix, e.NewMatrix);
+                if (diff > eps)
+                    b.GlobalMatrix = e.NewMatrix;
+            };
+
+            var pos = (a.GlobalMatrix.Translation + b.GlobalMatrix.Translation) / 2;
+
+            var matA = a.GlobalMatrix;
+            matA.Translation = pos;
+            a.GlobalMatrix = matA;
         }
     }
 }

@@ -78,7 +78,5 @@ namespace ModelEditor
             return result;
         }
 
-
-
     }
 }
