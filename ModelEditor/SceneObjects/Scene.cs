@@ -44,6 +44,16 @@ namespace ModelEditor
             Camera = AddObj(new Camera(), this);
             ResetCamera();
             Cursor = AddObj(new Cursor(RayCaster), this);
+
+
+            var a = AddBezierSurfaceC0(this);
+            var b = AddBezierSurfaceC0(this);
+            var c = AddBezierSurfaceC0(this);
+            a.Rotate(new Vector3(0, 0, 0.7f));
+            a.Move(-4, 4, 0);
+            b.Rotate(new Vector3(0, 0, -0.7f));
+            b.Move(4, 4, 0);
+            c.Move(0, -4, 0);
         }
 
         public SceneObject AddEmptyObject(SceneObject parent)
@@ -89,6 +99,19 @@ namespace ModelEditor
             obj.SetParent(parent);
 
             return obj;
+        }
+        public SceneObject AddGregoryPatfch(BezierSurfaceC0 surfA, BezierSurfaceC0 surfB, BezierSurfaceC0 surfC)
+        {
+            var verts = BezierSurfaceC0.CheckGregory(surfA, surfB, surfC);
+            if (verts == null)
+                return null;
+
+            var data = new List<GregoryEdgeData>();
+            data.Add(new GregoryEdgeData() { Surface = surfA, A = verts[0], B = verts[1] });
+            data.Add(new GregoryEdgeData() { Surface = surfB, A = verts[2], B = verts[3] });
+            data.Add(new GregoryEdgeData() { Surface = surfC, A = verts[4], B = verts[5] });
+
+            return AddObj(new GregoryPatch(data), this);
         }
 
         public void LoadModel(string[] data)

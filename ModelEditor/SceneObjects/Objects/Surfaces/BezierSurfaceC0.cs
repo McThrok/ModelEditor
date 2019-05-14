@@ -19,10 +19,10 @@ namespace ModelEditor
         {
             Name = nameof(BezierSurfaceC0) + " " + _count++.ToString();
 
-            _height = 10;
-            _width = 10;
-            HeightPatchCount = 2;
-            WidthPatchCount = 2;
+            _height = 5;
+            _width = 5;
+            HeightPatchCount = 1;
+            WidthPatchCount = 1;
             DrawHeightCount = 4;
             DrawWidthCount = 4;
             InitVertices();
@@ -198,7 +198,7 @@ namespace ModelEditor
             if (surfA.LinkedVertices.Keys.Any(k => k.Id == a.Id) || surfB.LinkedVertices.Keys.Any(k => k.Id == b.Id))
                 return;
 
-            if (surfA.IsOnCorner(a) && surfB.IsOnCorner(b))
+            if (!surfA.IsOnCorner(a) || !surfB.IsOnCorner(b))
                 return;
 
             surfA.LinkedVertices.Add(a, b);
@@ -227,11 +227,8 @@ namespace ModelEditor
             a.GlobalMatrix = matA;
         }
 
-        public static List<Vertex> CheckGregory(Vertex a, Vertex b, Vertex c)
+        public static List<Vertex> CheckGregory(BezierSurfaceC0 surfA, BezierSurfaceC0 surfB, BezierSurfaceC0 surfC)
         {
-            if (!(a.Parent is BezierSurfaceC0 surfA) || !(b.Parent is BezierSurfaceC0 surfB) || !(c.Parent is BezierSurfaceC0 surfC))
-                return null;
-
             if (surfA.Id == surfB.Id || surfA.Id == surfC.Id | surfB.Id == surfC.Id)
                 return null;
 
@@ -276,7 +273,7 @@ namespace ModelEditor
                         if (vert2idxC.X != vert3idxC.X && vert2idxC.Y != vert3idxC.Y)
                             continue;
 
-                        return new List<Vertex>() { vert1.Key, vert2.Key, vert3.Key}
+                        return new List<Vertex>() { vert2.Key, vert1.Key, vert1.Value, vert3.Key, vert3.Value, vert2.Value };
                     }
                 }
             }

@@ -270,6 +270,22 @@ namespace ModelEditor
 
             BezierSurfaceC0.LinkVertices(vertA, vertB);
         }
+        private void Gregory_click(object sender, RoutedEventArgs e)
+        {
+            var surfaces = new HashSet<BezierSurfaceC0>();
+
+            foreach (var obj in Engine.Scene.Cursor.HeldObjects)
+            {
+                if (obj is Vertex vert && vert.Parent is BezierSurfaceC0 surf)
+                    surfaces.Add(surf);
+            }
+
+            if(surfaces.Count == 3)
+            {
+                var tmp = surfaces.ToList();
+                Engine.Scene.AddGregoryPatfch(tmp[0], tmp[1], tmp[2]);
+            }
+        }
 
         private void Save_click(object sender, RoutedEventArgs e)
         {

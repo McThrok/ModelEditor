@@ -49,8 +49,8 @@ namespace ModelEditor
             {
                 result.Add(new List<Vector3>());
                 result[i].Add(middleData[i][0]);
-                result[i].Add(2 * result[i][0] - middleData[i][1]);
-                result[i].Add(0.5f * (3 * result[i][0] - result[i][1]));//Q
+                result[i].Add(result[i][0] + middleData[i][1]);
+                result[i].Add(0.5f * (3 * result[i][1] - result[i][0]));//Q
             }
 
             var p = (result[0][2] + result[1][2] + result[2][2]) / 3;
@@ -81,14 +81,14 @@ namespace ModelEditor
             if (vertA.X == vertB.X)
             {
                 idxW = data.Surface.WidthVertexCount / 2;
-                idxH = vertA.X == 0 ? -1 : data.Surface.HeightVertexCount - 2;
+                idxH = vertA.X == 0 ? 1 : data.Surface.HeightVertexCount - 2;
 
                 result.Add(data.Surface.GetVertex(vertA.X, idxW));
             }
             else
             {
                 idxH = data.Surface.HeightVertexCount / 2;
-                idxW = vertA.Y == 0 ? -1 : data.Surface.WidthVertexCount - 2;
+                idxW = vertA.Y == 0 ? 1 : data.Surface.WidthVertexCount - 2;
 
                 result.Add(data.Surface.GetVertex(idxH, vertA.Y));
             }
