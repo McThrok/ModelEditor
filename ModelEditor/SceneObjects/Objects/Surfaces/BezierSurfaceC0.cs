@@ -151,6 +151,10 @@ namespace ModelEditor
             return data;
         }
 
+        public Vector3 GetVertex(int h, int w)
+        {
+            return _controlVertices[h][w].GlobalMatrix.Translation;
+        }
         public Vector2Int GetIndices(Vertex vert)
         {
             for (int i = 0; i < _controlVertices.Count; i++)
