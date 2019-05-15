@@ -38,6 +38,7 @@ namespace ModelEditor
             for (int i = 0; i < pPoins.Count; i++)
                 data.AddLine(pPoins[i]);
 
+
             return data;
         }
 
@@ -75,27 +76,72 @@ namespace ModelEditor
             var vertA = data.Surface.GetIndices(data.A);
             var vertB = data.Surface.GetIndices(data.B);
 
-            int idxW;
-            int idxH;
+            if (vertA.X > vertB.X || vertA.Y > vertB.Y)
+            {
+                var tmp = vertB;
+                vertB = vertA;
+                vertA = tmp;
+            }
+
+            var verts = data.Surface.GetVertsGlobal();
+            Vector3 vertex;
+            Vector3 vector;
 
             if (vertA.X == vertB.X)
             {
-                idxW = data.Surface.WidthVertexCount / 2;
-                idxH = vertA.X == 0 ? 1 : data.Surface.HeightVertexCount - 2;
+                int pIdxW = vertA.Y / 3;
 
-                result.Add(data.Surface.GetVertex(vertA.X, idxW));
+                if (vertA.X == 0)
+                {
+                    vertex = data.Surface.GetValue(verts, 0, pIdxW, 0, 0.5f);
+                    vector = -data.Surface.GetValueDivH(verts, 0, pIdxW, 0, 0.5f);
+                }
+                else
+                {
+                    var hpc = data.Surface.HeightPatchCount;
+                    vertex = data.Surface.GetValue(verts, hpc - 1, pIdxW, 1, 0.5f);
+                    vector = data.Surface.GetValueDivH(verts, hpc - 1, pIdxW, 1, 0.5f);
+                }
             }
             else
             {
-                idxH = data.Surface.HeightVertexCount / 2;
-                idxW = vertA.Y == 0 ? 1 : data.Surface.WidthVertexCount - 2;
+                int pIdxH = vertA.X / 3;
 
-                result.Add(data.Surface.GetVertex(idxH, vertA.Y));
+                if (vertA.Y == 0)
+                {
+                    vertex = data.Surface.GetValue(verts, pIdxH, 0, 0.5f, 0);
+                    vector = -data.Surface.GetValueDivW(verts, pIdxH, 0, 0.5f, 0);
+                }
+                else
+                {
+                    var hpw = data.Surface.WidthPatchCount;
+                    vertex = data.Surface.GetValue(verts, pIdxH, hpw - 1, 0.5f, 1);
+                    vector = data.Surface.GetValueDivW(verts, pIdxH, hpw - 1, 0.5f, 1);
+                }
             }
 
-            result.Add(result[0] - data.Surface.GetVertex(idxH, idxW));
+            vector /= 3;
+            result.Add(vertex);
+            result.Add(vector);
 
             return result;
         }
+
+
+
+
+        
+        //#region manipulation
+        //public override void Move(Vector3 CreateTranslation) { }
+        //public override void Move(double x, double y, double z) { }
+        //public override void MoveLoc(Vector3 CreateTranslation) { }
+        //public override void MoveLoc(double x, double y, double z) { }
+        //public override void Rotate(Vector3 CreateRotation) { }
+        //public override void Rotate(double x, double y, double z) { }
+        //public override void RotateLoc(Vector3 CreateRotation) { }
+        //public override void RotateLoc(double x, double y, double z) { }
+        //public override void Scale(double x, double y, double z) { }
+        //public override void ScaleLoc(double x, double y, double z) { }
+        //#endregion
     }
 }

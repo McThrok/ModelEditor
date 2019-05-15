@@ -54,6 +54,11 @@ namespace ModelEditor
             b.Rotate(new Vector3(0, 0, -0.7f));
             b.Move(4, 4, 0);
             c.Move(0, -4, 0);
+
+
+            BezierSurfaceC0.LinkVertices(a.HiddenChildren[3] as Vertex, b.HiddenChildren[0] as Vertex);
+            BezierSurfaceC0.LinkVertices(a.HiddenChildren[0] as Vertex, c.HiddenChildren[12] as Vertex);
+            BezierSurfaceC0.LinkVertices(b.HiddenChildren[3] as Vertex, c.HiddenChildren[15] as Vertex);
         }
 
         public SceneObject AddEmptyObject(SceneObject parent)
@@ -111,7 +116,10 @@ namespace ModelEditor
             data.Add(new GregoryEdgeData() { Surface = surfB, A = verts[2], B = verts[3] });
             data.Add(new GregoryEdgeData() { Surface = surfC, A = verts[4], B = verts[5] });
 
-            return AddObj(new GregoryPatch(data), this);
+            var greg = new GregoryPatch(data);
+            greg.SetParent(this);
+
+            return greg;
         }
 
         public void LoadModel(string[] data)

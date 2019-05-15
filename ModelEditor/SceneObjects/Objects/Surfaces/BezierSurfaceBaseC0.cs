@@ -117,7 +117,7 @@ namespace ModelEditor
             return curve;
         }
 
-        protected Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        public Vector3 GetValue(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
         {
             var point = Vector3.Zero;
             for (int h = 0; h < 4; h++)

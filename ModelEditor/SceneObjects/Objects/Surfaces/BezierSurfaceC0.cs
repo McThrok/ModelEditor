@@ -63,9 +63,13 @@ namespace ModelEditor
 
             return data;
         }
-        private List<List<Vector3>> GetVerts()
+        public List<List<Vector3>> GetVerts()
         {
             return _controlVertices.Select(row => row.Select(v => v.Matrix.Translation).ToList()).ToList();
+        }
+        public List<List<Vector3>> GetVertsGlobal()
+        {
+            return _controlVertices.Select(row => row.Select(v => v.GlobalMatrix.Translation).ToList()).ToList();
         }
 
         private float _height;
@@ -323,7 +327,7 @@ namespace ModelEditor
             if (i == 1)
                 return 3 * (-2 * t + c) * c;
             if (i == 2)
-                return 3 * 2 * t * (c - t);
+                return 3 * t * (2 - 3 * t);
             if (i == 3)
                 return 3 * t * t;
 
