@@ -169,12 +169,11 @@ namespace ModelEditor
 
             return Vector2Int.Empty;
         }
-        public bool IsOnCorner(Vertex vert)
+
+        public bool IsOnPatchCorner(Vertex vert)
         {
             var idx = GetIndices(vert);
-            var xResult = idx.X == 0 || idx.X == HeightVertexCount - 1;
-            var yResult = idx.Y == 0 || idx.Y == WidthVertexCount - 1;
-            return xResult && yResult;
+            return idx.X % 3 == 0 && idx.Y % 3 == 0;
         }
 
         public static float GetMatrixDiff(Matrix4x4 a, Matrix4x4 b)
@@ -198,7 +197,7 @@ namespace ModelEditor
             if (surfA.LinkedVertices.Keys.Any(k => k.Id == a.Id) || surfB.LinkedVertices.Keys.Any(k => k.Id == b.Id))
                 return;
 
-            if (!surfA.IsOnCorner(a) || !surfB.IsOnCorner(b))
+            if (!surfA.IsOnPatchCorner(a) || !surfB.IsOnPatchCorner(b))
                 return;
 
             surfA.LinkedVertices.Add(a, b);
@@ -227,6 +226,16 @@ namespace ModelEditor
             a.GlobalMatrix = matA;
         }
 
+        public bool IsOnTheSamePatchEdge(Vector2Int a, Vector2Int b)
+        {
+            var xDiff = Math.Abs(a.X - b.X);
+            var yDiff = Math.Abs(a.Y - b.Y);
+
+            var result = xDiff == 3 && yDiff == 0 || xDiff == 0 && yDiff == 3;
+
+            return result;
+        }
+
         public static List<Vertex> CheckGregory(BezierSurfaceC0 surfA, BezierSurfaceC0 surfB, BezierSurfaceC0 surfC)
         {
             if (surfA.Id == surfB.Id || surfA.Id == surfC.Id | surfB.Id == surfC.Id)
@@ -245,7 +254,7 @@ namespace ModelEditor
                 if (vert1idxB == Vector2Int.Empty)
                     continue;
 
-                for (int j = 0; j < surfA.LinkedVertices.Count; j++)
+                for (int j = 0; j < linkA.Count; j++)
                 {
                     if (i == j)
                         continue;
@@ -256,7 +265,8 @@ namespace ModelEditor
                     if (vert2idxC == Vector2Int.Empty)
                         continue;
 
-                    if (vert1idxA.X != vert2idxA.X && vert1idxA.Y != vert2idxA.Y)
+
+                    if (!surfA.IsOnTheSamePatchEdge(vert1idxA, vert2idxA))
                         continue;
 
                     for (int k = 0; k < linkB.Count; k++)
@@ -267,10 +277,10 @@ namespace ModelEditor
                         if (vert3idxC == Vector2Int.Empty)
                             continue;
 
-                        if (vert1idxB.X != vert3idxB.X && vert1idxB.Y != vert3idxB.Y)
+                        if (!surfB.IsOnTheSamePatchEdge(vert1idxB, vert3idxB))
                             continue;
 
-                        if (vert2idxC.X != vert3idxC.X && vert2idxC.Y != vert3idxC.Y)
+                        if (!surfC.IsOnTheSamePatchEdge(vert2idxC, vert3idxC))
                             continue;
 
                         return new List<Vertex>() { vert2.Key, vert1.Key, vert1.Value, vert3.Key, vert3.Value, vert2.Value };
