@@ -43,8 +43,20 @@ namespace ModelEditor
 
             var change = e.NewMatrix * e.OldMatrix.Inversed();
 
+            var linked = new List<Vertex>();
             foreach (var obj in HeldObjects)
+            {
+                if(obj is Vertex vert)
+                {
+                    if (linked.Contains(vert))
+                        continue;
+
+                    if (vert.Parent is BezierSurfaceC0 surf && surf.LinkedVertices.ContainsKey(vert))
+                        linked.Add(surf.LinkedVertices[vert]);
+                }
+
                 obj.GlobalMatrix *= change;
+            }
         }
         public void HoldClosestObject(SceneObject sceneObject)
         {

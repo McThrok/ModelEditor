@@ -129,19 +129,17 @@ namespace ModelEditor
 
 
 
-
-        
-        //#region manipulation
-        //public override void Move(Vector3 CreateTranslation) { }
-        //public override void Move(double x, double y, double z) { }
-        //public override void MoveLoc(Vector3 CreateTranslation) { }
-        //public override void MoveLoc(double x, double y, double z) { }
-        //public override void Rotate(Vector3 CreateRotation) { }
-        //public override void Rotate(double x, double y, double z) { }
-        //public override void RotateLoc(Vector3 CreateRotation) { }
-        //public override void RotateLoc(double x, double y, double z) { }
-        //public override void Scale(double x, double y, double z) { }
-        //public override void ScaleLoc(double x, double y, double z) { }
-        //#endregion
+        #region manipulation
+        public override void Move(Vector3 CreateTranslation) { }
+        public override void Move(double x, double y, double z) { }
+        public override void MoveLoc(Vector3 CreateTranslation) { }
+        public override void MoveLoc(double x, double y, double z) { }
+        public override void Rotate(Vector3 CreateRotation) { }
+        public override void Rotate(double x, double y, double z) { }
+        public override void RotateLoc(Vector3 CreateRotation) { }
+        public override void RotateLoc(double x, double y, double z) { }
+        public override void Scale(double x, double y, double z) { }
+        public override void ScaleLoc(double x, double y, double z) { }
+        #endregion
     }
 }

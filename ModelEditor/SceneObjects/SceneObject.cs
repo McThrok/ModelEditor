@@ -13,6 +13,25 @@ namespace ModelEditor
 {
     public class SceneObject : INotifyPropertyChanged
     {
+        public SceneObject()
+        {
+            MatrixChange += SceneObject_MatrixChange;
+        }
+
+        private void SceneObject_MatrixChange(object sender, ChangeMatrixEventArgs e)
+        {
+            foreach (var child in Children)
+            {
+                child.NotifyMatrixChange();
+                child.NotifyAllChanges();
+            }
+            foreach (var child in HiddenChildren)
+            {
+                child.NotifyMatrixChange();
+                child.NotifyAllChanges();
+            }
+        }
+
         private string _name;
         public string Name
         {
@@ -29,6 +48,12 @@ namespace ModelEditor
         public SceneObject Parent { get; set; }
         public ObservableCollection<SceneObject> Children { get; private set; } = new ObservableCollection<SceneObject>();
         public ObservableCollection<SceneObject> HiddenChildren { get; private set; } = new ObservableCollection<SceneObject>();
+        
+        public void NotifyMatrixChange()
+        {
+            MatrixChange?.Invoke(this, new ChangeMatrixEventArgs(Matrix4x4.Identity, Matrix));
+            GlobalMatrixChange?.Invoke(this, new ChangeMatrixEventArgs(Matrix4x4.Identity, GlobalMatrix));
+        }
 
         #region manipulation
         public virtual void Move(Vector3 CreateTranslation)
@@ -307,7 +332,7 @@ namespace ModelEditor
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-        private void NotifyAllChanges()
+        public void NotifyAllChanges()
         {
             string[] props = { nameof(PositionX), nameof(PositionY), nameof(PositionZ),
                                 nameof(RotationX), nameof(RotationY), nameof(RotationZ),
