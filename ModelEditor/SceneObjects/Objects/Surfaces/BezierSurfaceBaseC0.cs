@@ -130,7 +130,7 @@ namespace ModelEditor
 
             return point;
         }
-        private float GetB(int i, float t)
+        protected float GetB(int i, float t)
         {
             float c = 1.0f - t;
 

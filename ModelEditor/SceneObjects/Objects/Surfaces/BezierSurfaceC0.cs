@@ -169,11 +169,19 @@ namespace ModelEditor
 
             return Vector2Int.Empty;
         }
-
         public bool IsOnPatchCorner(Vertex vert)
         {
             var idx = GetIndices(vert);
             return idx.X % 3 == 0 && idx.Y % 3 == 0;
+        }
+        public bool IsOnTheSamePatchEdge(Vector2Int a, Vector2Int b)
+        {
+            var xDiff = Math.Abs(a.X - b.X);
+            var yDiff = Math.Abs(a.Y - b.Y);
+
+            var result = xDiff == 3 && yDiff == 0 || xDiff == 0 && yDiff == 3;
+
+            return result;
         }
 
         public static float GetMatrixDiff(Matrix4x4 a, Matrix4x4 b)
@@ -225,17 +233,6 @@ namespace ModelEditor
             matA.Translation = pos;
             a.GlobalMatrix = matA;
         }
-
-        public bool IsOnTheSamePatchEdge(Vector2Int a, Vector2Int b)
-        {
-            var xDiff = Math.Abs(a.X - b.X);
-            var yDiff = Math.Abs(a.Y - b.Y);
-
-            var result = xDiff == 3 && yDiff == 0 || xDiff == 0 && yDiff == 3;
-
-            return result;
-        }
-
         public static List<Vertex> CheckGregory(BezierSurfaceC0 surfA, BezierSurfaceC0 surfB, BezierSurfaceC0 surfC)
         {
             if (surfA.Id == surfB.Id || surfA.Id == surfC.Id | surfB.Id == surfC.Id)
@@ -289,6 +286,48 @@ namespace ModelEditor
             }
 
             return null;
+        }
+
+        public Vector3 GetValueDivH(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        {
+            var point = Vector3.Zero;
+            for (int h = 0; h < 4; h++)
+            {
+                for (int w = 0; w < 4; w++)
+                {
+                    point += verts[idxH + h][idxW + w] * GetBDrv(h, tu) * GetB(w, tv);
+                }
+            }
+
+            return point;
+        }
+        public Vector3 GetValueDivW(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        {
+            var point = Vector3.Zero;
+            for (int h = 0; h < 4; h++)
+            {
+                for (int w = 0; w < 4; w++)
+                {
+                    point += verts[idxH + h][idxW + w] * GetB(h, tu) * GetBDrv(w, tv);
+                }
+            }
+
+            return point;
+        }
+        public float GetBDrv(int i, float t)
+        {
+            float c = 1.0f - t;
+
+            if (i == 0)
+                return -3 * c * c;
+            if (i == 1)
+                return 3 * (-2 * t + c) * c;
+            if (i == 2)
+                return 3 * 2 * t * (c - t);
+            if (i == 3)
+                return 3 * t * t;
+
+            return 0;
         }
     }
 }
