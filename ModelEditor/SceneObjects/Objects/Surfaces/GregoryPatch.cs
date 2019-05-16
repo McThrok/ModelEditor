@@ -46,11 +46,13 @@ namespace ModelEditor
         {
             var result = new List<List<Vector3>>();
 
+            var pEst = (middleData[0][0] + middleData[1][0] + middleData[2][0]) / 3;
             for (int i = 0; i < middleData.Count; i++)
             {
                 result.Add(new List<Vector3>());
                 result[i].Add(middleData[i][0]);
-                result[i].Add(result[i][0] + middleData[i][1]);
+                var tanget = Vector3.Distance(pEst, result[i][0]) / 3 * middleData[i][1].Normalized();
+                result[i].Add(result[i][0] + tanget);
                 result[i].Add(0.5f * (3 * result[i][1] - result[i][0]));//Q
             }
 
@@ -120,7 +122,6 @@ namespace ModelEditor
                 }
             }
 
-            vector /= 3;
             result.Add(vertex);
             result.Add(vector);
 
