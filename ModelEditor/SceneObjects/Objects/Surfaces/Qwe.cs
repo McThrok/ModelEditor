@@ -64,68 +64,32 @@ namespace ModelEditor
         }
         public Vector3 findP1(Vector3 q, Vector3 center)
         {
-            return DividePoint(SumPoints(MultiplyPoint(q, 2), center), 3);
+            return (2 * q + center) / 3;
         }
         public Vector3 findCenter(Vector3 q1, Vector3 q2, Vector3 q3)
         {
-            return DividePoint(SumPoints(SumPoints(q1, q2), q3), 3);
+            return (q1 + q2 + q3) / 3;
         }
         public Vector3 findQ(Vector3 p2, Vector3 p3)
         {
-            return DividePoint(DiffPoints(MultiplyPoint(p2, 3), p3), 2);
-        }
-        public Vector3 DividePoint(Vector3 a, Vector3 b)
-        {
-            return a / b;
-        }
-        public Vector3 DividePoint(Vector3 a, float b)
-        {
-            return a / b;
-        }
-        public Vector3 DividePoint(Vector3 a, int b)
-        {
-            return a / b;
-        }
-        public Vector3 MultiplyPoint(Vector3 a, Vector3 b)
-        {
-            return a * b;
-        }
-        public Vector3 MultiplyPoint(Vector3 a, float b)
-        {
-            return a * b;
-        }
-        public Vector3 SumPoints(Vector3 a, Vector3 b)
-        {
-            return a + b;
-        }
-        public Vector3 SumPoints(Vector3 a, float b)
-        {
-            return a + Vector3.One * b;
-        }
-        public Vector3 DiffPoints(Vector3 a, Vector3 b)
-        {
-            return a - b;
-        }
-        public Vector3 DiffPoints(Vector3 a, float b)
-        {
-            return a - Vector3.One * b;
+            return (3 * p2 - p3) / 2;
         }
 
         public Vector3 getF0(Vector3 f0, Vector3 f1, float u, float v)
         {
-            return DividePoint(SumPoints(MultiplyPoint(f1, u), MultiplyPoint(f0, v)), u + v != 0 ? u + v : 0.0001f);
+            return (f1 * u + f0 * v) / (u + v != 0 ? u + v : 0.0001f);
         }
         public Vector3 getF1(Vector3 f0, Vector3 f1, float u, float v)
         {
-            return DividePoint(SumPoints(MultiplyPoint(f0, 1 - u), MultiplyPoint(f1, v)), (1 - u + v) == 0 ? +0.0001f : (1 - u + v));
+            return (f1 * (1 - u) + f0 * v) / ((1 - u + v) == 0 ? +0.0001f : (1 - u + v));
         }
         public Vector3 getF2(Vector3 f0, Vector3 f1, float u, float v)
         {
-            return DividePoint(SumPoints(MultiplyPoint(f1, 1 - u), MultiplyPoint(f0, 1 - v)), 2 - u - v == 0 ? 0.0001f : 2 - u - v);
+            return (f1 * (1 - u) + f0 * (1 - v)) / (2 - u - v == 0 ? 0.0001f : 2 - u - v);
         }
         public Vector3 getF3(Vector3 f0, Vector3 f1, float u, float v)
         {
-            return DividePoint(SumPoints(MultiplyPoint(f0, u), MultiplyPoint(f1, 1 - v)), 1 + u - v == 0 ? 0.0001f : 1 + u - v);
+            return (f1 * u + f0 * (1 - v)) / (1 + u - v == 0 ? 0.0001f : 1 + u - v);
         }
 
         public List<float> getBezierVector(float number)
@@ -152,7 +116,7 @@ namespace ModelEditor
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    firstCut[j].Add(DividePoint(SumPoints(importantArray[j][i], importantArray[j][i + 1]), 2));
+                    firstCut[j].Add((importantArray[j][i] + importantArray[j][i + 1]) / 2);
                 }
             }
 
@@ -160,15 +124,15 @@ namespace ModelEditor
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    secondCut[j].Add(DividePoint(SumPoints(firstCut[j][i], firstCut[j][i + 1]), 2));
+                    secondCut[j].Add((firstCut[j][i] + firstCut[j][i + 1]) / 2);
                 }
             }
 
-            var P3 = SumPoints(secondCut[0][0], secondCut[0][1]) / 2;
+            var P3 = (secondCut[0][0] + secondCut[0][1]) / 2;
             return new Pstruct()
             {
                 P3 = P3,
-                P2 = SumPoints(P3, MultiplyPoint(DiffPoints(P3, DividePoint(SumPoints(secondCut[1][0], secondCut[1][1]), 2)), 0.5f)),
+                P2 = P3 + (P3 - (secondCut[1][0] + secondCut[1][1]) / 2) * 0.5f,
             };
         }
 
@@ -241,8 +205,8 @@ namespace ModelEditor
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    firstCut1[j].Add(DividePoint(SumPoints(importantArray1[j][i], importantArray1[j][i + 1]), 2));
-                    firstCut2[j].Add(DividePoint(SumPoints(importantArray2[j][i], importantArray2[j][i + 1]), 2));
+                    firstCut1[j].Add((importantArray1[j][i] + importantArray1[j][i + 1]) / 2);
+                    firstCut2[j].Add((importantArray2[j][i] + importantArray2[j][i + 1]) / 2);
                 }
             }
 
@@ -250,8 +214,8 @@ namespace ModelEditor
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    secondCut1[j].Add(DividePoint(SumPoints(firstCut1[j][i], firstCut1[j][i + 1]), 2));
-                    secondCut2[j].Add(DividePoint(SumPoints(firstCut2[j][i], firstCut2[j][i + 1]), 2));
+                    secondCut1[j].Add((firstCut1[j][i] + firstCut1[j][i + 1]) / 2);
+                    secondCut2[j].Add((firstCut2[j][i] + firstCut2[j][i + 1]) / 2);
                 }
             }
             var a = new List<Vector3>();
@@ -265,10 +229,10 @@ namespace ModelEditor
             a.Add(firstCut2[0][0]);
             b.Add(secondCut1[0][1]);
             b.Add(secondCut2[0][0]);
-            aPrim.Add(SumPoints(MultiplyPoint(DiffPoints(a[0], firstCut1[1][2]), 0.5f), a[0]));
-            aPrim.Add(SumPoints(MultiplyPoint(DiffPoints(a[1], firstCut2[1][0]), 0.5f), a[1]));
-            bPrim.Add(SumPoints(MultiplyPoint(DiffPoints(b[0], secondCut1[1][1]), 0.5f), b[0]));
-            bPrim.Add(SumPoints(MultiplyPoint(DiffPoints(b[1], secondCut2[1][0]), 0.5f), b[1]));
+            aPrim.Add(((a[0] - firstCut1[1][2]) * 0.5f) + a[0]);
+            aPrim.Add(((a[1] - firstCut2[1][0]) * 0.5f) + a[1]);
+            bPrim.Add(((b[0] - secondCut1[1][1]) * 0.5f) + b[0]);
+            bPrim.Add(((b[1] - secondCut2[1][0]) * 0.5f) + b[1]);
             return new ABstruct() { a = a, b = b, aPrim = aPrim, bPrim = bPrim, helps = helps };
         }
 
@@ -398,9 +362,9 @@ namespace ModelEditor
         public List<Vector3> getGs(Vector3 a0, Vector3 b0, Vector3 a3, Vector3 b3)
         {
             var ret = new List<Vector3>();
-            var g0 = DividePoint(SumPoints(a0, b0), 2);
-            var g2 = DividePoint(SumPoints(a3, b3), 2);
-            var g1 = DividePoint(SumPoints(g0, g2), 2);
+            var g0 = (a0 + b0) / 2;
+            var g2 = (a3 + b3) / 2;
+            var g1 = (g0 + g2) / 2;
             ret.Add(g0);
             ret.Add(g1);
             ret.Add(g2);
@@ -412,7 +376,7 @@ namespace ModelEditor
             var hv = kh0.h * (1 - v) + kh1.h * v;
             var gv = getGValue(v, gs);
             var cv = getCValue(v, cs);
-            return SumPoints(MultiplyPoint(gv, kv), MultiplyPoint(cv, hv));
+            return gv * kv + cv * hv;
         }
         public Vector3 getGValue(float v, List<Vector3> gs)
         {
@@ -420,9 +384,9 @@ namespace ModelEditor
             var sums = new List<Vector3>();
             for (int i = 0; i < 3; i++)
             {
-                sums.Add(MultiplyPoint(gs[i], beziers2[i]));
+                sums.Add(gs[i] * beziers2[i]);
             }
-            return SumPoints(SumPoints(sums[0], sums[2]), sums[1]);
+            return sums[0] + sums[2] + sums[1];
         }
         public Vector3 getCValue(float v, List<Vector3> cs)
         {
@@ -430,13 +394,13 @@ namespace ModelEditor
             var sums = new List<Vector3>();
             for (int i = 0; i < 3; i++)
             {
-                sums.Add(MultiplyPoint(cs[i], beziers2[i]));
+                sums.Add(cs[i] * beziers2[i]);
             }
-            return SumPoints(SumPoints(sums[0], sums[2]), sums[1]);
+            return sums[0] + sums[2] + sums[1];
         }
         public List<Vector3> getCis(Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3)
         {
-            return new List<Vector3>() { DiffPoints(P2, P3), DiffPoints(P1, P2), DiffPoints(P0, P1) };
+            return new List<Vector3>() { P2 - P3, P1 - P2, P0 - P1 };
         }
 
         public struct KHstruct
@@ -505,8 +469,6 @@ namespace ModelEditor
             for (var i = 0; i < 3; i++)
             {
                 p1.Add(findP1(q[i], p));
-                // GregoryVectors.Add([p2[i], p1[i]]);
-                // GregoryVectors.Add([p1[i], p]);
             }
 
             var PArrs = new List<List<Vector3>>();
@@ -527,10 +489,6 @@ namespace ModelEditor
             createSmallPatch(PArrs[0], vvArrs[0], importantArrays[0], importantArrays[1], u, v, GregoryPoints, GregoryVectors);
             createSmallPatch(PArrs[1], vvArrs[1], importantArrays[1], importantArrays[2], u, v, GregoryPoints, GregoryVectors);
             createSmallPatch(PArrs[2], vvArrs[2], importantArrays[2], importantArrays[0], u, v, GregoryPoints, GregoryVectors);
-            // addPoint(vvArrs[2][0].x, vvArrs[2][0].y, vvArrs[2][0].z, 'dfsds');
-            // addPoint(vvArrs[2][1].x, vvArrs[2][1].y, vvArrs[2][1].z, 'dfsds');
-            // addPoint(vvArrs[2][2].x, vvArrs[2][2].y, vvArrs[2][2].z, 'dfsds');
-            // addPoint(vvArrs[2][3].x, vvArrs[2][3].y, vvArrs[2][3].z, 'dfsds');
 
             return GregoryPoints;
         }
@@ -545,26 +503,23 @@ namespace ModelEditor
             var bPrim = abstruct.bPrim;
             var helps = abstruct.helps;
 
-            var a0 = DiffPoints(P[1], helps[0]);
-            var b0 = DiffPoints(b[0], P[1]);
-            var a3 = DiffPoints(P[2], vv[4]);
-            var b3 = DiffPoints(vv[2], P[2]);
+            var a0 = P[1] - helps[0];
+            var b0 = b[0] - P[1];
+            var a3 = P[2] - vv[4];
+            var b3 = vv[2] - P[2];
             var gs = getGs(a0, b0, a3, b3);
             var cs = getCis(P[2], vv[1], vv[0], P[1]);
             var kh0 = countK0AndH0(gs[0], cs[0], b0);
             var kh1 = countK0AndH0(gs[2], cs[2], b3);
             var dv0 = getDValue(1 / 3, gs, cs, kh0, kh1);
             var dv1 = getDValue(2 / 3, gs, cs, kh0, kh1);
-            // GregoryVectors.Add([vv[0], SumPoints(vv[0], dv0)]);
-            cPrim.Add(SumPoints(vv[0], dv0));
-            dPrim.Add(SumPoints(vv[1], dv1));
-            // GregoryVectors.Add([vv[0], SumPoints(vv[0], dv0)]);
-            // GregoryVectors.Add([vv[1], SumPoints(vv[1], dv1)]);
+            cPrim.Add(vv[0]+ dv0);
+            dPrim.Add(vv[1]+ dv1);
 
-            a0 = DiffPoints(P[3], helps[1]);
-            b0 = DiffPoints(b[1], P[3]);
-            b3 = DiffPoints(vv[1], P[2]);
-            a3 = DiffPoints(P[2], vv[4]);
+            a0 = P[3] - helps[1];
+            b0 = b[1] - P[3];
+            b3 = vv[1]- P[2];
+            a3 = P[2] - vv[4];
             gs = getGs(a0, b0, a3, b3);
             cs = getCis(P[2], vv[2], vv[3], P[3]);
             kh0 = countK0AndH0(gs[0], cs[0], b0);
@@ -572,14 +527,12 @@ namespace ModelEditor
             dv0 = getDValue(1 / 3, gs, cs, kh0, kh1);
             dv1 = getDValue(2 / 3, gs, cs, kh0, kh1);
 
-            cPrim.Add(SumPoints(vv[3], dv0));
-            dPrim.Add(SumPoints(vv[2], dv1));
-            //  GregoryVectors.Add([vv[3], SumPoints(vv[3], dv0)]);
+            cPrim.Add(vv[3]+ dv0);
+            dPrim.Add(vv[2]+ dv1);
             GregoryVectors.Add(new List<Vector3>() { b[0], bPrim[0] });
             GregoryVectors.Add(new List<Vector3>() { b[1], bPrim[1] });
             GregoryVectors.Add(new List<Vector3>() { a[0], aPrim[0] });
             GregoryVectors.Add(new List<Vector3>() { a[1], aPrim[1] });
-            // GregoryVectors.Add([vv[2], SumPoints(vv[2], dv1)]);
 
             var preG = new List<List<Vector3>>();
             for (int i = 0; i < 4; i++)
