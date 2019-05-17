@@ -45,6 +45,16 @@ namespace ModelEditor
             ResetCamera();
             Cursor = AddObj(new Cursor(RayCaster), this);
 
+            var q = new Qwe();
+            var data = q.Q();
+
+            foreach (var d in data)
+            {
+                var vert = new Vertex();
+                vert.MoveLoc(10*d);
+                vert.SetParent(this, true);
+            }
+
 
             var a = AddBezierSurfaceC0(this);
             var b = AddBezierSurfaceC0(this);

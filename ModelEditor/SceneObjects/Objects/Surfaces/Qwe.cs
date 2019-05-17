@@ -11,6 +11,57 @@ namespace ModelEditor
 {
     public class Qwe
     {
+        public List<Vector3> Q()
+        {
+            var points = new List<Vector3>();
+            points.Add(new Vector3(0.175f, -0.07f, 0));
+            points.Add(new Vector3(0.095f, 0.223f, 0));
+            points.Add(new Vector3(-0.056f, -0.055f, 0));
+
+            var arrays = new List<List<List<Vector3>>>();
+            for (int i = 0; i < 3; i++)
+            {
+                var arr = new List<List<Vector3>>();
+                for (int j = 0; j < 2; j++)
+                {
+                    var aa = new List<Vector3>();
+                    for (int k = 0; k < 4; k++)
+                    {
+                        aa.Add(new Vector3());
+                    }
+                    arr.Add(aa);
+                }
+
+                arrays.Add(arr);
+            }
+
+            arrays[0][0][0] = new Vector3(0.175013f, -0.0706f, 0);
+            arrays[0][0][1] = new Vector3(0.225014f, 0.074996f, 0);
+            arrays[0][0][2] = new Vector3(0.225014f, 0.144996f, 0);
+            arrays[0][0][3] = new Vector3(0.095011f, 0.22998f, 0);
+            arrays[0][1][0] = new Vector3(0.295015f, 0.0049949f, 0);
+            arrays[0][1][1] = new Vector3(0.295015f, 0.074996f, 0);
+            arrays[0][1][2] = new Vector3(0.295015f, 0.144996f, 0);
+            arrays[0][1][3] = new Vector3(0.295015f, 0.214997f, 0);
+            arrays[1][0][0] = new Vector3(0.095011f, 0.22998f, 0);
+            arrays[1][0][1] = new Vector3(-0.034992f, 0.174996f, 0);
+            arrays[1][0][2] = new Vector3(-0.034992f, 0.104995f, 0);
+            arrays[1][0][3] = new Vector3(-0.05993f, -0.05506f, 0);
+            arrays[1][1][0] = new Vector3(-0.104993f, 0.244997f, 0);
+            arrays[1][1][1] = new Vector3(-0.104993f, 0.174996f, 0);
+            arrays[1][1][2] = new Vector3(-0.104993f, 0.104995f, 0);
+            arrays[1][1][3] = new Vector3(-0.104993f, 0.034995f, 0);
+            arrays[2][0][0] = new Vector3(-0.05993f, -0.05506f, 0);
+            arrays[2][0][1] = new Vector3(-0.014993f, -0.14507f, 0);
+            arrays[2][0][2] = new Vector3(0.05508f, -0.14507f, 0);
+            arrays[2][0][3] = new Vector3(0.175013f, -0.0706f, 0);
+            arrays[2][1][0] = new Vector3(-0.084994f, -0.21508f, 0);
+            arrays[2][1][1] = new Vector3(-0.014993f, -0.21508f, 0);
+            arrays[2][1][2] = new Vector3(0.05508f, -0.21508f, 0);
+            arrays[2][1][3] = new Vector3(0.12508f, -0.21508f, 0);
+
+            return RebuildGregory(arrays, points, 4, 4);
+        }
         public Vector3 findP1(Vector3 q, Vector3 center)
         {
             return DividePoint(SumPoints(MultiplyPoint(q, 2), center), 3);
@@ -274,24 +325,25 @@ namespace ModelEditor
                     p.Z = getQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
                     //setTranslationPoints([p]);
                     //ret.Add(UpdatePointsForCanvas(Translate({}))[0]);
+                    ret.Add(p);
                     //if(v != 0) {
                     //    drawLine(ret[i].X, ret[i].Y, ret[i - 1].X, ret[i - 1].Y, ctx);
                     //}
-                    if (v + 0.02 > 1.0 && v + 0.02 != 1.0 && v != 1)
-                    {
-                        v = 1.0f;
-                        i++;
-                        var q = Vector3.Zero;
-                        q.X = getQuv(Gx, u, v, aPrim, bPrim, cPrim, dPrim, "X");
-                        q.Y = getQuv(Gy, u, v, aPrim, bPrim, cPrim, dPrim, "Y");
-                        q.Z = getQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
-                        //setTranslationPoints([p]);
-                        //ret.Add(UpdatePointsForCanvas(Translate({}))[0]);
-                        //if(u != 0) {
-                        //    drawLine(ret[i].X, ret[i].Y, ret[i - 1].X, ret[i - 1].Y, ctx);
-                        //}
-                    }
-                    i++;
+                    //if (v + 0.02 > 1.0 && v + 0.02 != 1.0 && v != 1)
+                    //{
+                    //    v = 1.0f;
+                    //    i++;
+                    //    var q = Vector3.Zero;
+                    //    q.X = getQuv(Gx, u, v, aPrim, bPrim, cPrim, dPrim, "X");
+                    //    q.Y = getQuv(Gy, u, v, aPrim, bPrim, cPrim, dPrim, "Y");
+                    //    q.Z = getQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
+                    //    //setTranslationPoints([p]);
+                    //    //ret.Add(UpdatePointsForCanvas(Translate({}))[0]);
+                    //    //if(u != 0) {
+                    //    //    drawLine(ret[i].X, ret[i].Y, ret[i - 1].X, ret[i - 1].Y, ctx);
+                    //    //}
+                    //}
+                    //i++;
                 }
                 //ctx.stroke();
             }
@@ -308,24 +360,25 @@ namespace ModelEditor
                     p.Z = getQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
                     //setTranslationPoints([p]);
                     //ret.Add(UpdatePointsForCanvas(Translate({}))[0]);
+                    ret.Add(p);
                     //            if(u != 0) {
                     //                drawLine(ret[i].X, ret[i].Y, ret[i - 1].X, ret[i - 1].Y, ctx);
                     //            }
-                    if (u + 0.02 > 1.0 && u + 0.02 != 1.0 && u != 1.0)
-                    {
-                        u = 1.0f;
-                        i++;
-                        var q = Vector3.Zero;
-                        q.X = getQuv(Gx, u, v, aPrim, bPrim, cPrim, dPrim, "X");
-                        q.Y = getQuv(Gy, u, v, aPrim, bPrim, cPrim, dPrim, "Y");
-                        q.Z = getQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
-                        //setTranslationPoints([p]);
-                        //ret.Add(UpdatePointsForCanvas(Translate({}))[0]);
-                        //                if(u != 0) {
-                        //                    drawLine(ret[i].X, ret[i].Y, ret[i - 1].X, ret[i - 1].Y, ctx);
-                        //                }
-                    }
-                    i++;
+                    //if (u + 0.02 > 1.0 && u + 0.02 != 1.0 && u != 1.0)
+                    //{
+                    //    u = 1.0f;
+                    //    i++;
+                    //    var q = Vector3.Zero;
+                    //    q.X = getQuv(Gx, u, v, aPrim, bPrim, cPrim, dPrim, "X");
+                    //    q.Y = getQuv(Gy, u, v, aPrim, bPrim, cPrim, dPrim, "Y");
+                    //    q.Z = getQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
+                    //    //setTranslationPoints([p]);
+                    //    //ret.Add(UpdatePointsForCanvas(Translate({}))[0]);
+                    //    //                if(u != 0) {
+                    //    //                    drawLine(ret[i].X, ret[i].Y, ret[i - 1].X, ret[i - 1].Y, ctx);
+                    //    //                }
+                    //}
+                    //i++;
                 }
                 //ctx.stroke();
             }
@@ -429,7 +482,7 @@ namespace ModelEditor
             return g1 * c2 - g2 * c1;
         }
 
-        public void RebuildGregory(List<List<List<Vector3>>> importantArrays, List<Vector3> points, int u, int v)
+        public List<Vector3> RebuildGregory(List<List<List<Vector3>>> importantArrays, List<Vector3> points, int u, int v)
         {
             var GregoryPoints = new List<Vector3>();
             var GregoryVectors = new List<List<Vector3>>();
@@ -478,6 +531,8 @@ namespace ModelEditor
             // addPoint(vvArrs[2][1].x, vvArrs[2][1].y, vvArrs[2][1].z, 'dfsds');
             // addPoint(vvArrs[2][2].x, vvArrs[2][2].y, vvArrs[2][2].z, 'dfsds');
             // addPoint(vvArrs[2][3].x, vvArrs[2][3].y, vvArrs[2][3].z, 'dfsds');
+
+            return GregoryPoints;
         }
         public void createSmallPatch(List<Vector3> P, List<Vector3> vv, List<List<Vector3>> ia1, List<List<Vector3>> ia2, int u, int v, List<Vector3> GregoryPoints, List<List<Vector3>> GregoryVectors)
         {
@@ -540,8 +595,8 @@ namespace ModelEditor
             preG[1].Add(Vector3.Zero);
             preG[1].Add(vv[3]);
             preG[2].Add(b[0]);
-            preG[1].Add(Vector3.Zero);
-            preG[1].Add(Vector3.Zero);
+            preG[2].Add(Vector3.Zero);
+            preG[2].Add(Vector3.Zero);
             preG[2].Add(vv[2]);
             preG[3].Add(P[1]);
             preG[3].Add(vv[0]);
