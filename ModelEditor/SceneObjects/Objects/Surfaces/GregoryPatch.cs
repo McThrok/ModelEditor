@@ -15,6 +15,14 @@ namespace ModelEditor
         public Vertex A { get; set; }
         public Vertex B { get; set; }
     }
+    public class GregoryPatchData
+    {
+        public List<Vector3> Pdown { get; set; }
+        public List<Vector3> Pup { get; set; }
+        public GregoryEdgeData EdgeDown { get; set; }
+        public GregoryEdgeData EdgeUp { get; set; }
+    }
+
 
     public class GregoryPatch : SceneObject, IRenderableObj
     {
@@ -36,12 +44,33 @@ namespace ModelEditor
             var pPoins = GetP(middleData);
 
             for (int i = 0; i < pPoins.Count; i++)
-                data.AddLine(pPoins[i]);
+                data.AddLine(pPoins[1]);
 
+            //var patchDatas = GetPatchDatas(pPoins, _data);
+            //data.AddLine(patchDatas[0].Pdown);
+            //data.AddLine(patchDatas[0].Pup.Take(2).ToList());
 
             return data;
         }
 
+        private List<GregoryPatchData> GetPatchDatas(List<List<Vector3>> pPoins, List<GregoryEdgeData> edgeData)
+        {
+            var data = new List<GregoryPatchData>();
+
+            int n = edgeData.Count;
+            for (int i = 0; i < n; i++)
+            {
+                var patch = new GregoryPatchData();
+                patch.EdgeDown = edgeData[i];
+                patch.EdgeUp = edgeData[(i + 1) % n];
+                patch.Pdown = pPoins[i];
+                patch.Pup = pPoins[(i + 1) % n];
+
+                data.Add(patch);
+            }
+
+            return data;
+        }
         private List<List<Vector3>> GetP(List<List<Vector3>> middleData)
         {
             var result = new List<List<Vector3>>();
@@ -70,7 +99,6 @@ namespace ModelEditor
 
             return result;
         }
-
         private List<Vector3> GetMiddleData(GregoryEdgeData data)
         {
             var result = new List<Vector3>();

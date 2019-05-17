@@ -159,6 +159,10 @@ namespace ModelEditor
         {
             return _controlVertices[h][w].GlobalMatrix.Translation;
         }
+        public Vertex GetVert(int h, int w)
+        {
+            return _controlVertices[h][w];
+        }
         public Vector2Int GetIndices(Vertex vert)
         {
             for (int i = 0; i < _controlVertices.Count; i++)
@@ -214,6 +218,8 @@ namespace ModelEditor
 
             surfA.LinkedVertices.Add(a, b);
             surfB.LinkedVertices.Add(b, a);
+            a.LinkId = a.Id;
+            b.LinkId = a.Id;
 
             var eps = 0.000001;
 
