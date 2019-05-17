@@ -243,6 +243,7 @@ namespace ModelEditor
             matA.Translation = pos;
             a.GlobalMatrix = matA;
         }
+
         public static List<Vertex> CheckGregory(BezierSurfaceC0 surfA, BezierSurfaceC0 surfB, BezierSurfaceC0 surfC)
         {
             if (surfA.Id == surfB.Id || surfA.Id == surfC.Id | surfB.Id == surfC.Id)

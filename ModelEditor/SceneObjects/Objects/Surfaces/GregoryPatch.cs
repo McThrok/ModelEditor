@@ -15,13 +15,12 @@ namespace ModelEditor
         public Vertex A { get; set; }
         public Vertex B { get; set; }
     }
-    public class GregoryPatchData
+    public class GregoryData
     {
-        public List<Vector3> Pdown { get; set; }
-        public List<Vector3> Pup { get; set; }
-        public GregoryEdgeData EdgeDown { get; set; }
-        public GregoryEdgeData EdgeUp { get; set; }
+        public List<Vector3> Points { get; set; } = new List<Vector3>();
+        public List<List<List<Vector3>>> Arrays { get; set; } = new List<List<List<Vector3>>>();
     }
+
 
 
     public class GregoryPatch : SceneObject, IRenderableObj
@@ -35,128 +34,170 @@ namespace ModelEditor
             _data = data;
         }
 
-        public ObjRenderData GetRenderData()
+        public GregoryData GetGregoryData()
         {
-            var data = new ObjRenderData();
-            var middleData = new List<List<Vector3>>();
+            var greg = new GregoryData();
+
             for (int i = 0; i < _data.Count; i++)
-                middleData.Add(GetMiddleData(_data[i]));
-            var pPoins = GetP(middleData);
+                greg.Points.Add(_data[i].A.GlobalMatrix.Translation);
 
-            for (int i = 0; i < pPoins.Count; i++)
-                data.AddLine(pPoins[1]);
+            for (int i = 0; i < _data.Count; i++)
+                greg.Arrays.Add(GetArray(_data[i]));
 
-            //var patchDatas = GetPatchDatas(pPoins, _data);
-            //data.AddLine(patchDatas[0].Pdown);
-            //data.AddLine(patchDatas[0].Pup.Take(2).ToList());
-
-            return data;
+            return greg;
         }
 
-        private List<GregoryPatchData> GetPatchDatas(List<List<Vector3>> pPoins, List<GregoryEdgeData> edgeData)
-        {
-            var data = new List<GregoryPatchData>();
-
-            int n = edgeData.Count;
-            for (int i = 0; i < n; i++)
-            {
-                var patch = new GregoryPatchData();
-                patch.EdgeDown = edgeData[i];
-                patch.EdgeUp = edgeData[(i + 1) % n];
-                patch.Pdown = pPoins[i];
-                patch.Pup = pPoins[(i + 1) % n];
-
-                data.Add(patch);
-            }
-
-            return data;
-        }
-        private List<List<Vector3>> GetP(List<List<Vector3>> middleData)
+        public List<List<Vector3>> GetArray(GregoryEdgeData data)
         {
             var result = new List<List<Vector3>>();
-
-            var pEst = (middleData[0][0] + middleData[1][0] + middleData[2][0]) / 3;
-            for (int i = 0; i < middleData.Count; i++)
-            {
-                result.Add(new List<Vector3>());
-                result[i].Add(middleData[i][0]);
-                var tanget = Vector3.Distance(pEst, result[i][0]) / 3 * middleData[i][1].Normalized();
-                result[i].Add(result[i][0] + tanget);
-                result[i].Add(0.5f * (3 * result[i][1] - result[i][0]));//Q
-            }
-
-            var p = (result[0][2] + result[1][2] + result[2][2]) / 3;
-
-            for (int i = 0; i < middleData.Count; i++)
-            {
-                result[i].Add(p);
-            }
-
-            for (int i = 0; i < middleData.Count; i++)
-            {
-                result[i][2] = (2 * result[i][2] + p) / 3;
-            }
-
-            return result;
-        }
-        private List<Vector3> GetMiddleData(GregoryEdgeData data)
-        {
-            var result = new List<Vector3>();
+            result.Add(new List<Vector3>());
+            result.Add(new List<Vector3>());
 
             var vertA = data.Surface.GetIndices(data.A);
             var vertB = data.Surface.GetIndices(data.B);
-
-            if (vertA.X > vertB.X || vertA.Y > vertB.Y)
-            {
-                var tmp = vertB;
-                vertB = vertA;
-                vertA = tmp;
-            }
-
             var verts = data.Surface.GetVertsGlobal();
-            Vector3 vertex;
-            Vector3 vector;
 
+            //X=h, Y=w
             if (vertA.X == vertB.X)
             {
-                int pIdxW = vertA.Y / 3;
+                int change = (vertB.Y - vertA.Y) / 3;
+                for (int i = 0; i < 4; i++)
+                    result[0].Add(data.Surface.GetVertex(vertA.X, vertA.Y+i*change));
 
-                if (vertA.X == 0)
-                {
-                    vertex = data.Surface.GetValue(verts, 0, pIdxW, 0, 0.5f);
-                    vector = -data.Surface.GetValueDivH(verts, 0, pIdxW, 0, 0.5f);
-                }
-                else
-                {
-                    var hpc = data.Surface.HeightPatchCount;
-                    vertex = data.Surface.GetValue(verts, hpc - 1, pIdxW, 1, 0.5f);
-                    vector = data.Surface.GetValueDivH(verts, hpc - 1, pIdxW, 1, 0.5f);
-                }
+                int intX = vertA.X == 0 ? 1 : data.Surface.HeightVertexCount - 2;
+
+                for (int i = 0; i < 4; i++)
+                    result[1].Add(data.Surface.GetVertex(intX, vertA.Y + i * change));
             }
             else
             {
-                int pIdxH = vertA.X / 3;
+                int change = (vertB.X - vertA.Y) / 3;
+                for (int i = 0; i < 4; i++)
+                    result[0].Add(data.Surface.GetVertex(vertA.Y + i * change, vertA.Y));
 
-                if (vertA.Y == 0)
-                {
-                    vertex = data.Surface.GetValue(verts, pIdxH, 0, 0.5f, 0);
-                    vector = -data.Surface.GetValueDivW(verts, pIdxH, 0, 0.5f, 0);
-                }
-                else
-                {
-                    var hpw = data.Surface.WidthPatchCount;
-                    vertex = data.Surface.GetValue(verts, pIdxH, hpw - 1, 0.5f, 1);
-                    vector = data.Surface.GetValueDivW(verts, pIdxH, hpw - 1, 0.5f, 1);
-                }
+                int intY = vertA.Y == 0 ? 1 : data.Surface.WidthVertexCount - 2;
+
+                for (int i = 0; i < 4; i++)
+                    result[1].Add(data.Surface.GetVertex(vertA.Y + i * change, intY));
             }
-
-            result.Add(vertex);
-            result.Add(vector);
 
             return result;
         }
 
+        public ObjRenderData GetRenderData()
+        {
+            var data = new ObjRenderData();
+            var greg = GetGregoryData();
 
+            var qwe = new Qwe();
+
+            data.Vertices = qwe.RebuildGregory(greg.Arrays, greg.Points, 4, 4);
+
+            return data;
+        }
+
+        //private List<GregoryPatchData> GetPatchDatas(List<List<Vector3>> pPoins, List<GregoryEdgeData> edgeData)
+        //{
+        //    var data = new List<GregoryPatchData>();
+
+        //    int n = edgeData.Count;
+        //    for (int i = 0; i < n; i++)
+        //    {
+        //        var patch = new GregoryPatchData();
+        //        patch.EdgeDown = edgeData[i];
+        //        patch.EdgeUp = edgeData[(i + 1) % n];
+        //        patch.Pdown = pPoins[i];
+        //        patch.Pup = pPoins[(i + 1) % n];
+
+        //        data.Add(patch);
+        //    }
+
+        //    return data;
+        //}
+        //private List<List<Vector3>> GetP(List<List<Vector3>> middleData)
+        //{
+        //    var result = new List<List<Vector3>>();
+
+        //    var pEst = (middleData[0][0] + middleData[1][0] + middleData[2][0]) / 3;
+        //    for (int i = 0; i < middleData.Count; i++)
+        //    {
+        //        result.Add(new List<Vector3>());
+        //        result[i].Add(middleData[i][0]);
+        //        var tanget = Vector3.Distance(pEst, result[i][0]) / 3 * middleData[i][1].Normalized();
+        //        result[i].Add(result[i][0] + tanget);
+        //        result[i].Add(0.5f * (3 * result[i][1] - result[i][0]));//Q
+        //    }
+
+        //    var p = (result[0][2] + result[1][2] + result[2][2]) / 3;
+
+        //    for (int i = 0; i < middleData.Count; i++)
+        //    {
+        //        result[i].Add(p);
+        //    }
+
+        //    for (int i = 0; i < middleData.Count; i++)
+        //    {
+        //        result[i][2] = (2 * result[i][2] + p) / 3;
+        //    }
+
+        //    return result;
+        //}
+        //private List<Vector3> GetMiddleData(GregoryEdgeData data)
+        //{
+        //    var result = new List<Vector3>();
+
+        //    var vertA = data.Surface.GetIndices(data.A);
+        //    var vertB = data.Surface.GetIndices(data.B);
+
+        //    if (vertA.X > vertB.X || vertA.Y > vertB.Y)
+        //    {
+        //        var tmp = vertB;
+        //        vertB = vertA;
+        //        vertA = tmp;
+        //    }
+
+        //    var verts = data.Surface.GetVertsGlobal();
+        //    Vector3 vertex;
+        //    Vector3 vector;
+
+        //    if (vertA.X == vertB.X)
+        //    {
+        //        int pIdxW = vertA.Y / 3;
+
+        //        if (vertA.X == 0)
+        //        {
+        //            vertex = data.Surface.GetValue(verts, 0, pIdxW, 0, 0.5f);
+        //            vector = -data.Surface.GetValueDivH(verts, 0, pIdxW, 0, 0.5f);
+        //        }
+        //        else
+        //        {
+        //            var hpc = data.Surface.HeightPatchCount;
+        //            vertex = data.Surface.GetValue(verts, hpc - 1, pIdxW, 1, 0.5f);
+        //            vector = data.Surface.GetValueDivH(verts, hpc - 1, pIdxW, 1, 0.5f);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        int pIdxH = vertA.X / 3;
+
+        //        if (vertA.Y == 0)
+        //        {
+        //            vertex = data.Surface.GetValue(verts, pIdxH, 0, 0.5f, 0);
+        //            vector = -data.Surface.GetValueDivW(verts, pIdxH, 0, 0.5f, 0);
+        //        }
+        //        else
+        //        {
+        //            var hpw = data.Surface.WidthPatchCount;
+        //            vertex = data.Surface.GetValue(verts, pIdxH, hpw - 1, 0.5f, 1);
+        //            vector = data.Surface.GetValueDivW(verts, pIdxH, hpw - 1, 0.5f, 1);
+        //        }
+        //    }
+
+        //    result.Add(vertex);
+        //    result.Add(vector);
+
+        //    return result;
+        //}
 
         #region manipulation
         public override void Move(Vector3 CreateTranslation) { }
