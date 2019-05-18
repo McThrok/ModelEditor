@@ -42,7 +42,6 @@ namespace ModelEditor
         public float h { get; set; }
     }
 
-
     public class GregoryPatch : SceneObject, IRenderableObj
     {
         private static int _count = 0;
@@ -107,7 +106,6 @@ namespace ModelEditor
             var data = new ObjRenderData();
             var greg = GetGregoryData();
 
-
             data.Vertices = RebuildGregory(greg.Arrays, greg.Points, 4, 4);
 
             return data;
@@ -121,30 +119,13 @@ namespace ModelEditor
         {
             return (3 * p2 - p3) / 2;
         }
-        public Pstruct FindP3(List<List<Vector3>> array)
+        public Vector3 FindP2(List<List<Vector3>> array, Vector3 p3)
         {
-            var firstCut = new List<List<Vector3>>();
-            var secondCut = new List<List<Vector3>>();
-            for (var i = 0; i < 2; i++)
-            {
-                firstCut.Add(new List<Vector3>());
-                secondCut.Add(new List<Vector3>());
-            }
-
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 2; j++)
-                    firstCut[j].Add((array[j][i] + array[j][i + 1]) / 2);
-
-            for (int i = 0; i < 2; i++)
-                for (int j = 0; j < 2; j++)
-                    secondCut[j].Add((firstCut[j][i] + firstCut[j][i + 1]) / 2);
-
-            var P3 = (secondCut[0][0] + secondCut[0][1]) / 2;
-            return new Pstruct()
-            {
-                P3 = P3,
-                P2 = P3 + (P3 - (secondCut[1][0] + secondCut[1][1]) / 2) * 0.5f,
-            };
+            return p3 + 0.5f * (p3 - GetBezierValue(0.5f, array[1]));
+        }
+        public Vector3 FindP3(List<List<Vector3>> array)
+        {
+            return GetBezierValue(0.5f, array[0]);
         }
 
         public Vector3 GetF0(Vector3 f0, Vector3 f1, float u, float v)
@@ -174,7 +155,17 @@ namespace ModelEditor
             float c = 1 - t;
             return new Vector3(c * c, 2 * c * t, t * t);
         }
+        public Vector3 GetBezierValue(float t, List<Vector3> verts)
+        {
+            var bezierV = GetBezierCubic(0.5f);
+            var p = verts[0] * bezierV.X + verts[1] * bezierV.Y + verts[2] * bezierV.Z + verts[3] * bezierV.W;
+            return p;
+        }
 
+        public List<Vector3> GetCis(Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3)
+        {
+            return new List<Vector3>() { P2 - P3, P1 - P2, P0 - P1 };
+        }
         public List<Vector3> GetGs(Vector3 a0, Vector3 b0, Vector3 a3, Vector3 b3)
         {
             var ret = new List<Vector3>();
@@ -199,25 +190,20 @@ namespace ModelEditor
             var b = GetBezierSquare(v);
             return b.X * values[0] + b.Y * values[1] + b.Z * values[2];
         }
-       
-        public List<Vector3> GetCis(Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3)
-        {
-            return new List<Vector3>() { P2 - P3, P1 - P2, P0 - P1 };
-        }
 
-        public List<float> MultiplyVectorAndMatrix(List<List<float>> matrix, List<float> vector)
-        {
-            var result = new List<float>();
-            for (var i = 0; i < vector.Count; i++)
-            {
-                result.Add(0);
-                for (var j = 0; j < matrix[i].Count; j++)
-                {
-                    result[i] += vector[j] * matrix[i][j];
-                }
-            }
-            return result;
-        }
+        //public List<List<float>> multiplyVectorAndMatrix(List<List<Vector3>>  matrix, List<Vector3> vector)
+        //{
+        //    var result = new List<List<float>>();
+        //    for (int i = 0; i < vector.Count; i++)
+        //    {
+        //        result.push(0);
+        //        for (int j = 0; j < matrix[i].Count; j++)
+        //        {
+        //            result[i] += vector[j] * matrix[i][j];
+        //        }
+        //    }
+        //    return result;
+        //}
         public float GetQuv(List<List<float>> G, float u, float v, List<Vector3> aPrim, List<Vector3> bPrim, List<Vector3> cPrim, List<Vector3> dPrim, string axis)
         {
             if (axis == "X")
@@ -287,6 +273,7 @@ namespace ModelEditor
                     secondCut2[j].Add((firstCut2[j][i] + firstCut2[j][i + 1]) / 2);
                 }
             }
+
             var a = new List<Vector3>();
             var b = new List<Vector3>();
             var aPrim = new List<Vector3>();
@@ -302,6 +289,7 @@ namespace ModelEditor
             aPrim.Add(((a[1] - firstCut2[1][0]) * 0.5f) + a[1]);
             bPrim.Add(((b[0] - secondCut1[1][1]) * 0.5f) + b[0]);
             bPrim.Add(((b[1] - secondCut2[1][0]) * 0.5f) + b[1]);
+
             return new ABstruct() { a = a, b = b, aPrim = aPrim, bPrim = bPrim, helps = helps };
         }
         public List<Vector3> GetPartialGregoryPoints(List<List<Vector3>> preG, List<Vector3> aPrim, List<Vector3> bPrim, List<Vector3> cPrim, List<Vector3> dPrim, float _u, float _v)
@@ -337,7 +325,7 @@ namespace ModelEditor
                     ret.Add(p);
                 }
             }
-            for (float v = 0; v <= 1.00; v += (1.0f / (_v - 1)))
+            for (float v = 0; v <= 1.0; v += (1.0f / (_v - 1)))
             {
                 for (float u = 0; u <= 1.00; u += 0.02f)
                 {
@@ -388,7 +376,7 @@ namespace ModelEditor
             return g1 * c2 - g2 * c1;
         }
 
-        public List<Vector3> RebuildGregory(List<List<List<Vector3>>> importantArrays, List<Vector3> points, int u, int v)
+        public List<Vector3> RebuildGregory(List<List<List<Vector3>>> arrays, List<Vector3> points, int u, int v)
         {
             var GregoryPoints = new List<Vector3>();
             var GregoryVectors = new List<List<Vector3>>();
@@ -396,15 +384,18 @@ namespace ModelEditor
             var p2 = new List<Vector3>();
             for (var i = 0; i < 3; i++)
             {
-                var help = FindP3(importantArrays[i]);
-                p3.Add(help.P3);
-                p2.Add(help.P2);
+                var p33 = FindP3(arrays[i]);
+                var p22 = FindP2(arrays[i], p33);
+                p3.Add(p33);
+                p2.Add(p22);
             }
+
             List<Vector3> q = new List<Vector3>();
             for (var i = 0; i < 3; i++)
             {
                 q.Add(FindQ(p2[i], p3[i]));
             }
+
             var p = (q[0] + q[1] + q[2]) / 3;
             List<Vector3> p1 = new List<Vector3>();
             for (var i = 0; i < 3; i++)
@@ -422,14 +413,10 @@ namespace ModelEditor
             vvArrs.Add(new List<Vector3>() { p2[1], p1[1], p1[2], p2[2], p1[0] });
             vvArrs.Add(new List<Vector3>() { p2[2], p1[2], p1[0], p2[0], p1[1] });
 
-            var importantArrays2 = new List<List<List<Vector3>>>();
-            importantArrays2.Add(importantArrays[1]);
-            importantArrays2.Add(importantArrays[2]);
-            importantArrays2.Add(importantArrays[0]);
 
-            CreateSmallPatch(PArrs[0], vvArrs[0], importantArrays[0], importantArrays[1], u, v, GregoryPoints, GregoryVectors);
-            CreateSmallPatch(PArrs[1], vvArrs[1], importantArrays[1], importantArrays[2], u, v, GregoryPoints, GregoryVectors);
-            CreateSmallPatch(PArrs[2], vvArrs[2], importantArrays[2], importantArrays[0], u, v, GregoryPoints, GregoryVectors);
+            CreateSmallPatch(PArrs[0], vvArrs[0], arrays[0], arrays[1], u, v, GregoryPoints, GregoryVectors);
+            CreateSmallPatch(PArrs[1], vvArrs[1], arrays[1], arrays[2], u, v, GregoryPoints, GregoryVectors);
+            CreateSmallPatch(PArrs[2], vvArrs[2], arrays[2], arrays[0], u, v, GregoryPoints, GregoryVectors);
 
             return GregoryPoints;
         }
@@ -454,6 +441,7 @@ namespace ModelEditor
             var kh1 = CountK0AndH0(gs[2], cs[2], b3);
             var dv0 = GetDValue(1 / 3, gs, cs, kh0, kh1);
             var dv1 = GetDValue(2 / 3, gs, cs, kh0, kh1);
+
             cPrim.Add(vv[0] + dv0);
             dPrim.Add(vv[1] + dv1);
 
@@ -470,6 +458,7 @@ namespace ModelEditor
 
             cPrim.Add(vv[3] + dv0);
             dPrim.Add(vv[2] + dv1);
+
             GregoryVectors.Add(new List<Vector3>() { b[0], bPrim[0] });
             GregoryVectors.Add(new List<Vector3>() { b[1], bPrim[1] });
             GregoryVectors.Add(new List<Vector3>() { a[0], aPrim[0] });
