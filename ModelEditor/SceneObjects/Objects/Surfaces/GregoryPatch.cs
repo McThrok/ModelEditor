@@ -191,56 +191,30 @@ namespace ModelEditor
             return b.X * values[0] + b.Y * values[1] + b.Z * values[2];
         }
 
-        //public List<List<float>> multiplyVectorAndMatrix(List<List<Vector3>>  matrix, List<Vector3> vector)
-        //{
-        //    var result = new List<List<float>>();
-        //    for (int i = 0; i < vector.Count; i++)
-        //    {
-        //        result.push(0);
-        //        for (int j = 0; j < matrix[i].Count; j++)
-        //        {
-        //            result[i] += vector[j] * matrix[i][j];
-        //        }
-        //    }
-        //    return result;
-        //}
-        public float GetQuv(List<List<float>> G, float u, float v, List<Vector3> aPrim, List<Vector3> bPrim, List<Vector3> cPrim, List<Vector3> dPrim, string axis)
+        public List<Vector3> MultiplyVectorAndMatrix(List<List<Vector3>> matrix, List<float> vector)
         {
-            if (axis == "X")
+            var result = new List<Vector3>();
+            for (int i = 0; i < vector.Count; i++)
             {
-                G[1][1] = GetF0(aPrim[1], aPrim[0], u, v).X;
-                G[2][1] = GetF1(bPrim[0], cPrim[0], u, v).X;
-                G[2][2] = GetF2(dPrim[0], dPrim[1], u, v).X;
-                G[1][2] = GetF3(cPrim[1], bPrim[1], u, v).X;
+                result.Add(Vector3.Zero);
+                for (int j = 0; j < matrix[i].Count; j++)
+                {
+                    result[i] += vector[j] * matrix[i][j];
+                }
             }
-            else if (axis == "Y")
-            {
-                G[1][1] = GetF0(aPrim[1], aPrim[0], u, v).Y;
-                G[2][1] = GetF1(bPrim[0], cPrim[0], u, v).Y;
-                G[2][2] = GetF2(dPrim[0], dPrim[1], u, v).Y;
-                G[1][2] = GetF3(cPrim[1], bPrim[1], u, v).Y;
-            }
-            else if (axis == "Z")
-            {
-                G[1][1] = GetF0(aPrim[1], aPrim[0], u, v).Z;
-                G[2][1] = GetF1(bPrim[0], cPrim[0], u, v).Z;
-                G[2][2] = GetF2(dPrim[0], dPrim[1], u, v).Z;
-                G[1][2] = GetF3(cPrim[1], bPrim[1], u, v).Z;
-            }
-
-            var m = new Matrix4x4(
-                G[0][0], G[0][1], G[0][2], G[0][3],
-                G[1][0], G[1][1], G[1][2], G[1][3],
-                G[2][0], G[2][1], G[2][2], G[2][3],
-                G[3][0], G[3][1], G[3][2], G[3][3]
-                );
-
-            var vector = GetBezierCubic(v);
-            var vec = m.Multiply(vector);
-            var bezierV = GetBezierCubic(u);
-            var result = Vector4.Dot(vec, bezierV);
-
             return result;
+        }
+        public Vector3 GetQuv(List<List<Vector3>> G, float u, float v, List<Vector3> aPrim, List<Vector3> bPrim, List<Vector3> cPrim, List<Vector3> dPrim)
+        {
+            G[1][1] = GetF0(aPrim[1], aPrim[0], u, v);
+            G[2][1] = GetF1(bPrim[0], cPrim[0], u, v);
+            G[2][2] = GetF2(dPrim[0], dPrim[1], u, v);
+            G[1][2] = GetF3(cPrim[1], bPrim[1], u, v);
+
+            var bezierV = MultiplyVectorAndMatrix(G, GetBezierCubic(v).ToList());
+            var bezierU = GetBezierCubic(u);
+
+            return bezierV[0] * bezierU.X + bezierV[1] * bezierU.Y + bezierV[2] * bezierU.Z + bezierV[3] * bezierU.W;
         }
         public ABstruct FindAB(List<List<Vector3>> importantArray1, List<List<Vector3>> importantArray2)
         {
@@ -295,45 +269,21 @@ namespace ModelEditor
         public List<Vector3> GetPartialGregoryPoints(List<List<Vector3>> preG, List<Vector3> aPrim, List<Vector3> bPrim, List<Vector3> cPrim, List<Vector3> dPrim, float _u, float _v)
         {
             var ret = new List<Vector3>();
-            var Gx = new List<List<float>>();
-            var Gy = new List<List<float>>();
-            var Gz = new List<List<float>>();
-
-            for (int i = 0; i < 4; i++)
-            {
-                Gx.Add(new List<float>());
-                Gy.Add(new List<float>());
-                Gz.Add(new List<float>());
-            }
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    Gx[i].Add(preG[i][j].X);
-                    Gy[i].Add(preG[i][j].Y);
-                    Gz[i].Add(preG[i][j].Z);
-                }
-            }
+        
             for (float u = 0; u <= 1.0; u += (1.0f / (_u - 1)))
             {
                 for (float v = 0; v <= 1.0; v += 0.02f)
                 {
-                    var p = Vector3.Zero;
-                    p.X = GetQuv(Gx, u, v, aPrim, bPrim, cPrim, dPrim, "X");
-                    p.Y = GetQuv(Gy, u, v, aPrim, bPrim, cPrim, dPrim, "Y");
-                    p.Z = GetQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
-                    ret.Add(p);
+                  
+                    ret.Add(GetQuv(preG, u, v, aPrim, bPrim, cPrim, dPrim));
                 }
             }
             for (float v = 0; v <= 1.0; v += (1.0f / (_v - 1)))
             {
                 for (float u = 0; u <= 1.00; u += 0.02f)
                 {
-                    var p = Vector3.Zero;
-                    p.X = GetQuv(Gx, u, v, aPrim, bPrim, cPrim, dPrim, "X");
-                    p.Y = GetQuv(Gy, u, v, aPrim, bPrim, cPrim, dPrim, "Y");
-                    p.Z = GetQuv(Gz, u, v, aPrim, bPrim, cPrim, dPrim, "Z");
-                    ret.Add(p);
+                   
+                    ret.Add(GetQuv(preG, u, v, aPrim, bPrim, cPrim, dPrim));
                 }
             }
             return ret;

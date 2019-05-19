@@ -145,6 +145,15 @@ namespace ModelEditor
         {
             return (float)(180 * v / Math.PI);
         }
+
+        public static List<float> ToList(this Vector3 v)
+        {
+            return new List<float>() { v.X, v.Y, v.Z };
+        }
+        public static List<float> ToList(this Vector4 v)
+        {
+            return new List<float>() { v.X, v.Y, v.Z,v.W };
+        }
     }
 }
 
