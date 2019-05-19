@@ -359,49 +359,40 @@ namespace ModelEditor
 
             return GregoryPoints;
         }
-        public void CreateSmallPatch(List<Vector3> P, List<Vector3> vv, List<List<List<Vector3>>> arrays, int u, int v, List<Vector3> GregoryPoints, List<List<Vector3>> GregoryVectors)
+        public void CreateSmallPatch(List<Vector3> P, List<Vector3> sides, List<List<List<Vector3>>> arrays, int u, int v, List<Vector3> GregoryPoints, List<List<Vector3>> GregoryVectors)
         {
-            var cPrim = new List<Vector3>();
-            var dPrim = new List<Vector3>();
-            var abstruct = FindAB(arrays);
-            var a = new List<Vector3>() { abstruct[0][0], abstruct[1][0] };
-            var aPrim = new List<Vector3>() { abstruct[0][1], abstruct[1][1] };
-            var b = new List<Vector3>() { abstruct[0][2], abstruct[1][2] };
-            var bPrim = new List<Vector3>() { abstruct[0][3], abstruct[1][3] };
-            var helps = new List<Vector3>() { abstruct[0][4], abstruct[1][3] };
+            var ab = FindAB(arrays);
 
-            var a0 = P[1] - helps[0];
-            var b0 = b[0] - P[1];
-            var a3 = P[2] - vv[4];
-            var b3 = vv[2] - P[2];
+            var a0 = P[1] - ab[0][4];
+            var b0 = ab[0][2] - P[1];
+            var a3 = P[2] - sides[4];
+            var b3 = sides[2] - P[2];
             var gs = GetGs(a0, b0, a3, b3);
-            var cs = GetCis(P[2], vv[1], vv[0], P[1]);
+            var cs = GetCis(P[2], sides[1], sides[0], P[1]);
             var kh0 = CountK0AndH0(gs[0], cs[0], b0);
             var kh1 = CountK0AndH0(gs[2], cs[2], b3);
             var dv0 = GetDValue(1 / 3, gs, cs, kh0, kh1);
             var dv1 = GetDValue(2 / 3, gs, cs, kh0, kh1);
+            var cPrim1 = sides[0] + dv0;
+            var dPrim1 = sides[1] + dv1;
 
-            cPrim.Add(vv[0] + dv0);
-            dPrim.Add(vv[1] + dv1);
-
-            a0 = P[3] - helps[1];
-            b0 = b[1] - P[3];
-            b3 = vv[1] - P[2];
-            a3 = P[2] - vv[4];
+            a0 = P[3] - ab[1][4];
+            b0 = ab[1][2] - P[3];
+            b3 = sides[1] - P[2];
+            a3 = P[2] - sides[4];
             gs = GetGs(a0, b0, a3, b3);
-            cs = GetCis(P[2], vv[2], vv[3], P[3]);
+            cs = GetCis(P[2], sides[2], sides[3], P[3]);
             kh0 = CountK0AndH0(gs[0], cs[0], b0);
             kh1 = CountK0AndH0(gs[2], cs[2], b3);
             dv0 = GetDValue(1 / 3, gs, cs, kh0, kh1);
             dv1 = GetDValue(2 / 3, gs, cs, kh0, kh1);
+            var cPrim2 = sides[3] + dv0;
+            var dPrim2 = sides[2] + dv1;
 
-            cPrim.Add(vv[3] + dv0);
-            dPrim.Add(vv[2] + dv1);
-
-            GregoryVectors.Add(new List<Vector3>() { b[0], bPrim[0] });
-            GregoryVectors.Add(new List<Vector3>() { b[1], bPrim[1] });
-            GregoryVectors.Add(new List<Vector3>() { a[0], aPrim[0] });
-            GregoryVectors.Add(new List<Vector3>() { a[1], aPrim[1] });
+            GregoryVectors.Add(new List<Vector3>() { ab[0][2], ab[0][3] });
+            GregoryVectors.Add(new List<Vector3>() { ab[1][2], ab[1][3] });
+            GregoryVectors.Add(new List<Vector3>() { ab[0][0], ab[0][1] });
+            GregoryVectors.Add(new List<Vector3>() { ab[1][0], ab[1][1] });
 
             var preG = new List<List<Vector3>>();
             for (int i = 0; i < 4; i++)
@@ -410,24 +401,25 @@ namespace ModelEditor
             }
 
             preG[0].Add(P[0]);
-            preG[0].Add(a[1]);
-            preG[0].Add(b[1]);
+            preG[0].Add(ab[1][0]);
+            preG[0].Add(ab[1][2]);
             preG[0].Add(P[3]);
 
-            preG[1].Add(a[0]);
+            preG[1].Add(ab[0][0]);
             preG[1].Add(Vector3.Zero);
             preG[1].Add(Vector3.Zero);
-            preG[1].Add(vv[3]);
+            preG[1].Add(sides[3]);
 
-            preG[2].Add(b[0]);
+            preG[2].Add(ab[0][2]);
             preG[2].Add(Vector3.Zero);
             preG[2].Add(Vector3.Zero);
-            preG[2].Add(vv[2]);
+            preG[2].Add(sides[2]);
 
             preG[3].Add(P[1]);
-            preG[3].Add(vv[0]);
-            preG[3].Add(vv[1]);
+            preG[3].Add(sides[0]);
+            preG[3].Add(sides[1]);
             preG[3].Add(P[2]);
+
 
             var prims = new List<List<Vector3>>();
             for (int i = 0; i < 4; i++)
@@ -435,14 +427,14 @@ namespace ModelEditor
                 prims.Add(new List<Vector3>());
             }
 
-            prims[0].Add(aPrim[0]);
-            prims[0].Add(aPrim[1]);
-            prims[1].Add(bPrim[0]);
-            prims[1].Add(bPrim[1]);
-            prims[2].Add(cPrim[0]);
-            prims[2].Add(cPrim[1]);
-            prims[3].Add(dPrim[0]);
-            prims[3].Add(dPrim[1]);
+            prims[0].Add(ab[0][1]);
+            prims[0].Add(ab[1][1]);
+            prims[1].Add(ab[0][3]);
+            prims[1].Add(ab[1][3]);
+            prims[2].Add(cPrim1);
+            prims[2].Add(cPrim2);
+            prims[3].Add(dPrim1);
+            prims[3].Add(dPrim2);
 
             GregoryPoints.AddRange(GetPoints(preG, prims, u, v));
         }
