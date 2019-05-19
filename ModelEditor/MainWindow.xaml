@@ -155,7 +155,7 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        
+
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Height:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedObject.Height, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Range:" VerticalAlignment="Center" TextAlignment="Center" />
@@ -248,6 +248,28 @@
                         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedObject.DrawHeightCount, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Draw width:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SelectedObject.DrawWidthCount, ElementName=mainWindow}" />
+                    </Grid>
+
+                    <Grid Margin="5" Name="GregoryMenu">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Grid:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding SelectedObject.ShowGrid, ElementName=mainWindow, Mode=TwoWay }" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Control Grid:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding SelectedObject.ShowVectors, ElementName=mainWindow, Mode=TwoWay }" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Draw height:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedObject.DrawHeightCount, ElementName=mainWindow}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Draw width:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedObject.DrawWidthCount, ElementName=mainWindow}" />
                     </Grid>
 
                     <Grid Margin="5">

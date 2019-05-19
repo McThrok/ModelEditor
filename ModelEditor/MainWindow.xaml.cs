@@ -382,6 +382,9 @@ namespace ModelEditor
                 SurfaceC2Menu.Visibility = item is BezierSurfaceC2 ? Visibility.Visible : Visibility.Collapsed;
                 CylinderC2Menu.Visibility = item is BezierCylinderC2 ? Visibility.Visible : Visibility.Collapsed;
 
+                GregoryMenu.Visibility = item is GregoryPatch ? Visibility.Visible : Visibility.Collapsed;
+
+
             }
             else
             {
