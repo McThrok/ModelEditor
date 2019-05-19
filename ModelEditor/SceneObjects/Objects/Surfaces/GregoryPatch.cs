@@ -121,11 +121,11 @@ namespace ModelEditor
         }
         public Vector3 FindP2(List<List<Vector3>> array, Vector3 p3)
         {
-            return p3 + 0.5f * (p3 - GetBezierValue(0.5f, array[1]));
+            return p3 + 0.5f * (p3 - GetCubicValue(0.5f, array[1]));
         }
         public Vector3 FindP3(List<List<Vector3>> array)
         {
-            return GetBezierValue(0.5f, array[0]);
+            return GetCubicValue(0.5f, array[0]);
         }
 
         public Vector3 GetF0(Vector3 f0, Vector3 f1, float u, float v)
@@ -155,11 +155,15 @@ namespace ModelEditor
             float c = 1 - t;
             return new Vector3(c * c, 2 * c * t, t * t);
         }
-        public Vector3 GetBezierValue(float t, List<Vector3> verts)
+        public Vector3 GetCubicValue(float t, List<Vector3> verts)
         {
             var bezierV = GetBezierCubic(0.5f);
-            var p = verts[0] * bezierV.X + verts[1] * bezierV.Y + verts[2] * bezierV.Z + verts[3] * bezierV.W;
-            return p;
+            return verts[0] * bezierV.X + verts[1] * bezierV.Y + verts[2] * bezierV.Z + verts[3] * bezierV.W;
+        }
+        public Vector3 GetValueSquare(float v, List<Vector3> verts)
+        {
+            var b = GetBezierSquare(v);
+            return b.X * verts[0] + b.Y * verts[1] + b.Z * verts[2];
         }
 
         public List<Vector3> GetCis(Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3)
@@ -177,18 +181,14 @@ namespace ModelEditor
             ret.Add(g2);
             return ret;
         }
-        public Vector3 GetDValue(float v, List<Vector3> gs, List<Vector3> cs, KHstruct kh0, KHstruct kh1)
+        public Vector3 GetDValue(float v, List<Vector3> gs, List<Vector3> cs, Vector2 kh0, Vector2 kh1)
         {
-            var kv = kh0.k * (1 - v) + kh1.k * v;
-            var hv = kh0.h * (1 - v) + kh1.h * v;
+            //k = x, h = y
+            var kv = kh0.X * (1 - v) + kh1.X * v;
+            var hv = kh0.Y * (1 - v) + kh1.Y * v;
             var gv = GetValueSquare(v, gs);
             var cv = GetValueSquare(v, cs);
             return gv * kv + cv * hv;
-        }
-        public Vector3 GetValueSquare(float v, List<Vector3> values)
-        {
-            var b = GetBezierSquare(v);
-            return b.X * values[0] + b.Y * values[1] + b.Z * values[2];
         }
 
         public List<Vector3> MultiplyVectorAndMatrix(List<List<Vector3>> matrix, List<float> vector)
@@ -204,124 +204,113 @@ namespace ModelEditor
             }
             return result;
         }
-        public Vector3 GetQuv(List<List<Vector3>> G, float u, float v, List<Vector3> aPrim, List<Vector3> bPrim, List<Vector3> cPrim, List<Vector3> dPrim)
+        public Vector3 GetQuv(List<List<Vector3>> G, float u, float v, List<List<Vector3>> prims)
         {
-            G[1][1] = GetF0(aPrim[1], aPrim[0], u, v);
-            G[2][1] = GetF1(bPrim[0], cPrim[0], u, v);
-            G[2][2] = GetF2(dPrim[0], dPrim[1], u, v);
-            G[1][2] = GetF3(cPrim[1], bPrim[1], u, v);
+            G[1][1] = GetF0(prims[0][1], prims[0][0], u, v);
+            G[2][1] = GetF1(prims[1][0], prims[2][0], u, v);
+            G[2][2] = GetF2(prims[3][0], prims[3][1], u, v);
+            G[1][2] = GetF3(prims[2][1], prims[1][1], u, v);
 
             var bezierV = MultiplyVectorAndMatrix(G, GetBezierCubic(v).ToList());
             var bezierU = GetBezierCubic(u);
 
             return bezierV[0] * bezierU.X + bezierV[1] * bezierU.Y + bezierV[2] * bezierU.Z + bezierV[3] * bezierU.W;
         }
-        public ABstruct FindAB(List<List<Vector3>> importantArray1, List<List<Vector3>> importantArray2)
+        public List<List<Vector3>> FindAB(List<List<List<Vector3>>> arrays)
         {
-            var firstCut1 = new List<List<Vector3>>();
-            var secondCut1 = new List<List<Vector3>>();
-            var firstCut2 = new List<List<Vector3>>();
-            var secondCut2 = new List<List<Vector3>>();
+            var levels = new List<List<List<List<Vector3>>>>();
+
             for (var i = 0; i < 2; i++)
             {
-                firstCut1.Add(new List<Vector3>());
-                secondCut1.Add(new List<Vector3>());
-                firstCut2.Add(new List<Vector3>());
-                secondCut2.Add(new List<Vector3>());
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
+                levels.Add(new List<List<List<Vector3>>>());
                 for (int j = 0; j < 2; j++)
                 {
-                    firstCut1[j].Add((importantArray1[j][i] + importantArray1[j][i + 1]) / 2);
-                    firstCut2[j].Add((importantArray2[j][i] + importantArray2[j][i + 1]) / 2);
+                    levels[i].Add(new List<List<Vector3>>());
+                    for (int k = 0; k < 2; k++)
+                    {
+                        levels[i][j].Add(new List<Vector3>());
+                    }
                 }
             }
 
             for (int i = 0; i < 2; i++)
-            {
                 for (int j = 0; j < 2; j++)
-                {
-                    secondCut1[j].Add((firstCut1[j][i] + firstCut1[j][i + 1]) / 2);
-                    secondCut2[j].Add((firstCut2[j][i] + firstCut2[j][i + 1]) / 2);
-                }
-            }
+                    for (int k = 0; k < 3; k++)
+                        levels[i][j][0].Add((arrays[i][j][k] + arrays[i][j][k + 1]) / 2);
 
-            var a = new List<Vector3>();
-            var b = new List<Vector3>();
-            var aPrim = new List<Vector3>();
-            var bPrim = new List<Vector3>();
-            var helps = new List<Vector3>();
-            helps.Add(secondCut1[0][0]);
-            helps.Add(secondCut2[0][1]);
-            a.Add(firstCut1[0][2]);
-            a.Add(firstCut2[0][0]);
-            b.Add(secondCut1[0][1]);
-            b.Add(secondCut2[0][0]);
-            aPrim.Add(((a[0] - firstCut1[1][2]) * 0.5f) + a[0]);
-            aPrim.Add(((a[1] - firstCut2[1][0]) * 0.5f) + a[1]);
-            bPrim.Add(((b[0] - secondCut1[1][1]) * 0.5f) + b[0]);
-            bPrim.Add(((b[1] - secondCut2[1][0]) * 0.5f) + b[1]);
+            for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 2; j++)
+                    for (int k = 0; k < 2; k++)
+                        levels[i][j][1].Add((levels[i][j][0][k] + levels[i][j][0][k + 1]) / 2);
 
-            return new ABstruct() { a = a, b = b, aPrim = aPrim, bPrim = bPrim, helps = helps };
+            var result = new List<List<Vector3>>() { new List<Vector3>(), new List<Vector3>() };
+
+            result[0].Add(levels[0][0][0][2]);
+            result[0].Add(((result[0][0] - levels[0][1][0][2]) * 0.5f) + result[0][0]);
+            result[0].Add(levels[0][0][1][1]);
+            result[0].Add(((result[0][2] - levels[0][1][1][1]) * 0.5f) + result[0][2]);
+            result[0].Add(levels[0][0][1][0]);
+
+            result[1].Add(levels[1][0][0][0]);
+            result[1].Add(((result[1][0] - levels[1][1][0][0]) * 0.5f) + result[1][0]);
+            result[1].Add(levels[1][0][1][0]);
+            result[1].Add(((result[1][2] - levels[1][1][1][0]) * 0.5f) + result[1][2]);
+            result[1].Add(levels[1][0][1][1]);
+
+            return result;
         }
-        public List<Vector3> GetPartialGregoryPoints(List<List<Vector3>> preG, List<Vector3> aPrim, List<Vector3> bPrim, List<Vector3> cPrim, List<Vector3> dPrim, float _u, float _v)
+        public List<Vector3> GetPoints(List<List<Vector3>> preG, List<List<Vector3>> prims, float _u, float _v)
         {
             var ret = new List<Vector3>();
-        
+
             for (float u = 0; u <= 1.0; u += (1.0f / (_u - 1)))
             {
                 for (float v = 0; v <= 1.0; v += 0.02f)
                 {
-                  
-                    ret.Add(GetQuv(preG, u, v, aPrim, bPrim, cPrim, dPrim));
+                    ret.Add(GetQuv(preG, u, v, prims));
                 }
             }
             for (float v = 0; v <= 1.0; v += (1.0f / (_v - 1)))
             {
                 for (float u = 0; u <= 1.00; u += 0.02f)
                 {
-                   
-                    ret.Add(GetQuv(preG, u, v, aPrim, bPrim, cPrim, dPrim));
+                    ret.Add(GetQuv(preG, u, v, prims));
                 }
             }
+
             return ret;
         }
 
-        public KHstruct CountK0AndH0(Vector3 g, Vector3 c, Vector3 b)
+        public Vector2 CountK0AndH0(Vector3 g, Vector3 c, Vector3 b)
         {
-            var number = 0;
-            var W = CountW(g.X, g.Y, c.X, c.Y);
             float Wx, Wy;
-            if (W == 0)
+
+            var W = GetDet(g.X, g.Y, c.X, c.Y);
+            if (W != 0)
             {
-                number = 1;
-                W = CountW(g.Y, g.Z, c.Y, c.Z);
-            }
-            if (W == 0)
-            {
-                number = 2;
-                W = CountW(g.X, g.Z, c.X, c.Z);
-            }
-            if (number == 0)
-            {
-                Wx = CountW(b.X, b.Y, c.X, c.Y);
-                Wy = CountW(g.X, g.Y, b.X, b.Y);
-            }
-            else if (number == 1)
-            {
-                Wx = CountW(b.Y, b.Z, c.Y, c.Z);
-                Wy = CountW(g.Y, g.Z, b.Y, b.Z);
+                Wx = GetDet(b.X, b.Y, c.X, c.Y);
+                Wy = GetDet(g.X, g.Y, b.X, b.Y);
             }
             else
             {
-                Wx = CountW(b.X, b.Z, c.X, c.Z);
-                Wy = CountW(g.X, g.Z, b.X, b.Z);
+                W = GetDet(g.Y, g.Z, c.Y, c.Z);
+                if (W != 0)
+                {
+                    Wx = GetDet(b.Y, b.Z, c.Y, c.Z);
+                    Wy = GetDet(g.Y, g.Z, b.Y, b.Z);
+                }
+                else
+                {
+                    W = GetDet(g.X, g.Z, c.X, c.Z);
+                    Wx = GetDet(b.X, b.Z, c.X, c.Z);
+                    Wy = GetDet(g.X, g.Z, b.X, b.Z);
+
+                }
             }
-            return new KHstruct() { k = Wx / W, h = Wy / W };
+
+            return new Vector2() { X = Wx / W, Y = Wy / W };
         }
-        public float CountW(float g1, float g2, float c1, float c2)
+        public float GetDet(float g1, float g2, float c1, float c2)
         {
             return g1 * c2 - g2 * c1;
         }
@@ -364,22 +353,22 @@ namespace ModelEditor
             vvArrs.Add(new List<Vector3>() { p2[2], p1[2], p1[0], p2[0], p1[1] });
 
 
-            CreateSmallPatch(PArrs[0], vvArrs[0], arrays[0], arrays[1], u, v, GregoryPoints, GregoryVectors);
-            CreateSmallPatch(PArrs[1], vvArrs[1], arrays[1], arrays[2], u, v, GregoryPoints, GregoryVectors);
-            CreateSmallPatch(PArrs[2], vvArrs[2], arrays[2], arrays[0], u, v, GregoryPoints, GregoryVectors);
+            CreateSmallPatch(PArrs[0], vvArrs[0], new List<List<List<Vector3>>>() { arrays[0], arrays[1] }, u, v, GregoryPoints, GregoryVectors);
+            CreateSmallPatch(PArrs[1], vvArrs[1], new List<List<List<Vector3>>>() { arrays[1], arrays[2] }, u, v, GregoryPoints, GregoryVectors);
+            CreateSmallPatch(PArrs[2], vvArrs[2], new List<List<List<Vector3>>>() { arrays[2], arrays[0] }, u, v, GregoryPoints, GregoryVectors);
 
             return GregoryPoints;
         }
-        public void CreateSmallPatch(List<Vector3> P, List<Vector3> vv, List<List<Vector3>> ia1, List<List<Vector3>> ia2, int u, int v, List<Vector3> GregoryPoints, List<List<Vector3>> GregoryVectors)
+        public void CreateSmallPatch(List<Vector3> P, List<Vector3> vv, List<List<List<Vector3>>> arrays, int u, int v, List<Vector3> GregoryPoints, List<List<Vector3>> GregoryVectors)
         {
             var cPrim = new List<Vector3>();
             var dPrim = new List<Vector3>();
-            var abstruct = FindAB(ia1, ia2);
-            var a = abstruct.a;
-            var b = abstruct.b;
-            var aPrim = abstruct.aPrim;
-            var bPrim = abstruct.bPrim;
-            var helps = abstruct.helps;
+            var abstruct = FindAB(arrays);
+            var a = new List<Vector3>() { abstruct[0][0], abstruct[1][0] };
+            var aPrim = new List<Vector3>() { abstruct[0][1], abstruct[1][1] };
+            var b = new List<Vector3>() { abstruct[0][2], abstruct[1][2] };
+            var bPrim = new List<Vector3>() { abstruct[0][3], abstruct[1][3] };
+            var helps = new List<Vector3>() { abstruct[0][4], abstruct[1][3] };
 
             var a0 = P[1] - helps[0];
             var b0 = b[0] - P[1];
@@ -424,19 +413,38 @@ namespace ModelEditor
             preG[0].Add(a[1]);
             preG[0].Add(b[1]);
             preG[0].Add(P[3]);
+
             preG[1].Add(a[0]);
             preG[1].Add(Vector3.Zero);
             preG[1].Add(Vector3.Zero);
             preG[1].Add(vv[3]);
+
             preG[2].Add(b[0]);
             preG[2].Add(Vector3.Zero);
             preG[2].Add(Vector3.Zero);
             preG[2].Add(vv[2]);
+
             preG[3].Add(P[1]);
             preG[3].Add(vv[0]);
             preG[3].Add(vv[1]);
             preG[3].Add(P[2]);
-            GregoryPoints.AddRange(GetPartialGregoryPoints(preG, aPrim, bPrim, cPrim, dPrim, u, v));
+
+            var prims = new List<List<Vector3>>();
+            for (int i = 0; i < 4; i++)
+            {
+                prims.Add(new List<Vector3>());
+            }
+
+            prims[0].Add(aPrim[0]);
+            prims[0].Add(aPrim[1]);
+            prims[1].Add(bPrim[0]);
+            prims[1].Add(bPrim[1]);
+            prims[2].Add(cPrim[0]);
+            prims[2].Add(cPrim[1]);
+            prims[3].Add(dPrim[0]);
+            prims[3].Add(dPrim[1]);
+
+            GregoryPoints.AddRange(GetPoints(preG, prims, u, v));
         }
 
         #region manipulation
