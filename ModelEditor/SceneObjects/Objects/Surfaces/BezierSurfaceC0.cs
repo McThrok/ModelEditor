@@ -213,9 +213,6 @@ namespace ModelEditor
             if (surfA.LinkedVertices.Keys.Any(k => k.Id == a.Id) || surfB.LinkedVertices.Keys.Any(k => k.Id == b.Id))
                 return;
 
-            if (!surfA.IsOnPatchCorner(a) || !surfB.IsOnPatchCorner(b))
-                return;
-
             surfA.LinkedVertices.Add(a, b);
             surfB.LinkedVertices.Add(b, a);
             a.LinkId = a.Id;
@@ -249,6 +246,10 @@ namespace ModelEditor
             if (surfA.Id == surfB.Id || surfA.Id == surfC.Id | surfB.Id == surfC.Id)
                 return null;
 
+            if (surfA.HeightPatchCount != 1 || surfA.WidthPatchCount != 1
+                || surfB.HeightPatchCount != 1 || surfB.WidthPatchCount != 1
+                || surfC.HeightPatchCount != 1 || surfC.WidthPatchCount != 1)
+                return null;
 
             var linkA = surfA.LinkedVertices.ToList();
             var linkB = surfB.LinkedVertices.ToList();
