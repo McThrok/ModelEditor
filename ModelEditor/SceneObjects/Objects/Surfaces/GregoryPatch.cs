@@ -219,10 +219,14 @@ namespace ModelEditor
 
             if (ShowVectors)
             {
-                data.AddLine(new List<Vector3>() { ab[0][2], ab[0][3] });
-                data.AddLine(new List<Vector3>() { ab[1][2], ab[1][3] });
-                data.AddLine(new List<Vector3>() { ab[0][0], ab[0][1] });
-                data.AddLine(new List<Vector3>() { ab[1][0], ab[1][1] });
+                var left0 = GetCubicValue(1 - 1f / 6, arrays[0][0]);
+                var left1 = GetCubicValue(1 - 1f / 3, arrays[0][0]);
+                var right0 = GetCubicValue(1f / 6, arrays[1][0]);
+                var right1 = GetCubicValue(1f / 3, arrays[1][0]);
+                data.AddLine(new List<Vector3>() { left0, left0 + ab[0][1] - ab[0][0] });
+                data.AddLine(new List<Vector3>() { left1, left1 + ab[0][3] - ab[0][2] });
+                data.AddLine(new List<Vector3>() { right0, right0 + ab[1][1] - ab[1][0] });
+                data.AddLine(new List<Vector3>() { right1, right1 + ab[1][3] - ab[1][2] });
             }
 
             if (!ShowGrid)
@@ -330,15 +334,15 @@ namespace ModelEditor
             var result = new List<List<Vector3>>() { new List<Vector3>(), new List<Vector3>() };
 
             result[0].Add(levels[0][0][0][2]);
-            result[0].Add(((result[0][0] - levels[0][1][0][2]) * 0.5f) + result[0][0]);
+            result[0].Add((result[0][0] - levels[0][1][0][2])/* *0.5f */+ result[0][0]);
             result[0].Add(levels[0][0][1][1]);
-            result[0].Add(((result[0][2] - levels[0][1][1][1]) * 0.5f) + result[0][2]);
+            result[0].Add((result[0][2] - levels[0][1][1][1])/* * 0.5f*/ + result[0][2]);
             result[0].Add(levels[0][0][1][0]);
 
             result[1].Add(levels[1][0][0][0]);
-            result[1].Add(((result[1][0] - levels[1][1][0][0]) * 0.5f) + result[1][0]);
+            result[1].Add((result[1][0] - levels[1][1][0][0])/* * 0.5f*/ + result[1][0]);
             result[1].Add(levels[1][0][1][0]);
-            result[1].Add(((result[1][2] - levels[1][1][1][0]) * 0.5f) + result[1][2]);
+            result[1].Add((result[1][2] - levels[1][1][1][0])/* * 0.5f*/ + result[1][2]);
             result[1].Add(levels[1][0][1][1]);
 
             return result;
@@ -445,7 +449,7 @@ namespace ModelEditor
         }
         private Vector3 GetCubicValue(float t, List<Vector3> verts)
         {
-            var bezierV = GetBezierCubic(0.5f);
+            var bezierV = GetBezierCubic(t);
             return verts[0] * bezierV.X + verts[1] * bezierV.Y + verts[2] * bezierV.Z + verts[3] * bezierV.W;
         }
         private Vector3 GetValueSquare(float v, List<Vector3> verts)
@@ -464,7 +468,7 @@ namespace ModelEditor
         }
         private Vector3 FindP2(List<List<Vector3>> array, Vector3 p3)
         {
-            return p3 + 0.5f * (p3 - GetCubicValue(0.5f, array[1]));
+            return p3 +/* 0.5f **/ (p3 - GetCubicValue(0.5f, array[1]));
         }
         private Vector3 FindP3(List<List<Vector3>> array)
         {
