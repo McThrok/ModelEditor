@@ -199,8 +199,8 @@ namespace ModelEditor
             var cs = GetCs(P[2], sides[1], sides[0], P[1]);
             var kh0 = GetKH(gs[0], cs[0], b0);
             var kh1 = GetKH(gs[2], cs[2], b3);
-            var dv0 = GetDValue(1 / 3, gs, cs, kh0, kh1);
-            var dv1 = GetDValue(2 / 3, gs, cs, kh0, kh1);
+            var dv0 = GetDValue(1f / 3, gs, cs, kh0, kh1);
+            var dv1 = GetDValue(2f / 3, gs, cs, kh0, kh1);
             var cPrim1 = sides[0] + dv0;
             var dPrim1 = sides[1] + dv1;
 
@@ -212,8 +212,8 @@ namespace ModelEditor
             cs = GetCs(P[2], sides[2], sides[3], P[3]);
             kh0 = GetKH(gs[0], cs[0], b0);
             kh1 = GetKH(gs[2], cs[2], b3);
-            dv0 = GetDValue(1 / 3, gs, cs, kh0, kh1);
-            dv1 = GetDValue(2 / 3, gs, cs, kh0, kh1);
+            dv0 = GetDValue(1f / 3, gs, cs, kh0, kh1);
+            dv1 = GetDValue(2f / 3, gs, cs, kh0, kh1);
             var cPrim2 = sides[3] + dv0;
             var dPrim2 = sides[2] + dv1;
 
@@ -294,7 +294,7 @@ namespace ModelEditor
         }
         private Vector3 GetQuv(List<List<Vector3>> G, float u, float v, List<List<Vector3>> prims)
         {
-            G[1][1] = GetF0(prims[0][1], prims[0][0], u, v);
+            G[1][1] = GetF0(prims[0][0], prims[0][1], u, v);
             G[2][1] = GetF1(prims[1][0], prims[2][0], u, v);
             G[2][2] = GetF2(prims[3][0], prims[3][1], u, v);
             G[1][2] = GetF3(prims[2][1], prims[1][1], u, v);
