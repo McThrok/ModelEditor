@@ -104,21 +104,21 @@ namespace ModelEditor
             var p2 = new List<Vector3>();
             for (var i = 0; i < 3; i++)
             {
-                var p33 = FindP3(arrays[i]);
-                var p22 = FindP2(arrays[i], p33);
+                var p33 = GetP3(arrays[i]);
+                var p22 = GetP2(arrays[i], p33);
                 p3.Add(p33);
                 p2.Add(p22);
             }
 
             List<Vector3> q = new List<Vector3>();
             for (var i = 0; i < 3; i++)
-                q.Add(FindQ(p2[i], p3[i]));
+                q.Add(GetQ(p2[i], p3[i]));
 
             var p = (q[0] + q[1] + q[2]) / 3;
 
             List<Vector3> p1 = new List<Vector3>();
             for (var i = 0; i < 3; i++)
-                p1.Add(FindP1(q[i], p));
+                p1.Add(GetP1(q[i], p));
 
             var patchCorners = new List<List<Vector3>>();
             patchCorners.Add(new List<Vector3>() { points[1], p3[0], p, p3[1] });
@@ -292,7 +292,7 @@ namespace ModelEditor
             }
             return result;
         }
-        private Vector3 GetQuv(List<List<Vector3>> G, float u, float v, List<List<Vector3>> prims)
+        private Vector3 GetPoint(List<List<Vector3>> G, float u, float v, List<List<Vector3>> prims)
         {
             G[1][1] = GetF0(prims[0][0], prims[0][1], u, v);
             G[2][1] = GetF1(prims[1][0], prims[2][0], u, v);
@@ -360,7 +360,7 @@ namespace ModelEditor
             {
                 for (float v = 0; v <= 1.0; v += change)
                 {
-                    ret.Add(GetQuv(preG, u, v, prims));
+                    ret.Add(GetPoint(preG, u, v, prims));
                 }
                 data.AddLine(ret);
                 ret.Clear();
@@ -369,7 +369,7 @@ namespace ModelEditor
             {
                 for (float u = 0; u <= 1.00; u += change)
                 {
-                    ret.Add(GetQuv(preG, u, v, prims));
+                    ret.Add(GetPoint(preG, u, v, prims));
                 }
                 data.AddLine(ret);
                 ret.Clear();
@@ -458,19 +458,19 @@ namespace ModelEditor
             return b.X * verts[0] + b.Y * verts[1] + b.Z * verts[2];
         }
 
-        private Vector3 FindP1(Vector3 q, Vector3 center)
+        private Vector3 GetP1(Vector3 q, Vector3 center)
         {
             return (2 * q + center) / 3;
         }
-        private Vector3 FindQ(Vector3 p2, Vector3 p3)
+        private Vector3 GetQ(Vector3 p2, Vector3 p3)
         {
             return (3 * p2 - p3) / 2;
         }
-        private Vector3 FindP2(List<List<Vector3>> array, Vector3 p3)
+        private Vector3 GetP2(List<List<Vector3>> array, Vector3 p3)
         {
             return p3 +/* 0.5f **/ (p3 - GetCubicValue(0.5f, array[1]));
         }
-        private Vector3 FindP3(List<List<Vector3>> array)
+        private Vector3 GetP3(List<List<Vector3>> array)
         {
             return GetCubicValue(0.5f, array[0]);
         }
