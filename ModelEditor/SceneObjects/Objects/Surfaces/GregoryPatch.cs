@@ -174,14 +174,14 @@ namespace ModelEditor
             }
             else
             {
-                int change = (vertB.X - vertA.Y) / 3;
+                int change = (vertB.X - vertA.X) / 3;
                 for (int i = 0; i < 4; i++)
-                    result[0].Add(data.Surface.GetVertex(vertA.Y + i * change, vertA.Y));
+                    result[0].Add(data.Surface.GetVertex(vertA.X + i * change, vertA.Y));
 
                 int intY = vertA.Y == 0 ? 1 : data.Surface.WidthVertexCount - 2;
 
                 for (int i = 0; i < 4; i++)
-                    result[1].Add(data.Surface.GetVertex(vertA.Y + i * change, intY));
+                    result[1].Add(data.Surface.GetVertex(vertA.X + i * change, intY));
             }
 
             return result;
@@ -334,15 +334,15 @@ namespace ModelEditor
             var result = new List<List<Vector3>>() { new List<Vector3>(), new List<Vector3>() };
 
             result[0].Add(levels[0][0][0][2]);
-            result[0].Add((result[0][0] - levels[0][1][0][2])/* *0.5f */+ result[0][0]);
+            result[0].Add((result[0][0] - levels[0][1][0][2]) *0.5f + result[0][0]);
             result[0].Add(levels[0][0][1][1]);
-            result[0].Add((result[0][2] - levels[0][1][1][1])/* * 0.5f*/ + result[0][2]);
+            result[0].Add((result[0][2] - levels[0][1][1][1]) * 0.5f + result[0][2]);
             result[0].Add(levels[0][0][1][0]);
 
             result[1].Add(levels[1][0][0][0]);
-            result[1].Add((result[1][0] - levels[1][1][0][0])/* * 0.5f*/ + result[1][0]);
+            result[1].Add((result[1][0] - levels[1][1][0][0]) * 0.5f + result[1][0]);
             result[1].Add(levels[1][0][1][0]);
-            result[1].Add((result[1][2] - levels[1][1][1][0])/* * 0.5f*/ + result[1][2]);
+            result[1].Add((result[1][2] - levels[1][1][1][0]) * 0.5f + result[1][2]);
             result[1].Add(levels[1][0][1][1]);
 
             return result;
@@ -468,7 +468,7 @@ namespace ModelEditor
         }
         private Vector3 GetP2(List<List<Vector3>> array, Vector3 p3)
         {
-            return p3 +/* 0.5f **/ (p3 - GetCubicValue(0.5f, array[1]));
+            return p3 + 0.5f * (p3 - GetCubicValue(0.5f, array[1]));
         }
         private Vector3 GetP3(List<List<Vector3>> array)
         {

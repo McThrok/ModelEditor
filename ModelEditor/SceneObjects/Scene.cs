@@ -45,19 +45,19 @@ namespace ModelEditor
             ResetCamera();
             Cursor = AddObj(new Cursor(RayCaster), this);
 
-            var a = AddBezierSurfaceC0(this);
-            var b = AddBezierSurfaceC0(this);
-            var c = AddBezierSurfaceC0(this);
-            a.Rotate(new Vector3(0, 0, 0.7f));
-            a.Move(-4, 4, 0);
-            b.Rotate(new Vector3(0, 0, -0.7f));
-            b.Move(4, 4, 0);
-            c.Move(0, -4, 0);
+            //var a = AddBezierSurfaceC0(this);
+            //var b = AddBezierSurfaceC0(this);
+            //var c = AddBezierSurfaceC0(this);
+            //a.Rotate(new Vector3(0, 0, 0.7f));
+            //a.Move(-4, 4, 0);
+            //b.Rotate(new Vector3(0, 0, -0.7f));
+            //b.Move(4, 4, 0);
+            //c.Move(0, -4, 0);
 
 
-            BezierSurfaceC0.LinkVertices(a.HiddenChildren[3] as Vertex, b.HiddenChildren[0] as Vertex);
-            BezierSurfaceC0.LinkVertices(a.HiddenChildren[0] as Vertex, c.HiddenChildren[12] as Vertex);
-            BezierSurfaceC0.LinkVertices(b.HiddenChildren[3] as Vertex, c.HiddenChildren[15] as Vertex);
+            //BezierSurfaceC0.LinkVertices(a.HiddenChildren[3] as Vertex, b.HiddenChildren[0] as Vertex);
+            //BezierSurfaceC0.LinkVertices(a.HiddenChildren[0] as Vertex, c.HiddenChildren[12] as Vertex);
+            //BezierSurfaceC0.LinkVertices(b.HiddenChildren[3] as Vertex, c.HiddenChildren[15] as Vertex);
         }
 
         public SceneObject AddEmptyObject(SceneObject parent)
@@ -132,8 +132,8 @@ namespace ModelEditor
                 {
                     i += 1;
                     SceneObject obj = null;
-                    var d = data[i + j];
-                    //var d = data[i + j].Replace('.', ',');
+                    //var d = data[i + j];
+                    var d = data[i + j].Replace('.', ',');
                     switch (elementName)
                     {
                         case "curveC0": obj = new BezierCurveC0(RayCaster, d); break;
@@ -160,10 +160,10 @@ namespace ModelEditor
             foreach (var child in Children)
             {
                 var d = child.GetData();
-                //for (int i = 0; i < d.Length; i++)
-                //{
-                //    d[i].Replace(',', '.');
-                //}
+                for (int i = 0; i < d.Length; i++)
+                {
+                    d[i].Replace(',', '.');
+                }
                 data.AddRange(d);
             }
 
