@@ -15,6 +15,8 @@ namespace ModelEditor
         float Height { get; }
         Guid Id { get; }
         Vector3 Evaluate(float h, float w);
+        Vector3 evaluateDU(float h, float w);
+        Vector3 evaluateDV(float h, float w);
     }
     public class TrimmingCurve : SceneObject, IRenderableObj
     {
@@ -107,13 +109,29 @@ namespace ModelEditor
                 v = new Vector2(vPrev.X - betterPoint.Y, vPrev.Y - betterPoint.Z);
 
             }
-       
+
             return goGoNewton(obj0, obj1, u, v);
         }
 
         private static Vector4 GetGradient(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 point0, Vector2 point1)
         {
-            throw new NotImplementedException();
+            var eval1 = obj0.Evaluate(point0.X, point0.Y);
+            var eval2 = obj1.Evaluate(point1.X, point1.Y);
+
+            var diff = eval1 - eval2;
+
+            var eval0u = obj0.evaluateDU(point0.X, point0.Y);
+            var eval0v = obj0.evaluateDV(point0.X, point0.Y);
+
+            var eval1u = obj1.evaluateDU(point1.X, point1.Y);
+            var eval1v = obj1.evaluateDV(point1.X, point1.Y);
+
+           return new Vector4(
+            Vector3.Dot(diff, eval0u) * 2,
+            Vector3.Dot(diff, eval0v) * 2,
+            Vector3.Dot(diff, eval1u) * -2,
+            Vector3.Dot(diff, eval1v) * -2
+            );
         }
 
         private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v)
