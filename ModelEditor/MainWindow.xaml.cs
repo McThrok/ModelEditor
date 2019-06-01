@@ -48,6 +48,7 @@ namespace ModelEditor
             //init sliders
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
+            TrimSlider.Value = 0.45;
 
             //expand scene list
             var sceneNode = objectList.ItemContainerGenerator.ContainerFromItem(objectList.Items[0]) as TreeViewItem;
@@ -280,11 +281,48 @@ namespace ModelEditor
                     surfaces.Add(surf);
             }
 
-            if(surfaces.Count == 3)
+            if (surfaces.Count == 3)
             {
                 var tmp = surfaces.ToList();
                 Engine.Scene.AddGregoryPatfch(tmp[0], tmp[1], tmp[2]);
             }
+        }
+        private void Trim_click(object sender, RoutedEventArgs e)
+        {
+            var objs = new List<SceneObject>();
+
+            foreach (var obj in Engine.Scene.Cursor.HeldObjects)
+            {
+                if (obj is Vertex vert)
+                {
+                    if (vert.Parent is BezierSurfaceBaseC0 surfC0)
+                        objs.Add(surfC0);
+
+                    if (vert.Parent is BezierSurfaceBaseC2 surfC2)
+                        objs.Add(surfC2);
+                }
+
+                if (obj is Torus torus)
+                    objs.Add(torus);
+            }
+
+            if (objs.Count == 1)
+            {
+                var first = objs.First();
+                if (!(first is Torus))
+                    objs.Add(first);
+            }
+
+            if(objs.Count == 2)
+            {
+
+            }
+        }
+        private void Trim_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Engine.Scene.TrimPrecision = (float)(0.0001 + 0.0019 * e.NewValue);
+            TrimText.Text = "Trim presicion: " + Engine.Scene.TrimPrecision.ToString("0.0000") + " ";
+
         }
 
         private void Save_click(object sender, RoutedEventArgs e)

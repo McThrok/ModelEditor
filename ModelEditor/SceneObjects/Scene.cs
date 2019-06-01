@@ -13,6 +13,7 @@ namespace ModelEditor
 {
     public class Scene : SceneObject
     {
+        public float TrimPrecision { get; set; }
         public Camera Camera { get; private set; }
         public Cursor Cursor { get; private set; }
         public RayCaster RayCaster { get; set; }
