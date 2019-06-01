@@ -80,6 +80,7 @@
     <Compile Include="SceneObjects\Objects\Surfaces\BezierCylinderC0.cs" />
     <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceBaseC2.cs" />
     <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceBaseC0.cs" />
+    <Compile Include="SceneObjects\Objects\Surfaces\TrimmingCurve.cs" />
     <Compile Include="SceneObjects\Objects\Surfaces\GregoryPatch.cs" />
     <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceC2.cs" />
     <Compile Include="SceneObjects\Objects\Surfaces\BezierSurfaceC0.cs" />
