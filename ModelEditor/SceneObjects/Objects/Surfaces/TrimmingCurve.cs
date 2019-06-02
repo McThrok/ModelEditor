@@ -17,7 +17,7 @@ namespace ModelEditor
         bool WrappedU { get; }
         bool WrappedV { get; }
 
-        Vector3 Evaluate(float h, float w);
+        Vector3 Evaluate(float h, float w, bool b = false);
         Vector3 EvaluateDU(float h, float w);
         Vector3 EvaluateDV(float h, float w);
     }
@@ -150,8 +150,8 @@ namespace ModelEditor
             public string Name { get; set; }
             public List<Vector3> Points { get; set; }
             public object InterpolationCurve { get; set; }
-            public List<Vector3> intersectionVisualization1 { get; set; }
-            public List<Vector3> intersectionVisualization2 { get; set; }
+            public List<Vector2> intersectionVisualization1 { get; set; }
+            public List<Vector2> intersectionVisualization2 { get; set; }
         }
 
         static List<CurveData> curves = new List<CurveData>();
@@ -164,8 +164,8 @@ namespace ModelEditor
             {
                 Id = numberOfIntersections,
                 Name = "Intersection curve " + numberOfIntersections.ToString(),
-                intersectionVisualization1 = new List<Vector3>(),
-                intersectionVisualization2 = new List<Vector3>(),
+                intersectionVisualization1 = new List<Vector2>(),
+                intersectionVisualization2 = new List<Vector2>(),
                 Points = new List<Vector3>(),
                 InterpolationCurve = iCurve
             };
@@ -257,7 +257,7 @@ namespace ModelEditor
         {
             //var { obj0, obj1, u, v} = best;
             object interpolation = null;
-            CurveData cuttingCurve;
+            CurveData cuttingCurve = null;
             var _alpha = alpha;
             if (!iterations.HasValue)
             {
@@ -309,11 +309,11 @@ namespace ModelEditor
                     };
                     var upd0 = updateUVAfterNewton(u0);
                     var upd1 = updateUVAfterNewton(u1);
-                    u.X = upd0.U;
-                    u.Y = upd1.U;
+                    u.X = upd0.u;
+                    u.Y = upd1.u;
 
-                    v.X = upd0.V;
-                    v.Y = upd1.V;
+                    v.X = upd0.v;
+                    v.Y = upd1.v;
                     if (upd0.end || upd1.end)
                     {
                         finished = true;
@@ -332,7 +332,7 @@ namespace ModelEditor
                         crossed1 += upd0.crossed;
                         addBorder(upd0.crossed, 1, cuttingCurve, uPrev, vPrev, obj0);
                         updateIn1Visualisation(cuttingCurve.Id, upd0.uLast / obj0.Height, upd0.vLast / obj0.Width);
-                        //updateIn1Visualisation(cuttingCurve.Id, float.NaN,float.NaN);
+                        updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
                         updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.Height, v.X / obj0.Width);
                     }
                     if (!iterations.HasValue && upd1.crossed != 0 && !upd1.backThisTime)
@@ -340,10 +340,10 @@ namespace ModelEditor
                         crossed2 += upd1.crossed;
                         addBorder(upd1.crossed, 2, cuttingCurve, uPrev, vPrev, obj1);
                         updateIn2Visualisation(cuttingCurve.Id, upd1.uLast / obj1.Height, upd1.vLast / obj1.Width);
-                        //updateIn2Visualisation(cuttingCurve.Id, float.NaN,float.NaN);
+                        updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
                         updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.Height, v.Y / obj1.Width);
                     }
-                    if (!iterations && (upd0.backThisTime || upd1.backThisTime))
+                    if (!iterations.HasValue && (upd0.backThisTime || upd1.backThisTime))
                     {
                         if (upd0.backThisTime)
                         {
@@ -358,10 +358,8 @@ namespace ModelEditor
                     }
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
-                        pointsList.push(evaluate(obj0, u.X, v.X));
-                        var ret = backNewton(pointsList, uStart, vStart, u, v, uPrev, vPrev, _alpha);
-                        _alpha = ret.alpha;
-                        pointsList = ret.pointsList;
+                        pointsList.Add(obj0.Evaluate(u.X, v.X));
+                        backNewton(pointsList, ref uStart, ref vStart, ref u, ref v, ref uPrev, ref vPrev, ref _alpha);
                         notFinishYet = 5;
                         backed = true;
                         tempAlpha = _alpha;
@@ -369,28 +367,28 @@ namespace ModelEditor
                     }
 
                 }
-                uPrev = [u.X, u.Y];
-                vPrev = [v.X, v.Y];
+                uPrev = new Vector2(u.X, u.Y);
+                vPrev = new Vector2(v.X, v.Y);
 
-                var p1 = evaluate(obj0, u.X, v.X, true);
-                var p2 = evaluate(obj1, u.Y, v.Y);
-                if (alphaEpsilon < getVectorLength(p2, p1))
+                var p1 = obj0.Evaluate(u.X, v.X, true);
+                var p2 = obj1.Evaluate(u.Y, v.Y);
+                if (alphaEpsilon < Vector3.Distance(p2, p1))
                 {
                     tempAlpha /= 2;
                 }
-                DrawPoint(p1, "Red");
-                DrawPoint(p2, "Blue");
-                pointsList.push(evaluate(obj0, u.X, v.X));
+                //DrawPoint(p1, "Red");
+                //DrawPoint(p2, "Blue");
+                pointsList.Add(obj0.Evaluate(u.X, v.X));
 
-                if (!iterations)
+                if (!iterations.HasValue)
                 {
                     updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.Height, v.X / obj0.Width);
                     updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.Height, v.Y / obj1.Width);
                 }
-                if (finalEpsilon > getVectorLength(pStart, p1) && notFinishYet > 10)
+                if (finalEpsilon > Vector3.Distance(pStart, p1) && notFinishYet > 10)
                 {
-                    // updateWrappingBeforeFinish(crossed1, 1, cuttingCurve, u, v, obj0);
-                    // updateWrappingBeforeFinish(crossed2, 2, cuttingCurve, u, v, obj1);
+                    updateWrappingBeforeFinish(crossed1, 1, cuttingCurve, u, v, obj0);
+                    updateWrappingBeforeFinish(crossed2, 2, cuttingCurve, u, v, obj1);
                     break;
                 }
                 if (loops > stop)
@@ -400,38 +398,51 @@ namespace ModelEditor
                 notFinishYet++;
                 loops++;
             }
-            if (iterations)
+            if (iterations.HasValue)
             {
-                for (var i = 0; i < pointsList.length; i++)
+                for (var i = 0; i < pointsList.Count; i++)
                 {
                     //DrawPoint(pointsList[i], "Red"); 
                 }
-                return;
+                return null;
             }
-            setVisualisationObjects(obj0, obj1);
+            //setVisualisationObjects(obj0, obj1);
             if (!backed)
             {
-                //cuttingCurve.points.push({                    x: pStart.x, y: pStart.y, z: pStart.z            });
+                cuttingCurve.Points.Add( pStart);
             }
-            for (var i = 0; i < pointsList.length; i++)
+            for (var i = 0; i < pointsList.Count; i++)
             {
-                //cuttingCurve.points.push({ x: pointsList[i].x, y: pointsList[i].y, z: pointsList[i].z});
-            }
+                cuttingCurve.Points.Add(pointsList[i]);
+        }
             if (!backed)
             {
-                //cuttingCurve.points.push({                    x: pStart.x, y: pStart.y, z: pStart.z               });
+                cuttingCurve.Points.Add(pStart);
                 if (isLenghtNotToLong(cuttingCurve.intersectionVisualization1))
                 {
-                    //cuttingCurve.intersectionVisualization1.push({u: cuttingCurve.intersectionVisualization1[0].u, v: cuttingCurve.intersectionVisualization1[0].v});
+                    cuttingCurve.intersectionVisualization1.Add(new Vector2(cuttingCurve.intersectionVisualization1[0].X, cuttingCurve.intersectionVisualization1[0].Y));
                 }
                 if (isLenghtNotToLong(cuttingCurve.intersectionVisualization2))
                 {
-                    //cuttingCurve.intersectionVisualization2.push({ u: cuttingCurve.intersectionVisualization2[0].u, v: cuttingCurve.intersectionVisualization2[0].v});
+                    cuttingCurve.intersectionVisualization2.Add(new Vector2(cuttingCurve.intersectionVisualization2[0].X, cuttingCurve.intersectionVisualization2[0].Y));
                 }
             }
+
+            return null;
         }
 
-        private static object updateUVAfterNewton(UpdStruct u)
+        public struct UpdUvStruct
+        {
+            public float u;
+            public float v;
+            public bool end;
+            public bool backThisTime;
+            public int crossed;
+            public float uLast;
+            public float vLast;
+        }
+
+        private static UpdUvStruct updateUVAfterNewton(UpdStruct u)
         {
             // crossed:
             // left -1
@@ -443,13 +454,13 @@ namespace ModelEditor
             var crossed = 0;
             var end = false;
 
-           var eps = 0.0009;
-           var epsWrap = 0.00001;
+            var eps = 0.0009f;
+            var epsWrap = 0.00001f;
 
-            var _uNew = u.U - (u.UNew * eps);
-            var _vNew = u.V - (u.VNew * eps);
-            var _uLast = u.u - (u.UNew * eps);
-            var _vLast = u.V - (u.VNew * eps);
+            float _uNew = u.U - (u.UNew * eps);
+            float _vNew = u.V - (u.VNew * eps);
+            float _uLast = u.U - (u.UNew * eps);
+            float _vLast = u.V - (u.VNew * eps);
 
             if (_uNew < 0)
             {
@@ -477,7 +488,7 @@ namespace ModelEditor
                 if (u.Obj.WrappedU)
                 {
                     _uNew = 0;
-                    _uLast =u.Obj.Height - epsWrap;
+                    _uLast = u.Obj.Height - epsWrap;
                 }
                 else
                 {
@@ -535,28 +546,37 @@ namespace ModelEditor
                 }
                 crossed = -2;
             }
-            return { u: _uNew, v: _vNew, end: end, backThisTime: backThisTime, crossed: crossed, uLast: _uLast, vLast: _vLast};
+
+            return new UpdUvStruct()
+            {
+                u = _uNew,
+                v = _vNew,
+                end = end,
+                backThisTime = backThisTime,
+                crossed = crossed,
+                uLast = _uLast,
+                vLast = _vLast
+            };
         }
-        export function backNewton(pointsList, uStarts, vStarts, us, vs, uPrevs, vPrevs, alpha)
+
+        public static void backNewton(List<Vector3> pointsList, ref Vector2 uStarts, ref Vector2 vStarts, ref Vector2 us, ref Vector2 vs, ref Vector2 uPrevs, ref Vector2 vPrevs, ref float alpha)
         {
+            us.X = uStarts.X;
+            us.Y = uStarts.Y;
 
-            us[0] = uStarts[0];
-            us[1] = uStarts[1];
+            vs.X = vStarts.X;
+            vs.Y = vStarts.Y;
 
-            vs[0] = vStarts[0];
-            vs[1] = vStarts[1];
+            uPrevs.X = uStarts.X;
+            uPrevs.Y = uStarts.Y;
 
-            uPrevs[0] = uStarts[0];
-            uPrevs[1] = uStarts[1];
+            vPrevs.X = vStarts.X;
+            vPrevs.Y = vStarts.Y;
 
-            vPrevs[0] = vStarts[0];
-            vPrevs[1] = vStarts[1];
-
-            return {
-                pointsList: pointsList.reverse(),
-        alpha: -alpha
-            }
+            pointsList.Reverse();
+            alpha = -alpha;
         }
+
         public static bool isLenghtNotToLong(List<Vector2> intersectionVisualization)
         {
             var len0 = intersectionVisualization[0].X - intersectionVisualization[intersectionVisualization.Count - 1].X;
