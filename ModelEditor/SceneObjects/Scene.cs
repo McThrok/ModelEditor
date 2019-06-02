@@ -133,8 +133,8 @@ namespace ModelEditor
                 {
                     i += 1;
                     SceneObject obj = null;
-                    //var d = data[i + j];
-                    var d = data[i + j].Replace('.', ',');
+                    var d = data[i + j];
+                    //var d = data[i + j].Replace('.', ',');
                     switch (elementName)
                     {
                         case "curveC0": obj = new BezierCurveC0(RayCaster, d); break;
@@ -163,7 +163,7 @@ namespace ModelEditor
                 var d = child.GetData();
                 for (int i = 0; i < d.Length; i++)
                 {
-                    d[i].Replace(',', '.');
+                    //d[i].Replace(',', '.');
                 }
                 data.AddRange(d);
             }
