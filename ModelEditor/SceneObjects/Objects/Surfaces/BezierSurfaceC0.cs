@@ -360,7 +360,7 @@ namespace ModelEditor
                 pw = pwc - 1;
             float ww = w * pwc - pw;
 
-           return GetValue(GetPatchVerts(phc, pwc), 0, 0, hh, ww);
+           return GetValue(GetPatchVerts(ph, pw), 0, 0, hh, ww);
         }
 
         public Vector3 EvaluateDU(float h, float w)
@@ -377,7 +377,7 @@ namespace ModelEditor
                 pw = pwc - 1;
             float ww = w * pwc - pw;
 
-            return GetValueDivH(GetPatchVerts(phc, pwc), 0, 0, hh, ww);
+            return GetValueDivH(GetPatchVerts(ph, pw), 0, 0, hh, ww);
         }
 
         public Vector3 EvaluateDV(float h, float w)
@@ -394,7 +394,7 @@ namespace ModelEditor
                 pw = pwc - 1;
             float ww = w * pwc - pw;
 
-            return GetValueDivW(GetPatchVerts(phc, pwc), 0, 0, hh, ww);
+            return GetValueDivW(GetPatchVerts(ph, pw), 0, 0, hh, ww);
         }
 
         private List<List<Vector3>> GetPatchVerts(int h, int w)

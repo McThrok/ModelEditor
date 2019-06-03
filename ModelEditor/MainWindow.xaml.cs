@@ -289,23 +289,28 @@ namespace ModelEditor
         }
         private void Trim_click(object sender, RoutedEventArgs e)
         {
-            var objs = new List<SceneObject>();
+            var objSet = new HashSet<TrimmingSurface>();
 
             foreach (var obj in Engine.Scene.Cursor.HeldObjects)
             {
                 if (obj is Vertex vert)
                 {
-                    if (vert.Parent is BezierSurfaceBaseC0 surfC0)
-                        objs.Add(surfC0);
+                    //if (vert.Parent is BezierSurfaceBaseC0 surfC0)
+                    //    objs.Add(surfC0);
 
-                    if (vert.Parent is BezierSurfaceBaseC2 surfC2)
-                        objs.Add(surfC2);
+                    //if (vert.Parent is BezierSurfaceBaseC2 surfC2)
+                    //    objs.Add(surfC2);
+
+                    if (vert.Parent is BezierSurfaceC0 surfC0)
+                        objSet.Add(surfC0);
                 }
 
-                if (obj is Torus torus)
-                    objs.Add(torus);
+                //if (obj is Torus torus)
+                //    objs.Add(torus);
             }
 
+
+            var objs = objSet.ToList();
             if (objs.Count == 1)
             {
                 var first = objs.First();
@@ -313,9 +318,15 @@ namespace ModelEditor
                     objs.Add(first);
             }
 
-            if(objs.Count == 2)
+            if (objs.Count == 2)
             {
-
+                var cursorPos = Engine.Scene.Cursor.GlobalMatrix.Translation;
+                var tc = TrimmingCurve.FindTrimmingCurve(objs, cursorPos);
+                if (tc != null)
+                {
+                    tc.Parent = Engine.Scene;
+                    Engine.Scene.Children.Add(tc);
+                }
             }
         }
         private void Trim_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
