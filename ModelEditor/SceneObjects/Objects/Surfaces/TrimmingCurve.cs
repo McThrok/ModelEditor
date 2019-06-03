@@ -17,7 +17,7 @@ namespace ModelEditor
         bool WrappedU { get; }
         bool WrappedV { get; }
 
-        Vector3 Evaluate(float h, float w, bool b = false);
+        Vector3 Evaluate(float h, float w);
         Vector3 EvaluateDU(float h, float w);
         Vector3 EvaluateDV(float h, float w);
     }
@@ -272,7 +272,7 @@ namespace ModelEditor
                 uPrev = new Vector2(u.X, u.Y);
                 vPrev = new Vector2(v.X, v.Y);
 
-                var p1 = obj0.Evaluate(u.X, v.X, true);
+                var p1 = obj0.Evaluate(u.X, v.X);
                 var p2 = obj1.Evaluate(u.Y, v.Y);
                 if (alphaEpsilon < Vector3.Distance(p2, p1))
                 {

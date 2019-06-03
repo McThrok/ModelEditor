@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace ModelEditor
 {
-    public class BezierSurfaceC0 : BezierSurfaceBaseC0, IRenderableObj
+    public class BezierSurfaceC0 : BezierSurfaceBaseC0, IRenderableObj, TrimmingSurface
     {
         private static int _count = 0;
         public Dictionary<Vertex, Vertex> LinkedVertices { get; private set; } = new Dictionary<Vertex, Vertex>();
@@ -103,6 +103,7 @@ namespace ModelEditor
             }
 
         }
+
 
         protected override void InitVertices()
         {
@@ -340,6 +341,75 @@ namespace ModelEditor
                 return 3 * t * t;
 
             return 0;
+        }
+
+
+        public bool WrappedU => false;
+        public bool WrappedV => false;
+        public Vector3 Evaluate(float h, float w)
+        {
+            int phc = HeightPatchCount;
+            int ph = (int)Math.Floor(h * phc);
+            if (ph == phc)
+                ph = phc - 1;
+            float hh = h * phc - ph;
+
+            int pwc = WidthPatchCount;
+            int pw = (int)Math.Floor(w * pwc);
+            if (pw == pwc)
+                pw = pwc - 1;
+            float ww = w * pwc - pw;
+
+           return GetValue(GetPatchVerts(phc, pwc), 0, 0, hh, ww);
+        }
+
+        public Vector3 EvaluateDU(float h, float w)
+        {
+            int phc = HeightPatchCount;
+            int ph = (int)Math.Floor(h * phc);
+            if (ph == phc)
+                ph = phc - 1;
+            float hh = h * phc - ph;
+
+            int pwc = WidthPatchCount;
+            int pw = (int)Math.Floor(w * pwc);
+            if (pw == pwc)
+                pw = pwc - 1;
+            float ww = w * pwc - pw;
+
+            return GetValueDivH(GetPatchVerts(phc, pwc), 0, 0, hh, ww);
+        }
+
+        public Vector3 EvaluateDV(float h, float w)
+        {
+            int phc = HeightPatchCount;
+            int ph = (int)Math.Floor(h * phc);
+            if (ph == phc)
+                ph = phc - 1;
+            float hh = h * phc - ph;
+
+            int pwc = WidthPatchCount;
+            int pw = (int)Math.Floor(w * pwc);
+            if (pw == pwc)
+                pw = pwc - 1;
+            float ww = w * pwc - pw;
+
+            return GetValueDivW(GetPatchVerts(phc, pwc), 0, 0, hh, ww);
+        }
+
+        private List<List<Vector3>> GetPatchVerts(int h, int w)
+        {
+            var verts = new List<List<Vector3>>();
+            for (int i = 0; i < 4; i++)
+            {
+                verts.Add(new List<Vector3>());
+                for (int j = 0; j < 4; j++)
+                {
+                    verts[i].Add(_controlVertices[h + i][w + j].GlobalMatrix.Translation);
+                }
+            }
+
+            return verts;
         }
     }
 }
