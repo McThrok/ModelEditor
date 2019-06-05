@@ -346,6 +346,8 @@ namespace ModelEditor
 
         public bool WrappedU => false;
         public bool WrappedV => false;
+        public float WidthQwe => 1;
+        public float HeightQwe => 1;
         public Vector3 Evaluate(float h, float w)
         {
             int phc = HeightPatchCount;

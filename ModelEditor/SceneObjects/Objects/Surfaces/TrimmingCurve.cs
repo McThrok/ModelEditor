@@ -11,8 +11,8 @@ namespace ModelEditor
 {
     public interface TrimmingSurface
     {
-        float Width { get; }
-        float Height { get; }
+        float WidthQwe { get; }
+        float HeightQwe { get; }
         Guid Id { get; }
         bool WrappedU { get; }
         bool WrappedV { get; }
@@ -227,7 +227,7 @@ namespace ModelEditor
                         V = v.X,
                         UNew = betterPoint.X,
                         VNew = betterPoint.Y,
-                        Backed = true
+                        Backed = backed
                     };
                     var u1 = new UpdStruct()
                     {
@@ -236,7 +236,7 @@ namespace ModelEditor
                         V = v.Y,
                         UNew = betterPoint.Z,
                         VNew = betterPoint.W,
-                        Backed = true
+                        Backed = backed
                     };
                     var upd0 = updateUVAfterNewton(u0);
                     var upd1 = updateUVAfterNewton(u1);
@@ -262,17 +262,17 @@ namespace ModelEditor
                     {
                         crossed1 += upd0.crossed;
                         addBorder(upd0.crossed, 1, cuttingCurve, uPrev, vPrev, obj0);
-                        updateIn1Visualisation(cuttingCurve.Id, upd0.uLast / obj0.Height, upd0.vLast / obj0.Width);
+                        updateIn1Visualisation(cuttingCurve.Id, upd0.uLast / obj0.HeightQwe, upd0.vLast / obj0.WidthQwe);
                         updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                        updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.Height, v.X / obj0.Width);
+                        updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.HeightQwe, v.X / obj0.WidthQwe);
                     }
                     if (!iterations.HasValue && upd1.crossed != 0 && !upd1.backThisTime)
                     {
                         crossed2 += upd1.crossed;
                         addBorder(upd1.crossed, 2, cuttingCurve, uPrev, vPrev, obj1);
-                        updateIn2Visualisation(cuttingCurve.Id, upd1.uLast / obj1.Height, upd1.vLast / obj1.Width);
+                        updateIn2Visualisation(cuttingCurve.Id, upd1.uLast / obj1.HeightQwe, upd1.vLast / obj1.WidthQwe);
                         updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                        updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.Height, v.Y / obj1.Width);
+                        updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.HeightQwe, v.Y / obj1.WidthQwe);
                     }
                     if (!iterations.HasValue && (upd0.backThisTime || upd1.backThisTime))
                     {
@@ -314,8 +314,8 @@ namespace ModelEditor
 
                 if (!iterations.HasValue)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.Height, v.X / obj0.Width);
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.Height, v.Y / obj1.Width);
+                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.HeightQwe, v.X / obj0.WidthQwe);
+                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.HeightQwe, v.Y / obj1.WidthQwe);
                 }
                 if (finalEpsilon > Vector3.Distance(pStart, p1) && notFinishYet > 10)
                 {
@@ -465,7 +465,7 @@ namespace ModelEditor
             {
                 if (u.Obj.WrappedU)
                 {
-                    _uNew = u.Obj.Height - epsWrap;
+                    _uNew = u.Obj.HeightQwe - epsWrap;
                     _uLast = 0;
                 }
                 else
@@ -482,16 +482,16 @@ namespace ModelEditor
                 }
                 crossed = -1;
             }
-            if (_uNew >= u.Obj.Height)
+            if (_uNew >= u.Obj.HeightQwe)
             {
                 if (u.Obj.WrappedU)
                 {
                     _uNew = 0;
-                    _uLast = u.Obj.Height - epsWrap;
+                    _uLast = u.Obj.HeightQwe - epsWrap;
                 }
                 else
                 {
-                    _uNew = u.Obj.Height - epsWrap;
+                    _uNew = u.Obj.HeightQwe - epsWrap;
                     if (u.Backed)
                     {
                         end = true;
@@ -503,16 +503,16 @@ namespace ModelEditor
                 }
                 crossed = 1;
             }
-            if (_vNew >= u.Obj.Width)
+            if (_vNew >= u.Obj.WidthQwe)
             {
                 if (u.Obj.WrappedV)
                 {
                     _vNew = 0;
-                    _vLast = u.Obj.Width - epsWrap;
+                    _vLast = u.Obj.WidthQwe - epsWrap;
                 }
                 else
                 {
-                    _vNew = u.Obj.Width - epsWrap;
+                    _vNew = u.Obj.WidthQwe - epsWrap;
                     if (u.Backed)
                     {
                         end = true;
@@ -528,7 +528,7 @@ namespace ModelEditor
             {
                 if (u.Obj.WrappedV)
                 {
-                    _vNew = u.Obj.Width - epsWrap;
+                    _vNew = u.Obj.WidthQwe - epsWrap;
                     _vLast = 0;
                 }
                 else
@@ -559,17 +559,11 @@ namespace ModelEditor
         }
         public static void backNewton(List<Vector3> pointsList, ref Vector2 uStarts, ref Vector2 vStarts, ref Vector2 us, ref Vector2 vs, ref Vector2 uPrevs, ref Vector2 vPrevs, ref float alpha)
         {
-            us.X = uStarts.X;
-            us.Y = uStarts.Y;
+            us = uStarts;
+            vs = vStarts;
 
-            vs.X = vStarts.X;
-            vs.Y = vStarts.Y;
-
-            uPrevs.X = uStarts.X;
-            uPrevs.Y = uStarts.Y;
-
-            vPrevs.X = vStarts.X;
-            vPrevs.Y = vStarts.Y;
+            uPrevs = uStarts;
+            vPrevs = vStarts;
 
             pointsList.Reverse();
             alpha = -alpha;
@@ -580,44 +574,44 @@ namespace ModelEditor
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.Height, 0);
+                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.HeightQwe, 0);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.Height, 0);
+                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.HeightQwe, 0);
                 }
             }
             else if (crossed == 2)
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.Height, 0.99999f);
+                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.HeightQwe, 0.99999f);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.Height, 0.99999f);
+                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.HeightQwe, 0.99999f);
                 }
             }
             else if (crossed == -1)
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, 0, v.X / obj.Width);
+                    updateIn1Visualisation(cuttingCurve.Id, 0, v.X / obj.WidthQwe);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, 0, v.Y / obj.Width);
+                    updateIn2Visualisation(cuttingCurve.Id, 0, v.Y / obj.WidthQwe);
                 }
             }
             else if (crossed == 1)
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X / obj.Width);
+                    updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X / obj.WidthQwe);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y / obj.Width);
+                    updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y / obj.WidthQwe);
                 }
             }
         }
@@ -671,60 +665,60 @@ namespace ModelEditor
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.Height, 0);
+                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.HeightQwe, 0);
                     updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.Height, 0.99999f);
+                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.HeightQwe, 0.99999f);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.Height, 0);
+                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.HeightQwe, 0);
                     updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.Height, 0.99999f);
+                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.HeightQwe, 0.99999f);
                 }
             }
             else if (crossed == 2)
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.Height, 0.99999f);
+                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.HeightQwe, 0.99999f);
                     updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.Height, 0);
+                    updateIn1Visualisation(cuttingCurve.Id, u.X / obj.HeightQwe, 0);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.Height, 0.99999f);
+                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.HeightQwe, 0.99999f);
                     updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.Height, 0);
+                    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj.HeightQwe, 0);
                 }
             }
             if (crossed == -1)
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, 0, v.X / obj.Width);
+                    updateIn1Visualisation(cuttingCurve.Id, 0, v.X / obj.WidthQwe);
                     updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X / obj.Width);
+                    updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X / obj.WidthQwe);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, 0, v.Y / obj.Width);
+                    updateIn2Visualisation(cuttingCurve.Id, 0, v.Y / obj.WidthQwe);
                     updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y / obj.Width);
+                    updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y / obj.WidthQwe);
                 }
             }
             else if (crossed == 1)
             {
                 if (num == 1)
                 {
-                    updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X / obj.Width);
+                    updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X / obj.WidthQwe);
                     updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn1Visualisation(cuttingCurve.Id, 0, v.X / obj.Width);
+                    updateIn1Visualisation(cuttingCurve.Id, 0, v.X / obj.WidthQwe);
                 }
                 else
                 {
-                    updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y / obj.Width);
+                    updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y / obj.WidthQwe);
                     updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    updateIn2Visualisation(cuttingCurve.Id, 0, v.Y / obj.Width);
+                    updateIn2Visualisation(cuttingCurve.Id, 0, v.Y / obj.WidthQwe);
                 }
             }
         }
