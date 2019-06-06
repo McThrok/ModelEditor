@@ -179,10 +179,9 @@ namespace ModelEditor
         private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v)
         {
             //var { obj0, obj1, u, v} = best;
-            object interpolation = null;
             CurveData cuttingCurve = null;
             var _alpha = alpha;
-            cuttingCurve = addCuttingCurve(interpolation);
+            cuttingCurve = addCuttingCurve();
 
             var uStart = u;
             var vStart = v;
@@ -306,14 +305,11 @@ namespace ModelEditor
 
                 //  updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.HeightQwe, v.X / obj0.WidthQwe);
                 //  updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.HeightQwe, v.Y / obj1.WidthQwe);
-                if (finalEpsilon > Vector3.Distance(pStart, p1) && notFinishYet > 10)
+                if (loops > 1000 || finalEpsilon > Vector3.Distance(pStart, p1) && notFinishYet > 10)
                 {
                     break;
                 }
-                if (loops > stop)
-                {
-                    break;
-                }
+
                 notFinishYet++;
                 loops++;
             }
@@ -343,7 +339,7 @@ namespace ModelEditor
             return new TrimmingCurve(cuttingCurve.Points);
         }
 
-        public static CurveData addCuttingCurve(object iCurve)
+        public static CurveData addCuttingCurve()
         {
             var curveData = new CurveData()
             {
@@ -352,7 +348,6 @@ namespace ModelEditor
                 intersectionVisualization1 = new List<Vector2>(),
                 intersectionVisualization2 = new List<Vector2>(),
                 Points = new List<Vector3>(),
-                InterpolationCurve = iCurve
             };
             numberOfIntersections++;
             curves.Add(curveData);
@@ -371,13 +366,7 @@ namespace ModelEditor
             var dV1 = obj0.EvaluateDV(u.X, v.X);
             var dU2 = obj1.EvaluateDU(u.Y, v.Y);
             var dV2 = obj1.EvaluateDV(u.Y, v.Y);
-            if (dU1 == Vector3.Zero)
-            {
-                dU1 = obj0.EvaluateDU(u.X, v.X);
-                dV1 = obj0.EvaluateDV(u.X, v.X);
-                dU2 = obj1.EvaluateDU(u.Y, v.Y);
-                dV2 = obj1.EvaluateDV(u.Y, v.Y);
-            }
+
             var t = getT(dU1, dU2, dV1, dV2);
             dU1 = obj0.EvaluateDU(uNew.X, vNew.X);
             dV1 = obj0.EvaluateDV(uNew.X, vNew.X);
@@ -552,47 +541,23 @@ namespace ModelEditor
         {
             if (crossed == -2)
             {
-                if (num == 1)
-                {
-                    updateIn1Visualisation(cuttingCurve.Id, u.X, 0);
-                }
-                else
-                {
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y, 0);
-                }
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, u.X, 0);
+                else updateIn2Visualisation(cuttingCurve.Id, u.Y, 0);
             }
             else if (crossed == 2)
             {
-                if (num == 1)
-                {
-                    updateIn1Visualisation(cuttingCurve.Id, u.X, 0.99999f);
-                }
-                else
-                {
-                    updateIn2Visualisation(cuttingCurve.Id, u.Y, 0.99999f);
-                }
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, u.X, 0.99999f);
+                else updateIn2Visualisation(cuttingCurve.Id, u.Y, 0.99999f);
             }
             else if (crossed == -1)
             {
-                if (num == 1)
-                {
-                    updateIn1Visualisation(cuttingCurve.Id, 0, v.X);
-                }
-                else
-                {
-                    updateIn2Visualisation(cuttingCurve.Id, 0, v.Y);
-                }
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, 0, v.X);
+                else updateIn2Visualisation(cuttingCurve.Id, 0, v.Y);
             }
             else if (crossed == 1)
             {
-                if (num == 1)
-                {
-                    updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X);
-                }
-                else
-                {
-                    updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y);
-                }
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X);
+                else updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y);
             }
         }
         public static void updateIn1Visualisation(int id, float u, float v)
