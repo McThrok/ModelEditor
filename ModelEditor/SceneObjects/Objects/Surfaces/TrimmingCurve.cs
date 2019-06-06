@@ -193,7 +193,6 @@ namespace ModelEditor
             int crossed1 = 0;
             int crossed2 = 0;
             var pointsList = new List<Vector3>();
-            var stop = 1000;
 
             while (!finished)
             {
@@ -207,23 +206,13 @@ namespace ModelEditor
                         betterPoint.Y *= 0.15f;
                         betterPoint.Z *= 0.15f;
                     }
-                    //var { ob, u, v, uNew, vNew, uStart, vStart, alpha, backed };
-                    var u0 = new UpdStruct()
-                    {
-                        Obj = obj0,
-                        UV = uv0,
-                        UVNew = new Vector2(betterPoint.X, betterPoint.Y),
-                        Backed = backed
-                    };
-                    var u1 = new UpdStruct()
-                    {
-                        Obj = obj1,
-                        UV = uv1,
-                        UVNew = new Vector2(betterPoint.Z, betterPoint.W),
-                        Backed = backed
-                    };
-                    var upd0 = updateUVAfterNewton(u0);
-                    var upd1 = updateUVAfterNewton(u1);
+
+
+                    var uvNew0 = new Vector2(betterPoint.X, betterPoint.Y);
+                    var uvNew1 = new Vector2(betterPoint.Z, betterPoint.W);
+
+                    var upd0 = updateUVAfterNewton(obj0, uv0, uvNew0, backed);
+                    var upd1 = updateUVAfterNewton(obj1, uv1, uvNew1, backed);
                     uv0 = upd0.uv;
                     uv1 = upd1.uv;
 
@@ -350,7 +339,6 @@ namespace ModelEditor
             var vec = getFforJacobi(obj0, obj1, uv0, uv1, uvNew0, uvNew1, alpha);
             return vec.Multiply(mat);
         }
-        //public static Matrix4x4 generateJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v, Vector2 uNew, Vector2 vNew, float alpha)
         public static Matrix4x4 generateJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
             var dU1 = obj0.EvaluateDU(uv0);
@@ -375,7 +363,6 @@ namespace ModelEditor
             Matrix4x4.Invert(jacobiMatrix, out Matrix4x4 inv);
             return inv;
         }
-        //public static Vector4 getFforJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v, Vector2 uNew, Vector2 vNew, float alpha)
         public static Vector4 getFforJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
             var P0 = obj0.Evaluate(uv0);
@@ -402,7 +389,7 @@ namespace ModelEditor
         }
 
 
-        private static UpdUvStruct updateUVAfterNewton(UpdStruct u)
+        private static UpdUvStruct updateUVAfterNewton(TrimmingSurface obj, Vector2 uv, Vector2 uvNew, bool backed)
         {
             // crossed:
             // left -1
@@ -417,14 +404,14 @@ namespace ModelEditor
             var eps = 0.0009f;
             var epsWrap = 0.00001f;
 
-            float _uNew = u.UV.X - (u.UVNew.X * eps);
-            float _vNew = u.UV.Y - (u.UVNew.Y * eps);
-            float _uLast =  u.UV.X - (u.UVNew.X * eps);
-            float _vLast = u.UV.Y - (u.UVNew.Y * eps);
+            float _uNew = uv.X - (uvNew.X * eps);
+            float _vNew = uv.Y - (uvNew.Y * eps);
+            float _uLast = uv.X - (uvNew.X * eps);
+            float _vLast = uv.Y - (uvNew.Y * eps);
 
             if (_uNew < 0)
             {
-                if (u.Obj.WrappedU)
+                if (obj.WrappedU)
                 {
                     _uNew = 1 - epsWrap;
                     _uLast = 0;
@@ -432,7 +419,7 @@ namespace ModelEditor
                 else
                 {
                     _uNew = 0;
-                    if (u.Backed)
+                    if (backed)
                     {
                         end = true;
                     }
@@ -445,7 +432,7 @@ namespace ModelEditor
             }
             if (_uNew >= 1)
             {
-                if (u.Obj.WrappedU)
+                if (obj.WrappedU)
                 {
                     _uNew = 0;
                     _uLast = 1 - epsWrap;
@@ -453,7 +440,7 @@ namespace ModelEditor
                 else
                 {
                     _uNew = 1 - epsWrap;
-                    if (u.Backed)
+                    if (backed)
                     {
                         end = true;
                     }
@@ -466,7 +453,7 @@ namespace ModelEditor
             }
             if (_vNew >= 1)
             {
-                if (u.Obj.WrappedV)
+                if (obj.WrappedV)
                 {
                     _vNew = 0;
                     _vLast = 1 - epsWrap;
@@ -474,7 +461,7 @@ namespace ModelEditor
                 else
                 {
                     _vNew = 1 - epsWrap;
-                    if (u.Backed)
+                    if (backed)
                     {
                         end = true;
                     }
@@ -487,7 +474,7 @@ namespace ModelEditor
             }
             if (_vNew < 0)
             {
-                if (u.Obj.WrappedV)
+                if (obj.WrappedV)
                 {
                     _vNew = 1 - epsWrap;
                     _vLast = 0;
@@ -495,7 +482,7 @@ namespace ModelEditor
                 else
                 {
                     _vNew = 0;
-                    if (u.Backed)
+                    if (backed)
                     {
                         end = true;
                     }
@@ -509,11 +496,11 @@ namespace ModelEditor
 
             return new UpdUvStruct()
             {
-                uv =new Vector2( _uNew, _vNew),
+                uv = new Vector2(_uNew, _vNew),
                 end = end,
                 backThisTime = backThisTime,
                 crossed = crossed,
-                uvLast =new Vector2(_uLast, _vLast),
+                uvLast = new Vector2(_uLast, _vLast),
             };
         }
         public static void backNewton(List<Vector3> pointsList, ref Vector2 uvStart0, ref Vector2 uvStart1, ref Vector2 uv0, ref Vector2 uv1, ref Vector2 uvPrev0, ref Vector2 uvPrev1, ref float alpha)
