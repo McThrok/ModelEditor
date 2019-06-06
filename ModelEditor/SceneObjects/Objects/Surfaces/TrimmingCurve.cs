@@ -37,22 +37,18 @@ namespace ModelEditor
     public struct UpdStruct
     {
         public TrimmingSurface Obj { get; set; }
-        public float U { get; set; }
-        public float V { get; set; }
-        public float UNew { get; set; }
-        public float VNew { get; set; }
+        public Vector2 UV { get; set; }
+        public Vector2 UVNew { get; set; }
         public bool Backed { get; set; }
     }
 
     public struct UpdUvStruct
     {
-        public float u;
-        public float v;
+        public Vector2 uv;
         public bool end;
         public bool backThisTime;
         public int crossed;
-        public float uLast;
-        public float vLast;
+        public Vector2 uvLast;
     }
 
     public class TrimmingCurve : SceneObject, IRenderableObj
@@ -149,9 +145,9 @@ namespace ModelEditor
                 p1 = obj1.Evaluate(value1);
             }
 
-            var u = new Vector2(value0.X, value1.X);
-            var v = new Vector2(value0.Y, value1.Y);
-            return goGoNewton(obj0, obj1, u, v);
+            //var u = new Vector2(value0.X, value1.X);
+            //var v = new Vector2(value0.Y, value1.Y);
+            return goGoNewton(obj0, obj1, value0, value1);
         }
         private static List<Vector2> GetGradient(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 point0, Vector2 point1)
         {
@@ -176,22 +172,22 @@ namespace ModelEditor
 
             return new List<Vector2>() { gradientStep * grad0, gradientStep * grad1 };
         }
-        private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v)
+        private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1)
         {
             //var { obj0, obj1, u, v} = best;
             CurveData cuttingCurve = null;
             var _alpha = alpha;
             cuttingCurve = addCuttingCurve();
 
-            var uStart = u;
-            var vStart = v;
-            var uPrev = uStart;
-            var vPrev = vStart;
+            var uvStart0 = uv0;
+            var uvStart1 = uv1;
+            var uvPrev0 = uvStart0;
+            var uvPrev1 = uvStart1;
 
             var backed = false;
             var finished = false;
 
-            var pStart = obj0.Evaluate(uStart.X, vStart.X);
+            var pStart = obj0.Evaluate(uvStart0);
             var notFinishYet = 0;
             var loops = 0;
             int crossed1 = 0;
@@ -204,7 +200,7 @@ namespace ModelEditor
                 var tempAlpha = _alpha;
                 for (var i = 0; i < 10; i++)
                 {
-                    var betterPoint = findNewNewtonPoint(obj0, obj1, uPrev, vPrev, u, v, tempAlpha);
+                    var betterPoint = findNewNewtonPoint(obj0, obj1, uvPrev0, uvPrev1, uv0, uv1, tempAlpha);
                     if (!(obj0 is Torus) && obj1 is Torus)
                     {
                         //?
@@ -215,28 +211,22 @@ namespace ModelEditor
                     var u0 = new UpdStruct()
                     {
                         Obj = obj0,
-                        U = u.X,
-                        V = v.X,
-                        UNew = betterPoint.X,
-                        VNew = betterPoint.Y,
+                        UV = uv0,
+                        UVNew = new Vector2(betterPoint.X, betterPoint.Y),
                         Backed = backed
                     };
                     var u1 = new UpdStruct()
                     {
                         Obj = obj1,
-                        U = u.Y,
-                        V = v.Y,
-                        UNew = betterPoint.Z,
-                        VNew = betterPoint.W,
+                        UV = uv1,
+                        UVNew = new Vector2(betterPoint.Z, betterPoint.W),
                         Backed = backed
                     };
                     var upd0 = updateUVAfterNewton(u0);
                     var upd1 = updateUVAfterNewton(u1);
-                    u.X = upd0.u;
-                    u.Y = upd1.u;
+                    uv0 = upd0.uv;
+                    uv1 = upd1.uv;
 
-                    v.X = upd0.v;
-                    v.Y = upd1.v;
                     if (upd0.end || upd1.end)
                     {
                         finished = true;
@@ -281,8 +271,8 @@ namespace ModelEditor
                     //}
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
-                        pointsList.Add(obj0.Evaluate(u.X, v.X));
-                        backNewton(pointsList, ref uStart, ref vStart, ref u, ref v, ref uPrev, ref vPrev, ref _alpha);
+                        pointsList.Add(obj0.Evaluate(uv0));
+                        backNewton(pointsList, ref uvStart0, ref uvStart1, ref uv0, ref uv1, ref uvPrev0, ref uvPrev1, ref _alpha);
                         notFinishYet = 5;
                         backed = true;
                         tempAlpha = _alpha;
@@ -291,17 +281,17 @@ namespace ModelEditor
 
                 }
 
-                uPrev = u;
-                vPrev = v;
+                uvPrev0 = uv0;
+                uvPrev1 = uv1;
 
-                var p1 = obj0.Evaluate(u.X, v.X);
-                var p2 = obj1.Evaluate(u.Y, v.Y);
+                var p1 = obj0.Evaluate(uv0);
+                var p2 = obj1.Evaluate(uv1);
                 //if (alphaEpsilon < Vector3.Distance(p2, p1))
                 //{
                 //    tempAlpha /= 2;
                 //}
 
-                pointsList.Add(obj0.Evaluate(u.X, v.X));
+                pointsList.Add(obj0.Evaluate(uv0));
 
                 //  updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.HeightQwe, v.X / obj0.WidthQwe);
                 //  updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.HeightQwe, v.Y / obj1.WidthQwe);
@@ -354,24 +344,25 @@ namespace ModelEditor
             return curveData;
         }
 
-        private static Vector4 findNewNewtonPoint(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v, Vector2 uNew, Vector2 vNew, float alpha)
+        private static Vector4 findNewNewtonPoint(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
-            var mat = generateJacobi(obj0, obj1, u, v, uNew, vNew, alpha);
-            var vec = getFforJacobi(obj0, obj1, u, v, uNew, vNew, alpha);
+            var mat = generateJacobi(obj0, obj1, uv0, uv1, uvNew0, uvNew1, alpha);
+            var vec = getFforJacobi(obj0, obj1, uv0, uv1, uvNew0, uvNew1, alpha);
             return vec.Multiply(mat);
         }
-        public static Matrix4x4 generateJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v, Vector2 uNew, Vector2 vNew, float alpha)
+        //public static Matrix4x4 generateJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v, Vector2 uNew, Vector2 vNew, float alpha)
+        public static Matrix4x4 generateJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
-            var dU1 = obj0.EvaluateDU(u.X, v.X);
-            var dV1 = obj0.EvaluateDV(u.X, v.X);
-            var dU2 = obj1.EvaluateDU(u.Y, v.Y);
-            var dV2 = obj1.EvaluateDV(u.Y, v.Y);
+            var dU1 = obj0.EvaluateDU(uv0);
+            var dV1 = obj0.EvaluateDV(uv0);
+            var dU2 = obj1.EvaluateDU(uv1);
+            var dV2 = obj1.EvaluateDV(uv1);
 
             var t = getT(dU1, dU2, dV1, dV2);
-            dU1 = obj0.EvaluateDU(uNew.X, vNew.X);
-            dV1 = obj0.EvaluateDV(uNew.X, vNew.X);
-            dU2 = -obj1.EvaluateDU(uNew.Y, vNew.Y);
-            dV2 = -obj1.EvaluateDV(uNew.Y, vNew.Y);
+            dU1 = obj0.EvaluateDU(uvNew0);
+            dV1 = obj0.EvaluateDV(uvNew0);
+            dU2 = -obj1.EvaluateDU(uvNew1);
+            dV2 = -obj1.EvaluateDV(uvNew1);
 
             var dot1 = Vector3.Dot(dU1, t);
             var dot2 = Vector3.Dot(dV1, t);
@@ -384,15 +375,16 @@ namespace ModelEditor
             Matrix4x4.Invert(jacobiMatrix, out Matrix4x4 inv);
             return inv;
         }
-        public static Vector4 getFforJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v, Vector2 uNew, Vector2 vNew, float alpha)
+        //public static Vector4 getFforJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v, Vector2 uNew, Vector2 vNew, float alpha)
+        public static Vector4 getFforJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
-            var P0 = obj0.Evaluate(u.X, v.X);
-            var Q = obj1.Evaluate(uNew.Y, vNew.Y);
-            var P1 = obj0.Evaluate(uNew.X, vNew.X);
-            var dU1 = obj0.EvaluateDU(u.X, v.X);
-            var dV1 = obj0.EvaluateDV(u.X, v.X);
-            var dU2 = obj1.EvaluateDU(u.Y, v.Y);
-            var dV2 = obj1.EvaluateDV(u.Y, v.Y);
+            var P0 = obj0.Evaluate(uv0);
+            var Q = obj1.Evaluate(uvNew1);
+            var P1 = obj0.Evaluate(uvNew0);
+            var dU1 = obj0.EvaluateDU(uv0);
+            var dV1 = obj0.EvaluateDV(uv0);
+            var dU2 = obj1.EvaluateDU(uv1);
+            var dV2 = obj1.EvaluateDV(uv1);
             var t = getT(dU1, dU2, dV1, dV2, alpha);
             return new Vector4(
                 P1.X - Q.X,
@@ -425,10 +417,10 @@ namespace ModelEditor
             var eps = 0.0009f;
             var epsWrap = 0.00001f;
 
-            float _uNew = u.U - (u.UNew * eps);
-            float _vNew = u.V - (u.VNew * eps);
-            float _uLast = u.U - (u.UNew * eps);
-            float _vLast = u.V - (u.VNew * eps);
+            float _uNew = u.UV.X - (u.UVNew.X * eps);
+            float _vNew = u.UV.Y - (u.UVNew.Y * eps);
+            float _uLast =  u.UV.X - (u.UVNew.X * eps);
+            float _vLast = u.UV.Y - (u.UVNew.Y * eps);
 
             if (_uNew < 0)
             {
@@ -517,22 +509,20 @@ namespace ModelEditor
 
             return new UpdUvStruct()
             {
-                u = _uNew,
-                v = _vNew,
+                uv =new Vector2( _uNew, _vNew),
                 end = end,
                 backThisTime = backThisTime,
                 crossed = crossed,
-                uLast = _uLast,
-                vLast = _vLast
+                uvLast =new Vector2(_uLast, _vLast),
             };
         }
-        public static void backNewton(List<Vector3> pointsList, ref Vector2 uStarts, ref Vector2 vStarts, ref Vector2 us, ref Vector2 vs, ref Vector2 uPrevs, ref Vector2 vPrevs, ref float alpha)
+        public static void backNewton(List<Vector3> pointsList, ref Vector2 uvStart0, ref Vector2 uvStart1, ref Vector2 uv0, ref Vector2 uv1, ref Vector2 uvPrev0, ref Vector2 uvPrev1, ref float alpha)
         {
-            us = uStarts;
-            vs = vStarts;
+            uv0 = uvStart0;
+            uv1 = uvStart1;
 
-            uPrevs = uStarts;
-            vPrevs = vStarts;
+            uvPrev0 = uvStart0;
+            uvPrev1 = uvStart1;
 
             pointsList.Reverse();
             alpha = -alpha;
