@@ -413,5 +413,20 @@ namespace ModelEditor
 
             return verts;
         }
+
+        public Vector3 Evaluate(Vector2 hw)
+        {
+            return Evaluate(hw.X, hw.Y);
+        }
+
+        public Vector3 EvaluateDU(Vector2 hw)
+        {
+            return EvaluateDU(hw.X, hw.Y);
+        }
+
+        public Vector3 EvaluateDV(Vector2 hw)
+        {
+            return EvaluateDV(hw.X, hw.Y);
+        }
     }
 }

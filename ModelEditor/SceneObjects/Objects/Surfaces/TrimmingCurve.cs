@@ -18,6 +18,10 @@ namespace ModelEditor
         Vector3 Evaluate(float h, float w);
         Vector3 EvaluateDU(float h, float w);
         Vector3 EvaluateDV(float h, float w);
+
+        Vector3 Evaluate(Vector2 hw);
+        Vector3 EvaluateDU(Vector2 hw);
+        Vector3 EvaluateDV(Vector2 hw);
     }
 
     public class CurveData
@@ -120,13 +124,9 @@ namespace ModelEditor
 
         private static TrimmingCurve CountGradientMethod(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 value0, Vector2 value1)
         {
-            var u = new Vector2(value0.X, value1.X);
-            var v = new Vector2(value0.Y, value1.Y);
             var p0 = obj0.Evaluate(value0.X, value0.Y);
             var p1 = obj1.Evaluate(value1.X, value1.Y);
 
-            Vector2 point0 = Vector2.Zero;
-            Vector2 point1 = Vector2.Zero;
             var i = 0;
             while (Vector3.Distance(p1, p0) > gradientEpsilon)
             {
@@ -134,50 +134,47 @@ namespace ModelEditor
                 if (i > 1000)
                     return null;
 
-                point0 = new Vector2(u.X, v.X);
-                point1 = new Vector2(u.Y, v.Y);
-
-                Vector4 betterPoint;
                 try
                 {
-                    betterPoint = GetGradient(obj0, obj1, point0, point1);
+                    var grads = GetGradient(obj0, obj1, value0, value1);
+                    value0 -= grads[0];
+                    value1 -= grads[1];
                 }
                 catch (Exception e)
                 {
                     return null;
                 }
 
-                betterPoint *= gradientStep;
-                p0 = obj0.Evaluate(u.X, v.X);
-                p1 = obj1.Evaluate(u.Y, v.Y);
-
-                Vector2 uPrev = u;
-                Vector2 vPrev = v;
-                u = new Vector2(uPrev.X - betterPoint.X, uPrev.Y - betterPoint.Z);
-                v = new Vector2(vPrev.X - betterPoint.Y, vPrev.Y - betterPoint.W);
+                p0 = obj0.Evaluate(value0);
+                p1 = obj1.Evaluate(value1);
             }
 
+            var u = new Vector2(value0.X, value1.X);
+            var v = new Vector2(value0.Y, value1.Y);
             return goGoNewton(obj0, obj1, u, v);
         }
-        private static Vector4 GetGradient(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 point0, Vector2 point1)
+        private static List<Vector2> GetGradient(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 point0, Vector2 point1)
         {
-            var eval1 = obj0.Evaluate(point0.X, point0.Y);
-            var eval2 = obj1.Evaluate(point1.X, point1.Y);
+            var eval1 = obj0.Evaluate(point0);
+            var eval2 = obj1.Evaluate(point1);
 
             var diff = eval1 - eval2;
 
-            var eval0u = obj0.EvaluateDU(point0.X, point0.Y);
-            var eval0v = obj0.EvaluateDV(point0.X, point0.Y);
+            var eval0u = obj0.EvaluateDU(point0);
+            var eval0v = obj0.EvaluateDV(point0);
 
-            var eval1u = obj1.EvaluateDU(point1.X, point1.Y);
-            var eval1v = obj1.EvaluateDV(point1.X, point1.Y);
+            var eval1u = obj1.EvaluateDU(point1);
+            var eval1v = obj1.EvaluateDV(point1);
 
-            return new Vector4(
+            var grad0 = new Vector2(
              Vector3.Dot(diff, eval0u),
-             Vector3.Dot(diff, eval0v),
+             Vector3.Dot(diff, eval0v));
+
+            var grad1 = new Vector2(
              Vector3.Dot(-diff, eval1u),
-             Vector3.Dot(-diff, eval1v)
-             );
+             Vector3.Dot(-diff, eval1v));
+
+            return new List<Vector2>() { gradientStep * grad0, gradientStep * grad1 };
         }
         private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 u, Vector2 v)
         {
@@ -191,8 +188,10 @@ namespace ModelEditor
             var vStart = v;
             var uPrev = uStart;
             var vPrev = vStart;
-            Vector4 betterPoint = Vector4.Zero;
+
             var backed = false;
+            var finished = false;
+
             var pStart = obj0.Evaluate(uStart.X, vStart.X);
             var notFinishYet = 0;
             var loops = 0;
@@ -200,16 +199,16 @@ namespace ModelEditor
             int crossed2 = 0;
             var pointsList = new List<Vector3>();
             var stop = 1000;
-            var finished = false;
 
             while (!finished)
             {
                 var tempAlpha = _alpha;
                 for (var i = 0; i < 10; i++)
                 {
-                    betterPoint = findNewNewtonPoint(obj0, obj1, uPrev, vPrev, u, v, tempAlpha);
+                    var betterPoint = findNewNewtonPoint(obj0, obj1, uPrev, vPrev, u, v, tempAlpha);
                     if (!(obj0 is Torus) && obj1 is Torus)
                     {
+                        //?
                         betterPoint.Y *= 0.15f;
                         betterPoint.Z *= 0.15f;
                     }
@@ -298,10 +297,10 @@ namespace ModelEditor
 
                 var p1 = obj0.Evaluate(u.X, v.X);
                 var p2 = obj1.Evaluate(u.Y, v.Y);
-                if (alphaEpsilon < Vector3.Distance(p2, p1))
-                {
-                    tempAlpha /= 2;
-                }
+                //if (alphaEpsilon < Vector3.Distance(p2, p1))
+                //{
+                //    tempAlpha /= 2;
+                //}
 
                 pointsList.Add(obj0.Evaluate(u.X, v.X));
 
