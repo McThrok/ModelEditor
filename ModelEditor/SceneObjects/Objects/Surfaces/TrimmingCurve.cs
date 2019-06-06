@@ -368,17 +368,13 @@ namespace ModelEditor
             var P0 = obj0.Evaluate(uv0);
             var Q = obj1.Evaluate(uvNew1);
             var P1 = obj0.Evaluate(uvNew0);
+
             var dU1 = obj0.EvaluateDU(uv0);
             var dV1 = obj0.EvaluateDV(uv0);
             var dU2 = obj1.EvaluateDU(uv1);
             var dV2 = obj1.EvaluateDV(uv1);
             var t = getT(dU1, dU2, dV1, dV2, alpha);
-            return new Vector4(
-                P1.X - Q.X,
-                P1.Y - Q.Y,
-                P1.Z - Q.Z,
-                Vector3.Dot(P1 - P0, t) + (alpha * 100.0f)
-            );
+            return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - (alpha * 100.0f));
         }
         public static Vector3 getT(Vector3 du1, Vector3 du2, Vector3 dv1, Vector3 dv2, float alpha = 0)
         {
