@@ -53,6 +53,8 @@ namespace ModelEditor
             //a.Scale(0.1, 0.1, 0.1);
 
             var b = (BezierSurfaceC0)AddBezierSurfaceC0(this);
+            //b.HeightPatchCount = 2;
+            b.WidthPatchCount = 2;
             b.Height = 6;
             b.Width = 6;
             //b.Scale(0.1, 0.1, 0.1);

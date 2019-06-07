@@ -100,13 +100,13 @@ namespace ModelEditor
                             float kk = 1f * k / (divCount - 1);
                             float mm = 1f * m / (divCount - 1);
 
-                            var ev1 = objs[0].Evaluate(new Vector2(jj, ii));
-                            var ev2 = objs[1].Evaluate(new Vector2(mm, kk));
+                            var ev1 = objs[0].Evaluate(new Vector2(ii, jj));
+                            var ev2 = objs[1].Evaluate(new Vector2(kk, mm));
                             var len = Vector3.Distance(ev1, cursorPos) + Vector3.Distance(ev2, cursorPos);
                             if (len < bestLen && (!sameObjects || (eps < Math.Abs(ii - kk) && eps < Math.Abs(jj - mm))))
                             {
-                                p0 = new Vector2(jj, ii);
-                                p1 = new Vector2(mm, kk);
+                                p0 = new Vector2(ii, jj);
+                                p1 = new Vector2(kk, mm);
                                 bestLen = len;
                             }
                         }

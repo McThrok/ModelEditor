@@ -173,9 +173,9 @@ namespace ModelEditor
                 for (int j = 0; j < 4; j++)
                 {
                     if (w + j < RangeVertexCount)
-                        verts[i].Add(_controlVertices[h + i][w + j].GlobalMatrix.Translation);
+                        verts[i].Add(_controlVertices[3 * h + i][3 * w + j].GlobalMatrix.Translation);
                     else
-                        verts[i].Add(_controlVertices[h + i][0].GlobalMatrix.Translation);
+                        verts[i].Add(_controlVertices[3 * h + i][0].GlobalMatrix.Translation);
                 }
             }
 
