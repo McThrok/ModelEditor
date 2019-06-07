@@ -89,6 +89,10 @@ namespace ModelEditor
         {
             return v / v.Length();
         }
+        public static Vector2 Normalized(this Vector2 v)
+        {
+            return v / v.Length();
+        }
 
         public static Vector3 ToEuler(this Quaternion rotation)
         {

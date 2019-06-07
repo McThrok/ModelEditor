@@ -56,7 +56,7 @@ namespace ModelEditor
         private static int _count = 0;
 
         private static float gradientEpsilon = 0.001f;
-        private static float gradientStep = 0.5f;
+        private static float gradientStep = 0.01f;
 
         static int numberOfIntersections = 0;
         static float size = 501.0f;
@@ -124,7 +124,9 @@ namespace ModelEditor
             var p1 = obj1.Evaluate(value1.X, value1.Y);
 
             var i = 0;
-            while (Vector3.Distance(p1, p0) > gradientEpsilon)
+            var alpha = 1f;
+            var dist = Vector3.Distance(p1, p0);
+            while (dist > gradientEpsilon)
             {
                 i++;
                 if (i > 1000)
@@ -133,16 +135,33 @@ namespace ModelEditor
                 try
                 {
                     var grads = GetGradient(obj0, obj1, value0, value1);
-                    value0 -= grads[0];
-                    value1 -= grads[1];
+                    value0 -= alpha * grads[0];
+                    value1 -= alpha * grads[1];
+
+                    value0.X = Math.Min(1, Math.Max(0, value0.X));
+                    value0.Y = Math.Min(1, Math.Max(0, value0.Y));
+                    value1.X = Math.Min(1, Math.Max(0, value1.X));
+                    value1.Y = Math.Min(1, Math.Max(0, value1.Y));
+
+                    var pNew0 = obj0.Evaluate(value0);
+                    var pNew1 = obj1.Evaluate(value1);
+
+                    var newDist = Vector3.Distance(pNew0, pNew1);
+                    if (newDist > dist)
+                    {
+                        alpha /= 2;
+                    }
+                    else
+                    {
+                        dist = newDist;
+                        p0 = pNew0;
+                        p1 = pNew1;
+                    }
                 }
                 catch (Exception e)
                 {
                     return null;
                 }
-
-                p0 = obj0.Evaluate(value0);
-                p1 = obj1.Evaluate(value1);
             }
 
             //var u = new Vector2(value0.X, value1.X);
@@ -151,10 +170,10 @@ namespace ModelEditor
         }
         private static List<Vector2> GetGradient(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 point0, Vector2 point1)
         {
-            var eval1 = obj0.Evaluate(point0);
-            var eval2 = obj1.Evaluate(point1);
+            var eval0 = obj0.Evaluate(point0);
+            var eval1 = obj1.Evaluate(point1);
 
-            var diff = eval1 - eval2;
+            var diff = eval0 - eval1;
 
             var eval0u = obj0.EvaluateDU(point0);
             var eval0v = obj0.EvaluateDV(point0);
@@ -170,7 +189,7 @@ namespace ModelEditor
              Vector3.Dot(-diff, eval1u),
              Vector3.Dot(-diff, eval1v));
 
-            return new List<Vector2>() { gradientStep * grad0, gradientStep * grad1 };
+            return new List<Vector2>() { gradientStep * grad0.Normalized(), gradientStep * grad1.Normalized() };
         }
         private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1)
         {
@@ -219,45 +238,45 @@ namespace ModelEditor
                     if (upd0.end || upd1.end)
                     {
                         finished = true;
-                        //if (upd0.end)
-                        //{
-                        //    addBorder(upd0.crossed, 1, cuttingCurve, uPrev, vPrev, obj0);
-                        //}
-                        //else if (upd1.end)
-                        //{
-                        //    addBorder(upd1.crossed, 2, cuttingCurve, uPrev, vPrev, obj1);
-                        //}
+                        if (upd0.end)
+                        {
+                            addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
+                        }
+                        else if (upd1.end)
+                        {
+                            addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
+                        }
                         break;
                     }
-                    //if ( upd0.crossed != 0 && !upd0.backThisTime)
-                    //{
-                    //    crossed1 += upd0.crossed;
-                    //    addBorder(upd0.crossed, 1, cuttingCurve, uPrev, vPrev, obj0);
-                    //    updateIn1Visualisation(cuttingCurve.Id, upd0.uLast / obj0.HeightQwe, upd0.vLast / obj0.WidthQwe);
-                    //    updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    //    updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.HeightQwe, v.X / obj0.WidthQwe);
-                    //}
-                    //if ( upd1.crossed != 0 && !upd1.backThisTime)
-                    //{
-                    //    crossed2 += upd1.crossed;
-                    //    addBorder(upd1.crossed, 2, cuttingCurve, uPrev, vPrev, obj1);
-                    //    updateIn2Visualisation(cuttingCurve.Id, upd1.uLast / obj1.HeightQwe, upd1.vLast / obj1.WidthQwe);
-                    //    updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                    //    updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.HeightQwe, v.Y / obj1.WidthQwe);
-                    //}
-                    //if  (upd0.backThisTime || upd1.backThisTime)
-                    //{
-                    //    if (upd0.backThisTime)
-                    //    {
-                    //        addBorder(upd0.crossed, 1, cuttingCurve, uPrev, vPrev, obj0);
-                    //    }
-                    //    else if (upd1.backThisTime)
-                    //    {
-                    //        addBorder(upd1.crossed, 2, cuttingCurve, uPrev, vPrev, obj1);
-                    //    }
-                    //    updateIn1Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
-                    //    updateIn2Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
-                    //}
+                    if (upd0.crossed != 0 && !upd0.backThisTime)
+                    {
+                        crossed1 += upd0.crossed;
+                        addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
+                        updateIn1Visualisation(cuttingCurve.Id, upd0.uvLast.X, upd0.uvLast.Y);
+                        updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
+                        updateIn1Visualisation(cuttingCurve.Id, uv0.X, uv0.Y);
+                    }
+                    if (upd1.crossed != 0 && !upd1.backThisTime)
+                    {
+                        crossed2 += upd1.crossed;
+                        addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
+                        updateIn2Visualisation(cuttingCurve.Id, upd1.uvLast.X, upd1.uvLast.Y);
+                        updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
+                        updateIn2Visualisation(cuttingCurve.Id, uv1.X, uv1.Y);
+                    }
+                    if (upd0.backThisTime || upd1.backThisTime)
+                    {
+                        if (upd0.backThisTime)
+                        {
+                            addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
+                        }
+                        else if (upd1.backThisTime)
+                        {
+                            addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
+                        }
+                        updateIn1Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
+                        updateIn2Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
+                    }
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
                         pointsList.Add(obj0.Evaluate(uv0));
@@ -275,10 +294,10 @@ namespace ModelEditor
 
                 var p1 = obj0.Evaluate(uv0);
                 var p2 = obj1.Evaluate(uv1);
-                //if (alphaEpsilon < Vector3.Distance(p2, p1))
-                //{
-                //    tempAlpha /= 2;
-                //}
+                if (alphaEpsilon < Vector3.Distance(p2, p1))
+                {
+                    tempAlpha /= 2;
+                }
 
                 pointsList.Add(obj0.Evaluate(uv0));
 
@@ -304,7 +323,7 @@ namespace ModelEditor
             }
             if (!backed)
             {
-                cuttingCurve.Points.Add(pStart);
+                //cuttingCurve.Points.Add(pStart);
                 //if (isLenghtNotToLong(cuttingCurve.intersectionVisualization1))
                 //{
                 //    cuttingCurve.intersectionVisualization1.Add(new Vector2(cuttingCurve.intersectionVisualization1[0].X, cuttingCurve.intersectionVisualization1[0].Y));
@@ -335,11 +354,11 @@ namespace ModelEditor
 
         private static Vector4 findNewNewtonPoint(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
-            var mat = generateJacobi(obj0, obj1, uv0, uv1, uvNew0, uvNew1, alpha);
+            var mat = generateJacobi(obj0, obj1, uv0, uv1, uvNew0, uvNew1);
             var vec = getFforJacobi(obj0, obj1, uv0, uv1, uvNew0, uvNew1, alpha);
             return vec.Multiply(mat);
         }
-        public static Matrix4x4 generateJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
+        public static Matrix4x4 generateJacobi(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1)
         {
             var dU1 = obj0.EvaluateDU(uv0);
             var dV1 = obj0.EvaluateDV(uv0);
@@ -373,10 +392,11 @@ namespace ModelEditor
             var dV1 = obj0.EvaluateDV(uv0);
             var dU2 = obj1.EvaluateDU(uv1);
             var dV2 = obj1.EvaluateDV(uv1);
-            var t = getT(dU1, dU2, dV1, dV2, alpha);
-            return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - (alpha * 100.0f));
+            var t = getT(dU1, dU2, dV1, dV2);
+
+            return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - (alpha * 1000.0f));
         }
-        public static Vector3 getT(Vector3 du1, Vector3 du2, Vector3 dv1, Vector3 dv2, float alpha = 0)
+        public static Vector3 getT(Vector3 du1, Vector3 du2, Vector3 dv1, Vector3 dv2)
         {
             var np = Vector3.Normalize(Vector3.Cross(du1, dv1));
             var nq = Vector3.Normalize(Vector3.Cross(du2, dv2));
@@ -510,27 +530,27 @@ namespace ModelEditor
             pointsList.Reverse();
             alpha = -alpha;
         }
-        public static void addBorder(int crossed, int num, CurveData cuttingCurve, Vector2 u, Vector2 v, TrimmingSurface obj)
+        public static void addBorder(int crossed, int num, CurveData cuttingCurve, Vector2 uv0, Vector2 uv1, TrimmingSurface obj)
         {
             if (crossed == -2)
             {
-                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, u.X, 0);
-                else updateIn2Visualisation(cuttingCurve.Id, u.Y, 0);
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, uv0.X, 0);
+                else updateIn2Visualisation(cuttingCurve.Id, uv1.X, 0);
             }
             else if (crossed == 2)
             {
-                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, u.X, 0.99999f);
-                else updateIn2Visualisation(cuttingCurve.Id, u.Y, 0.99999f);
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, uv0.X, 0.99999f);
+                else updateIn2Visualisation(cuttingCurve.Id, uv1.X, 0.99999f);
             }
             else if (crossed == -1)
             {
-                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, 0, v.X);
-                else updateIn2Visualisation(cuttingCurve.Id, 0, v.Y);
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, 0, uv0.Y);
+                else updateIn2Visualisation(cuttingCurve.Id, 0, uv1.Y);
             }
             else if (crossed == 1)
             {
-                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, 0.99999f, v.X);
-                else updateIn2Visualisation(cuttingCurve.Id, 0.99999f, v.Y);
+                if (num == 1) updateIn1Visualisation(cuttingCurve.Id, 0.99999f, uv0.Y);
+                else updateIn2Visualisation(cuttingCurve.Id, 0.99999f, uv1.Y);
             }
         }
         public static void updateIn1Visualisation(int id, float u, float v)
