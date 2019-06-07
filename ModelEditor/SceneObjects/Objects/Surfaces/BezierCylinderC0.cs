@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BezierCylinderC0 : BezierSurfaceBaseC0, IRenderableObj
+    public class BezierCylinderC0 : BezierSurfaceBaseC0, IRenderableObj, TrimmingSurface
     {
         private static int _count = 0;
 
@@ -160,6 +160,26 @@ namespace ModelEditor
             }
 
             return data;
+        }
+
+        public override bool WrappedV => true;
+
+        protected override List<List<Vector3>> GetPatchVerts(int h, int w)
+        {
+            var verts = new List<List<Vector3>>();
+            for (int i = 0; i < 4; i++)
+            {
+                verts.Add(new List<Vector3>());
+                for (int j = 0; j < 4; j++)
+                {
+                    if (w + j < RangeVertexCount)
+                        verts[i].Add(_controlVertices[h + i][w + j].GlobalMatrix.Translation);
+                    else
+                        verts[i].Add(_controlVertices[h + i][0].GlobalMatrix.Translation);
+                }
+            }
+
+            return verts;
         }
     }
 }

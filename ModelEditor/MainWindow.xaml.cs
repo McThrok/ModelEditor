@@ -295,14 +295,8 @@ namespace ModelEditor
             {
                 if (obj is Vertex vert)
                 {
-                    //if (vert.Parent is BezierSurfaceBaseC0 surfC0)
-                    //    objs.Add(surfC0);
-
-                    //if (vert.Parent is BezierSurfaceBaseC2 surfC2)
-                    //    objs.Add(surfC2);
-
-                    if (vert.Parent is BezierSurfaceC0 surfC0)
-                        objSet.Add(surfC0);
+                    if (vert.Parent is TrimmingSurface surf)
+                        objSet.Add(surf);
                 }
 
                 //if (obj is Torus torus)

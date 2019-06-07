@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public abstract class BezierSurfaceBaseC0 : SceneObject
+    public abstract class BezierSurfaceBaseC0 : SceneObject,TrimmingSurface
     {
         protected List<List<Vertex>> _controlVertices = new List<List<Vertex>>();
         protected readonly RayCaster _rayCaster;
@@ -254,8 +254,6 @@ namespace ModelEditor
             get => 3 * HeightPatchCount + 1;
         }
 
-        protected bool WrapLast { get; set; }
-
         protected abstract void InitVertices();
 
         protected Vertex CreateControlVertex()
@@ -263,6 +261,109 @@ namespace ModelEditor
             var vert = new Vertex();
             vert.SetParent(this, true);
             return vert;
+        }
+
+        public virtual bool WrappedU => false;
+        public virtual bool WrappedV => false;
+
+        public float GetBDrv(int i, float t)
+        {
+            float c = 1.0f - t;
+
+            if (i == 0)
+                return -3 * c * c;
+            if (i == 1)
+                return 3 * (-2 * t + c) * c;
+            if (i == 2)
+                return 3 * t * (2 - 3 * t);
+            if (i == 3)
+                return 3 * t * t;
+
+            return 0;
+        }
+
+        public Vector3 GetValueDivH(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        {
+            var point = Vector3.Zero;
+            for (int h = 0; h < 4; h++)
+            {
+                for (int w = 0; w < 4; w++)
+                {
+                    point += verts[idxH + h][idxW + w] * GetBDrv(h, tu) * GetB(w, tv);
+                }
+            }
+
+            return point;
+        }
+        public Vector3 GetValueDivW(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
+        {
+            var point = Vector3.Zero;
+            for (int h = 0; h < 4; h++)
+            {
+                for (int w = 0; w < 4; w++)
+                {
+                    point += verts[idxH + h][idxW + w] * GetB(h, tu) * GetBDrv(w, tv);
+                }
+            }
+
+            return point;
+        }
+
+        protected abstract List<List<Vector3>> GetPatchVerts(int h, int w);
+
+        public Vector3 Evaluate(Vector2 hw)
+        {
+            var h = hw.X;
+            var w = hw.Y;
+            int phc = HeightPatchCount;
+            int ph = (int)Math.Floor(h * phc);
+            if (ph == phc)
+                ph = phc - 1;
+            float hh = h * phc - ph;
+
+            int pwc = WidthPatchCount;
+            int pw = (int)Math.Floor(w * pwc);
+            if (pw == pwc)
+                pw = pwc - 1;
+            float ww = w * pwc - pw;
+
+            return GetValue(GetPatchVerts(ph, pw), 0, 0, hh, ww);
+        }
+        public Vector3 EvaluateDU(Vector2 hw)
+        {
+            var h = hw.X;
+            var w = hw.Y;
+            int phc = HeightPatchCount;
+            int ph = (int)Math.Floor(h * phc);
+            if (ph == phc)
+                ph = phc - 1;
+            float hh = h * phc - ph;
+
+            int pwc = WidthPatchCount;
+            int pw = (int)Math.Floor(w * pwc);
+            if (pw == pwc)
+                pw = pwc - 1;
+            float ww = w * pwc - pw;
+
+            return GetValueDivH(GetPatchVerts(ph, pw), 0, 0, hh, ww);
+        }
+        public Vector3 EvaluateDV(Vector2 hw)
+        {
+            var h = hw.X;
+            var w = hw.Y;
+            int phc = HeightPatchCount;
+            int ph = (int)Math.Floor(h * phc);
+            if (ph == phc)
+                ph = phc - 1;
+            float hh = h * phc - ph;
+
+            int pwc = WidthPatchCount;
+            int pw = (int)Math.Floor(w * pwc);
+            if (pw == pwc)
+                pw = pwc - 1;
+            float ww = w * pwc - pw;
+
+            return GetValueDivW(GetPatchVerts(ph, pw), 0, 0, hh, ww);
         }
     }
 }

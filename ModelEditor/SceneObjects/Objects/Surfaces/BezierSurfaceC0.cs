@@ -301,105 +301,7 @@ namespace ModelEditor
             return null;
         }
 
-        public Vector3 GetValueDivH(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
-        {
-            var point = Vector3.Zero;
-            for (int h = 0; h < 4; h++)
-            {
-                for (int w = 0; w < 4; w++)
-                {
-                    point += verts[idxH + h][idxW + w] * GetBDrv(h, tu) * GetB(w, tv);
-                }
-            }
-
-            return point;
-        }
-        public Vector3 GetValueDivW(List<List<Vector3>> verts, int idxH, int idxW, float tu, float tv)
-        {
-            var point = Vector3.Zero;
-            for (int h = 0; h < 4; h++)
-            {
-                for (int w = 0; w < 4; w++)
-                {
-                    point += verts[idxH + h][idxW + w] * GetB(h, tu) * GetBDrv(w, tv);
-                }
-            }
-
-            return point;
-        }
-        public float GetBDrv(int i, float t)
-        {
-            float c = 1.0f - t;
-
-            if (i == 0)
-                return -3 * c * c;
-            if (i == 1)
-                return 3 * (-2 * t + c) * c;
-            if (i == 2)
-                return 3 * t * (2 - 3 * t);
-            if (i == 3)
-                return 3 * t * t;
-
-            return 0;
-        }
-
-
-        public bool WrappedU => false;
-        public bool WrappedV => false;
-        public float WidthQwe => 1;
-        public float HeightQwe => 1;
-        public Vector3 Evaluate(float h, float w)
-        {
-            int phc = HeightPatchCount;
-            int ph = (int)Math.Floor(h * phc);
-            if (ph == phc)
-                ph = phc - 1;
-            float hh = h * phc - ph;
-
-            int pwc = WidthPatchCount;
-            int pw = (int)Math.Floor(w * pwc);
-            if (pw == pwc)
-                pw = pwc - 1;
-            float ww = w * pwc - pw;
-
-           return GetValue(GetPatchVerts(ph, pw), 0, 0, hh, ww);
-        }
-
-        public Vector3 EvaluateDU(float h, float w)
-        {
-            int phc = HeightPatchCount;
-            int ph = (int)Math.Floor(h * phc);
-            if (ph == phc)
-                ph = phc - 1;
-            float hh = h * phc - ph;
-
-            int pwc = WidthPatchCount;
-            int pw = (int)Math.Floor(w * pwc);
-            if (pw == pwc)
-                pw = pwc - 1;
-            float ww = w * pwc - pw;
-
-            return GetValueDivH(GetPatchVerts(ph, pw), 0, 0, hh, ww);
-        }
-
-        public Vector3 EvaluateDV(float h, float w)
-        {
-            int phc = HeightPatchCount;
-            int ph = (int)Math.Floor(h * phc);
-            if (ph == phc)
-                ph = phc - 1;
-            float hh = h * phc - ph;
-
-            int pwc = WidthPatchCount;
-            int pw = (int)Math.Floor(w * pwc);
-            if (pw == pwc)
-                pw = pwc - 1;
-            float ww = w * pwc - pw;
-
-            return GetValueDivW(GetPatchVerts(ph, pw), 0, 0, hh, ww);
-        }
-
-        private List<List<Vector3>> GetPatchVerts(int h, int w)
+        protected override List<List<Vector3>> GetPatchVerts(int h, int w)
         {
             var verts = new List<List<Vector3>>();
             for (int i = 0; i < 4; i++)
@@ -412,21 +314,6 @@ namespace ModelEditor
             }
 
             return verts;
-        }
-
-        public Vector3 Evaluate(Vector2 hw)
-        {
-            return Evaluate(hw.X, hw.Y);
-        }
-
-        public Vector3 EvaluateDU(Vector2 hw)
-        {
-            return EvaluateDU(hw.X, hw.Y);
-        }
-
-        public Vector3 EvaluateDV(Vector2 hw)
-        {
-            return EvaluateDV(hw.X, hw.Y);
         }
     }
 }

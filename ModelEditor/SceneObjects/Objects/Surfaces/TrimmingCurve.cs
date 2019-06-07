@@ -15,10 +15,6 @@ namespace ModelEditor
         bool WrappedU { get; }
         bool WrappedV { get; }
 
-        Vector3 Evaluate(float h, float w);
-        Vector3 EvaluateDU(float h, float w);
-        Vector3 EvaluateDV(float h, float w);
-
         Vector3 Evaluate(Vector2 hw);
         Vector3 EvaluateDU(Vector2 hw);
         Vector3 EvaluateDV(Vector2 hw);
@@ -56,7 +52,7 @@ namespace ModelEditor
         private static int _count = 0;
 
         private static float gradientEpsilon = 0.001f;
-        private static float gradientStep = 0.01f;
+        private static float gradientStep = 0.1f;
 
         static int numberOfIntersections = 0;
         static float size = 501.0f;
@@ -104,8 +100,8 @@ namespace ModelEditor
                             float kk = 1f * k / (divCount - 1);
                             float mm = 1f * m / (divCount - 1);
 
-                            var ev1 = objs[0].Evaluate(jj, ii);
-                            var ev2 = objs[1].Evaluate(mm, kk);
+                            var ev1 = objs[0].Evaluate(new Vector2(jj, ii));
+                            var ev2 = objs[1].Evaluate(new Vector2(mm, kk));
                             var len = Vector3.Distance(ev1, cursorPos) + Vector3.Distance(ev2, cursorPos);
                             if (len < bestLen && (!sameObjects || (eps < Math.Abs(ii - kk) && eps < Math.Abs(jj - mm))))
                             {
@@ -120,8 +116,8 @@ namespace ModelEditor
 
         private static TrimmingCurve CountGradientMethod(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 value0, Vector2 value1)
         {
-            var p0 = obj0.Evaluate(value0.X, value0.Y);
-            var p1 = obj1.Evaluate(value1.X, value1.Y);
+            var p0 = obj0.Evaluate(value0);
+            var p1 = obj1.Evaluate(value1);
 
             var i = 0;
             var alpha = 1f;
@@ -129,7 +125,7 @@ namespace ModelEditor
             while (dist > gradientEpsilon)
             {
                 i++;
-                if (i > 1000)
+                if (i > 100)
                     return null;
 
                 try
@@ -164,8 +160,6 @@ namespace ModelEditor
                 }
             }
 
-            //var u = new Vector2(value0.X, value1.X);
-            //var v = new Vector2(value0.Y, value1.Y);
             return goGoNewton(obj0, obj1, value0, value1);
         }
         private static List<Vector2> GetGradient(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 point0, Vector2 point1)
@@ -225,7 +219,6 @@ namespace ModelEditor
                         betterPoint.Y *= 0.15f;
                         betterPoint.Z *= 0.15f;
                     }
-
 
                     var uvNew0 = new Vector2(betterPoint.X, betterPoint.Y);
                     var uvNew1 = new Vector2(betterPoint.Z, betterPoint.W);
