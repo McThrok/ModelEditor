@@ -167,5 +167,10 @@ namespace ModelEditor
 
             return data;
         }
+
+        public override List<List<Vector3>> GetGlobalVerts()
+        {
+            return _controlVertices.Select(row => row.Select(v => v.GlobalMatrix.Translation).ToList()).ToList();
+        }
     }
 }

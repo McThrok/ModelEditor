@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public abstract class BezierSurfaceBaseC2 : SceneObject
+    public abstract class BezierSurfaceBaseC2 : SceneObject, TrimmingSurface
     {
         protected List<List<Vertex>> _controlVertices = new List<List<Vertex>>();
         protected readonly RayCaster _rayCaster;
@@ -24,7 +24,7 @@ namespace ModelEditor
             ShowGrid = true;
             _rayCaster = rayCaster;
         }
-      
+
         protected ObjRenderData GetControlGrid(List<List<Vector3>> verts)
         {
             var data = new ObjRenderData();
@@ -165,6 +165,71 @@ namespace ModelEditor
             }
 
             return verts[s];
+        }
+
+        public Vector3 GetSplineValue(Vector3[] points, float t)
+        {
+            int degree = 3;
+
+            var left = degree;
+            var right = points.Length;
+            t = t * (right - left) + left;
+
+            int s;
+            for (s = left; s < right; s++)
+            {
+                if (t >= s && t <= s + 1)
+                {
+                    break;
+                }
+            }
+
+            var verts = points.ToList();
+            for (int l = 1; l <= degree + 1; l++)
+            {
+                for (int i = s; i > s - degree - 1 + l; i--)
+                {
+                    float alpha = (t - i) / (degree + 1 - l);
+
+                    verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
+                }
+            }
+
+            var result = verts[s];
+
+            return result;
+        }
+        public Vector3 GetSplineDrvValue(Vector3[] points, float t)
+        {
+            int degree = 3;
+
+            var left = degree;
+            var right = points.Length;
+            t = t * (right - left) + left;
+
+            int s;
+            for (s = left; s < right; s++)
+            {
+                if (t >= s && t <= s + 1)
+                {
+                    break;
+                }
+            }
+
+            var verts = points.ToList();
+            for (int l = 1; l <= degree; l++)
+            {
+                for (int i = s; i > s - degree - 1 + l; i--)
+                {
+                    float alpha = (t - i) / (degree + 1 - l);
+
+                    verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
+                }
+            }
+
+            var result = 3*(verts[s] - verts[s - 1]);
+
+            return result;
         }
         //public Vector3 GetSplineValue(float t, Vector3[] points, int[] knots)
         ////public Vector3 GetSplineValue(Vector3[] points, float t)
@@ -338,11 +403,47 @@ namespace ModelEditor
 
         protected abstract void InitVertices();
 
+
+        public bool WrappedU =>  false;
+        public virtual bool WrappedV => false;
+
         protected Vertex CreateControlVertex()
         {
             var vert = new Vertex();
             vert.SetParent(this, true);
             return vert;
+        }
+
+        public abstract List<List<Vector3>> GetGlobalVerts();
+
+        public Vector3 Evaluate(Vector2 hw)
+        {
+            float h = hw.X;
+            float w = hw.Y;
+            FillTmpW(GetGlobalVerts(), h);
+            var result = GetSplineValue(_tmpW, w);
+
+            return result;
+        }
+
+        public Vector3 EvaluateDV(Vector2 hw)
+        {
+            float h = hw.X;
+            float w = hw.Y;
+            FillTmpW(GetGlobalVerts(), h);
+            var result = GetSplineDrvValue(_tmpW, w);
+
+            return result;
+        }
+
+        public Vector3 EvaluateDU(Vector2 hw)
+        {
+            float h = hw.X;
+            float w = hw.Y;
+            FillTmpH(GetGlobalVerts(), w);
+            var result = GetSplineDrvValue(_tmpH, h);
+
+            return result;
         }
     }
 }

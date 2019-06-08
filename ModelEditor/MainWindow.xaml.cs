@@ -293,14 +293,16 @@ namespace ModelEditor
 
             foreach (var obj in Engine.Scene.Cursor.HeldObjects)
             {
+
+                if (obj is TrimmingSurface objSurf)
+                    objSet.Add(objSurf);
+                else
+
                 if (obj is Vertex vert)
                 {
                     if (vert.Parent is TrimmingSurface surf)
                         objSet.Add(surf);
                 }
-
-                //if (obj is Torus torus)
-                //    objs.Add(torus);
             }
 
 

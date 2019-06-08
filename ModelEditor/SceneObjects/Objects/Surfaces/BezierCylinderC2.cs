@@ -188,5 +188,22 @@ namespace ModelEditor
 
             return data;
         }
+
+
+        public override bool WrappedV => true;
+        public override List<List<Vector3>> GetGlobalVerts()
+        {
+            int degree = 3;
+            return _controlVertices.Select(row =>
+            {
+                var result = row.Select(v => v.GlobalMatrix.Translation).ToList();
+                if (result.Count > 0)
+                {
+                    for (int i = 0; i < degree + 1; i++)
+                        result.Add(result[i % result.Count]);
+                }
+                return result;
+            }).ToList();
+        }
     }
 }
