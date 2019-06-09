@@ -187,7 +187,7 @@ namespace ModelEditor
 
         private float[][] ComputerMatN(int n, int order, List<float> parameters, List<float> knots)
         {
-            var k = 3;
+            var k = n;
             var MatN = new float[n + 1][];
 
             for (var i = 0; i < n + 1; i++)
@@ -255,6 +255,17 @@ namespace ModelEditor
                 return a + b;
             }
         }
+
+        public void SetPoints(List<Vector3> verts)
+        {
+            foreach (var pos  in verts)
+            {
+                var vert = new Vertex();
+                vert.MoveLoc(pos);
+                vert.SetParent(this);
+            }
+        }
+
         private void ComputeCoefficents(float[][] X, List<double> Y)
         {
             int n = Y.Count;

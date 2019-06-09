@@ -234,7 +234,18 @@ namespace ModelEditor
         }
         private void InterpolatingCurve(object sender, RoutedEventArgs e)
         {
+            var obj = Engine.Scene.SelectedObject;
+            if (obj is TrimmingCurve cutCrv)
+            {
+                var intCrv = (InterpolatingCurve)Engine.Scene.AddInterpolatingCurve(Engine.Scene);
+                intCrv.SetPoints(cutCrv.Verts);
+                SelectItem(intCrv);
+                Engine.Scene.Delete(cutCrv);
+            }
+            else
+            {
             SelectItem(Engine.Scene.AddInterpolatingCurve(Engine.Scene));
+            }
         }
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
