@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public abstract class BezierSurfaceBaseC0 : SceneObject,TrimmingSurface
+    public abstract class BezierSurfaceBaseC0 : SceneObject, TrimmingSurface
     {
         protected List<List<Vertex>> _controlVertices = new List<List<Vertex>>();
         protected readonly RayCaster _rayCaster;
@@ -347,7 +347,7 @@ namespace ModelEditor
                 pw = pwc - 1;
             float ww = w * pwc - pw;
 
-            return GetValueDivH(GetPatchVerts(ph, pw), 0, 0, hh, ww);
+            return GetValueDivH(GetPatchVerts(ph, pw), 0, 0, hh, ww) * HeightPatchCount;
         }
         public Vector3 EvaluateDV(Vector2 hw)
         {
@@ -366,7 +366,7 @@ namespace ModelEditor
                 pw = pwc - 1;
             float ww = w * pwc - pw;
 
-            return GetValueDivW(GetPatchVerts(ph, pw), 0, 0, hh, ww);
+            return GetValueDivW(GetPatchVerts(ph, pw), 0, 0, hh, ww) * WidthPatchCount;
         }
     }
 }

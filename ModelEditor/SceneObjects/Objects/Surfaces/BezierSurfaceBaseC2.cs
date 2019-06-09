@@ -227,7 +227,7 @@ namespace ModelEditor
                 }
             }
 
-            var result = 3*(verts[s] - verts[s - 1]);
+            var result = 3 * (verts[s] - verts[s - 1]);
 
             return result;
         }
@@ -404,7 +404,7 @@ namespace ModelEditor
         protected abstract void InitVertices();
 
 
-        public bool WrappedU =>  false;
+        public bool WrappedU => false;
         public virtual bool WrappedV => false;
 
         protected Vertex CreateControlVertex()
@@ -426,22 +426,22 @@ namespace ModelEditor
             return result;
         }
 
-        public Vector3 EvaluateDV(Vector2 hw)
-        {
-            float h = hw.X;
-            float w = hw.Y;
-            FillTmpW(GetGlobalVerts(), h);
-            var result = GetSplineDrvValue(_tmpW, w);
-
-            return result;
-        }
-
         public Vector3 EvaluateDU(Vector2 hw)
         {
             float h = hw.X;
             float w = hw.Y;
             FillTmpH(GetGlobalVerts(), w);
-            var result = GetSplineDrvValue(_tmpH, h);
+            var result = GetSplineDrvValue(_tmpH, h) * HeightPatchCount;
+
+            return result;
+        }
+
+        public Vector3 EvaluateDV(Vector2 hw)
+        {
+            float h = hw.X;
+            float w = hw.Y;
+            FillTmpW(GetGlobalVerts(), h);
+            var result = GetSplineDrvValue(_tmpW, w) * WidthPatchCount;
 
             return result;
         }

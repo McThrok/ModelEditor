@@ -287,6 +287,7 @@ namespace ModelEditor
 
                 var p1 = obj0.Evaluate(uv0);
                 var p2 = obj1.Evaluate(uv1);
+                var dist = Vector3.Distance(p2, p1);
                 if (alphaEpsilon < Vector3.Distance(p2, p1))
                 {
                     tempAlpha /= 2;
@@ -387,7 +388,9 @@ namespace ModelEditor
             var dV2 = obj1.EvaluateDV(uv1);
             var t = getT(dU1, dU2, dV1, dV2);
 
-            return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - (alpha * 1000.0f));
+            var d = alpha * 10;
+
+            return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - d);
         }
         public static Vector3 getT(Vector3 du1, Vector3 du2, Vector3 dv1, Vector3 dv2)
         {
@@ -409,14 +412,19 @@ namespace ModelEditor
             var crossed = 0;
             var end = false;
 
-            var eps = 0.0009f;
-            eps = 1f;
             var epsWrap = 0.00001f;
 
-            float _uNew = uv.X - (uvNew.X * eps);
-            float _vNew = uv.Y - (uvNew.Y * eps);
-            float _uLast = uv.X - (uvNew.X * eps);
-            float _vLast = uv.Y - (uvNew.Y * eps);
+            //var eps = 0.0009f;
+            //eps = 1f;
+
+            //float _uNew = uv.X - (uvNew.X * eps);
+            //float _vNew = uv.Y - (uvNew.Y * eps);
+            //float _uLast = uv.X - (uvNew.X * eps);
+            //float _vLast = uv.Y - (uvNew.Y * eps);
+            float _uNew = uv.X - uvNew.X;
+            float _vNew = uv.Y - uvNew.Y;
+            float _uLast = uv.X - uvNew.X;
+            float _vLast = uv.Y - uvNew.Y;
 
             if (_uNew < 0)
             {
