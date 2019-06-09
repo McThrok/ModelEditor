@@ -107,6 +107,8 @@ namespace ModelEditor
                      }
                  });
                 _writableBitmap.FromByteArray(_bitmapBuffer.Source);
+                _intersectionWritableBitmap0.FromByteArray(_intersectionBitmapBuffer0.Source);
+                _intersectionWritableBitmap1.FromByteArray(_intersectionBitmapBuffer1.Source);
 
                 await rendering;
                 await wait;

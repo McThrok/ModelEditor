@@ -317,12 +317,18 @@ namespace ModelEditor
             if (objs.Count == 2)
             {
                 var cursorPos = Engine.Scene.Cursor.GlobalMatrix.Translation;
+                //try
+                //{
                 var tc = TrimmingCurve.FindTrimmingCurve(objs, cursorPos, Engine.Scene.TrimPrecision);
-                if (tc != null)
-                {
-                    tc.Parent = Engine.Scene;
-                    Engine.Scene.Children.Add(tc);
-                }
+                    if (tc != null)
+                    {
+                        tc.Parent = Engine.Scene;
+                        Engine.Scene.Children.Add(tc);
+                    }
+                //}
+                //catch (Exception)
+                //{
+                //}
             }
         }
         private void Trim_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)

@@ -74,6 +74,9 @@ namespace ModelEditor
         public void RenderFrame()
         {
             _bb.Clear(Colors.Black);
+            _ibb0.Clear(Colors.Black);
+            _ibb1.Clear(Colors.Black);
+
             if (Anaglyphic)
             {
                 Render(GetLeftAnaglyphProjectionMatrix(), _drawLeftColor, false);
@@ -112,10 +115,13 @@ namespace ModelEditor
                 Render(screenRenderable, model, frameData, color);
             }
 
-            if(obj is IIntersectionRenderableObj intersectionRenderableObj)
-            {
-                Render(intersectionRenderableObj);
-            }
+            if (_scene.SelectedObject != null && obj.Id == _scene.SelectedObject.Id)
+                if (obj is IIntersectionRenderableObj intersectionRenderableObj)
+                {
+
+                    RenderIntersect(intersectionRenderableObj.IntersectionGetRenderData0(), 0);
+                    RenderIntersect(intersectionRenderableObj.IntersectionGetRenderData1(), 1);
+                }
 
             foreach (var child in obj.Children)
             {
@@ -128,9 +134,15 @@ namespace ModelEditor
             }
         }
 
-        private void Render(IIntersectionRenderableObj intersectionRenderableObj)
+        private void RenderIntersect(ObjRenderData data, int num)
         {
-            throw new NotImplementedException();
+            foreach (var edge in data.Edges)
+            {
+                var vertA = data.Vertices[edge.IdxA].ToVector4();
+                var vertB = data.Vertices[edge.IdxB].ToVector4();
+
+                DrawIntersectionLine(vertA, vertB, num);
+            }
         }
 
         private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData, Color color)
@@ -212,6 +224,29 @@ namespace ModelEditor
 
                 if (x > 0 && x < width && y > 0 && y < height)
                     _bb.MySetPixel(x, y, col, addColors);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        private void DrawIntersectionLine(Vector4 vertA, Vector4 vertB, int num)
+        {
+            var A = new Point(vertA.X, vertA.Y);
+            var B = new Point(vertB.X, vertB.Y);
+
+            BitmapBuffer bb = num == 0 ? _ibb0 : _ibb1;
+
+            var width = bb.Width;
+            var height = bb.Height;
+
+            try
+            {
+                var x1 = Convert.ToInt32(A.X * width);
+                var y1 = Convert.ToInt32((1 - A.Y) * height);
+                var x2 = Convert.ToInt32(B.X * width);
+                var y2 = Convert.ToInt32((1 - B.Y) * height);
+
+                bb.MyDrawLine(x1, y1, x2, y2, Colors.White, false);
             }
             catch (Exception e)
             {

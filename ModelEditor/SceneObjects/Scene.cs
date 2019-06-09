@@ -18,6 +18,7 @@ namespace ModelEditor
         public Cursor Cursor { get; private set; }
         public RayCaster RayCaster { get; set; }
 
+
         private Random _rd = new Random();
 
         public Scene()

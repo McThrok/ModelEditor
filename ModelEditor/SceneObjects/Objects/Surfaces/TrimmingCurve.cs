@@ -47,7 +47,7 @@ namespace ModelEditor
         public Vector2 uvLast;
     }
 
-    public class TrimmingCurve : SceneObject, IRenderableObj
+    public class TrimmingCurve : SceneObject, IRenderableObj, IIntersectionRenderableObj
     {
         private static int _count = 0;
 
@@ -68,15 +68,34 @@ namespace ModelEditor
         }
 
         List<Vector3> _verts;
-        public TrimmingCurve(List<Vector3> verts) : this()
+        List<Vector3> _uv0;
+        List<Vector3> _uv1;
+
+        public TrimmingCurve(List<Vector3> verts, List<Vector2> uv0, List<Vector2> uv1) : this()
         {
             _verts = verts;
+            _uv0 = uv0.Select(v => new Vector3( v, 0)).ToList();
+            _uv1 = uv1.Select(v => new Vector3( v, 0)).ToList();
         }
 
         public ObjRenderData GetRenderData()
         {
             var obj = new ObjRenderData();
             obj.AddLine(_verts);
+            return obj;
+        }
+
+        public ObjRenderData IntersectionGetRenderData0()
+        {
+            var obj = new ObjRenderData();
+            obj.AddLine(_uv0);
+            return obj;
+        }
+
+        public ObjRenderData IntersectionGetRenderData1()
+        {
+            var obj = new ObjRenderData();
+            obj.AddLine(_uv1);
             return obj;
         }
 
@@ -111,7 +130,7 @@ namespace ModelEditor
                             }
                         }
 
-            return CountGradientMethod(objs[0], objs[1], p0, p1,precision);
+            return CountGradientMethod(objs[0], objs[1], p0, p1, precision);
         }
 
         private static TrimmingCurve CountGradientMethod(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 value0, Vector2 value1, float precision)
@@ -190,7 +209,7 @@ namespace ModelEditor
             //var { obj0, obj1, u, v} = best;
             //CurveData cuttingCurve = null;
             var _alpha = alpha;
-            cuttingCurve = addCuttingCurve();
+            //cuttingCurve = addCuttingCurve();
 
             var uvStart0 = uv0;
             var uvStart1 = uv1;
@@ -233,14 +252,14 @@ namespace ModelEditor
                     if (upd0.end || upd1.end)
                     {
                         finished = true;
-                        if (upd0.end)
-                        {
-                            addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
-                        }
-                        else if (upd1.end)
-                        {
-                            addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
-                        }
+                        //if (upd0.end)
+                        //{
+                        //    addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
+                        //}
+                        //else if (upd1.end)
+                        //{
+                        //    addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
+                        //}
                         break;
                     }
                     //if (upd0.crossed != 0 && !upd0.backThisTime)
@@ -318,14 +337,11 @@ namespace ModelEditor
             //setVisualisationObjects(obj0, obj1);
             if (!backed)
             {
-                cuttingCurve.Points.Add(pStart);
+                pointsList.Add(pStart);
                 uvList0.Add(uvStart0);
                 uvList1.Add(uvStart1);
             }
-            for (var i = 0; i < pointsList.Count; i++)
-            {
-                cuttingCurve.Points.Add(pointsList[i]);
-            }
+
             if (!backed)
             {
                 //cuttingCurve.Points.Add(pStart);
@@ -339,23 +355,23 @@ namespace ModelEditor
                 //}
             }
 
-            return new TrimmingCurve(cuttingCurve.Points);
+            return new TrimmingCurve(pointsList, uvList0, uvList1);
         }
 
-        public static CurveData addCuttingCurve()
-        {
-            var curveData = new CurveData()
-            {
-                Id = numberOfIntersections,
-                Name = "Intersection curve " + numberOfIntersections.ToString(),
-                intersectionVisualization1 = new List<Vector2>(),
-                intersectionVisualization2 = new List<Vector2>(),
-                Points = new List<Vector3>(),
-            };
-            numberOfIntersections++;
-            curves.Add(curveData);
-            return curveData;
-        }
+        //public static CurveData addCuttingCurve()
+        //{
+        //    var curveData = new CurveData()
+        //    {
+        //        Id = numberOfIntersections,
+        //        Name = "Intersection curve " + numberOfIntersections.ToString(),
+        //        intersectionVisualization1 = new List<Vector2>(),
+        //        intersectionVisualization2 = new List<Vector2>(),
+        //        Points = new List<Vector3>(),
+        //    };
+        //    numberOfIntersections++;
+        //    curves.Add(curveData);
+        //    return curveData;
+        //}
 
         private static Vector4 findNewNewtonPoint(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
@@ -678,6 +694,5 @@ namespace ModelEditor
             var len1 = intersectionVisualization[0].Y - intersectionVisualization[intersectionVisualization.Count - 1].Y;
             return Math.Abs(len0) < 50 && Math.Abs(len1) < 50;
         }
-
     }
 }
