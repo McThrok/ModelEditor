@@ -315,6 +315,7 @@ namespace ModelEditor
         {
             var h = hw.X;
             var w = hw.Y;
+
             int phc = HeightPatchCount;
             int ph = (int)Math.Floor(h * phc);
             if (ph == phc)
@@ -333,6 +334,7 @@ namespace ModelEditor
         {
             var h = hw.X;
             var w = hw.Y;
+
             int phc = HeightPatchCount;
             int ph = (int)Math.Floor(h * phc);
             if (ph == phc)
@@ -351,6 +353,7 @@ namespace ModelEditor
         {
             var h = hw.X;
             var w = hw.Y;
+
             int phc = HeightPatchCount;
             int ph = (int)Math.Floor(h * phc);
             if (ph == phc)

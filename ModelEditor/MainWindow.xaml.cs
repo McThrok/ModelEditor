@@ -364,6 +364,10 @@ namespace ModelEditor
         {
             Engine.Scene.ResetCamera();
         }
+        private void Clear_Click(object sender, RoutedEventArgs e)
+        {
+            Engine.Scene.Clear();
+        }
 
         private void CbxAnaglyph_Checked(object sender, RoutedEventArgs e)
         {

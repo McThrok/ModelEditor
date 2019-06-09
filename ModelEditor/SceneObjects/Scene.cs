@@ -214,6 +214,17 @@ namespace ModelEditor
             Camera.SetTarget(Vector3.Zero);
 
         }
+        public void Clear()
+        {
+            foreach (var child in Children.ToList())
+            {
+                Delete(child);
+            }
+            foreach (var child in HiddenChildren.ToList())
+            {
+                Delete(child);
+            }
+        }
 
         private SceneObject _selectedObject;
         public SceneObject SelectedObject
