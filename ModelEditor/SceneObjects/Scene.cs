@@ -46,20 +46,20 @@ namespace ModelEditor
             ResetCamera();
             Cursor = AddObj(new Cursor(RayCaster), this);
 
-            var a = (BezierSurfaceC2)AddBezierSurfaceC2(this);
-            a.WidthPatchCount = 1;
-            a.HeightPatchCount = 1;
-            a.Height = 6;
-            a.Width = 6;
-            a.Rotate( Math.PI / 2, 0, 0);
-            //a.Scale(0.1, 0.1, 0.1);
+            //var a = (BezierSurfaceC2)AddBezierSurfaceC2(this);
+            //a.WidthPatchCount = 1;
+            //a.HeightPatchCount = 1;
+            //a.Height = 6;
+            //a.Width = 6;
+            //a.Rotate( Math.PI / 2, 0, 0);
+            ////a.Scale(0.1, 0.1, 0.1);
 
-            var b = (BezierSurfaceC2)AddBezierSurfaceC2(this);
-            b.WidthPatchCount = 1;
-            b.HeightPatchCount = 1;
-            b.Height = 6;
-            b.Width = 6;
-            //b.Scale(0.1, 0.1, 0.1);
+            //var b = (BezierSurfaceC2)AddBezierSurfaceC2(this);
+            //b.WidthPatchCount = 1;
+            //b.HeightPatchCount = 1;
+            //b.Height = 6;
+            //b.Width = 6;
+            ////b.Scale(0.1, 0.1, 0.1);
         }
 
         public SceneObject AddEmptyObject(SceneObject parent)

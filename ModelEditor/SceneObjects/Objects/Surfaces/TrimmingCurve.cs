@@ -125,7 +125,7 @@ namespace ModelEditor
             while (dist > gradientEpsilon)
             {
                 i++;
-                if (i > 100)
+                if (i > 1000)
                     return null;
 
                 try
@@ -215,9 +215,9 @@ namespace ModelEditor
                     var betterPoint = findNewNewtonPoint(obj0, obj1, uvPrev0, uvPrev1, uv0, uv1, tempAlpha);
                     if (!(obj0 is Torus) && obj1 is Torus)
                     {
-                        //?
-                        betterPoint.Y *= 0.15f;
-                        betterPoint.Z *= 0.15f;
+                        ////?
+                        //betterPoint.Y *= 0.15f;
+                        //betterPoint.Z *= 0.15f;
                     }
 
                     var uvNew0 = new Vector2(betterPoint.X, betterPoint.Y);
@@ -241,35 +241,35 @@ namespace ModelEditor
                         }
                         break;
                     }
-                    if (upd0.crossed != 0 && !upd0.backThisTime)
-                    {
-                        crossed1 += upd0.crossed;
-                        addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
-                        updateIn1Visualisation(cuttingCurve.Id, upd0.uvLast.X, upd0.uvLast.Y);
-                        updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                        updateIn1Visualisation(cuttingCurve.Id, uv0.X, uv0.Y);
-                    }
-                    if (upd1.crossed != 0 && !upd1.backThisTime)
-                    {
-                        crossed2 += upd1.crossed;
-                        addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
-                        updateIn2Visualisation(cuttingCurve.Id, upd1.uvLast.X, upd1.uvLast.Y);
-                        updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
-                        updateIn2Visualisation(cuttingCurve.Id, uv1.X, uv1.Y);
-                    }
-                    if (upd0.backThisTime || upd1.backThisTime)
-                    {
-                        if (upd0.backThisTime)
-                        {
-                            addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
-                        }
-                        else if (upd1.backThisTime)
-                        {
-                            addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
-                        }
-                        updateIn1Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
-                        updateIn2Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
-                    }
+                    //if (upd0.crossed != 0 && !upd0.backThisTime)
+                    //{
+                    //    crossed1 += upd0.crossed;
+                    //    addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
+                    //    updateIn1Visualisation(cuttingCurve.Id, upd0.uvLast.X, upd0.uvLast.Y);
+                    //    updateIn1Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
+                    //    updateIn1Visualisation(cuttingCurve.Id, uv0.X, uv0.Y);
+                    //}
+                    //if (upd1.crossed != 0 && !upd1.backThisTime)
+                    //{
+                    //    crossed2 += upd1.crossed;
+                    //    addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
+                    //    updateIn2Visualisation(cuttingCurve.Id, upd1.uvLast.X, upd1.uvLast.Y);
+                    //    updateIn2Visualisation(cuttingCurve.Id, float.NaN, float.NaN);
+                    //    updateIn2Visualisation(cuttingCurve.Id, uv1.X, uv1.Y);
+                    //}
+                    //if (upd0.backThisTime || upd1.backThisTime)
+                    //{
+                    //    if (upd0.backThisTime)
+                    //    {
+                    //        addBorder(upd0.crossed, 1, cuttingCurve, uvPrev0, uvPrev1, obj0);
+                    //    }
+                    //    else if (upd1.backThisTime)
+                    //    {
+                    //        addBorder(upd1.crossed, 2, cuttingCurve, uvPrev0, uvPrev1, obj1);
+                    //    }
+                    //    updateIn1Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
+                    //    updateIn2Visualisation(cuttingCurve.Id, float.Epsilon, float.Epsilon);
+                    //}
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
                         pointsList.Add(obj0.Evaluate(uv0));

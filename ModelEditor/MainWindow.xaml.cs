@@ -210,39 +210,39 @@ namespace ModelEditor
         #region topMenu
         private void Surface0_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierSurfaceC0(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierSurfaceC0(Engine.Scene));
         }
         private void Cylinder0_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCylinderC0(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCylinderC0(Engine.Scene));
         }
         private void Surface2_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierSurfaceC2(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierSurfaceC2(Engine.Scene));
         }
         private void Cylinder2_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCylinderC2(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCylinderC2(Engine.Scene));
         }
         private void Bezier0_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCurveC0(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCurveC0(Engine.Scene));
         }
         private void Bezier2_Click(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddBezierCurveC2(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddBezierCurveC2(Engine.Scene));
         }
         private void InterpolatingCurve(object sender, RoutedEventArgs e)
         {
-            SelectItem(Engine.Scene.AddInterpolatingCurve(GetVisibleSelectedObj()));
+            SelectItem(Engine.Scene.AddInterpolatingCurve(Engine.Scene));
         }
         private void Torus_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.AddTorus(GetVisibleSelectedObj());
+            Engine.Scene.AddTorus(Engine.Scene);
         }
         private void Empty_Click(object sender, RoutedEventArgs e)
         {
-            Engine.Scene.AddEmptyObject(GetVisibleSelectedObj());
+            Engine.Scene.AddEmptyObject(Engine.Scene);
         }
         private void Vertex_Click(object sender, RoutedEventArgs e)
         {

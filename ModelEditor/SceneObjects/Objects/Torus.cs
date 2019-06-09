@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class Torus : SceneObject, IRenderableObj
+    public class Torus : SceneObject, IRenderableObj, TrimmingSurface
     {
         private static int _count = 0;
         private double _largeRadius = 5;
@@ -21,6 +21,9 @@ namespace ModelEditor
         public double SmallRadius { get { return _smallRadius; } set { _dataChanged = true; _smallRadius = value; } }
         public int LargeDensity { get { return _largeDensity; } set { _dataChanged = true; _largeDensity = value; } }
         public int SmallDensity { get { return _smallDensity; } set { _dataChanged = true; _smallDensity = value; } }
+
+        public bool WrappedU => true;
+        public bool WrappedV => true;
 
         private bool _dataChanged = true;
         private ObjRenderData _renderData;
@@ -66,11 +69,11 @@ namespace ModelEditor
 
         public Torus()
         {
-            Name = nameof(Torus) + _count++.ToString(); 
+            Name = nameof(Torus) + _count++.ToString();
             Holdable = true;
         }
 
-        public  ObjRenderData GetRenderData()
+        public ObjRenderData GetRenderData()
         {
             if (_dataChanged)
             {
@@ -80,6 +83,54 @@ namespace ModelEditor
             }
 
             return _renderData;
+        }
+
+        public Vector3 Evaluate(Vector2 hw)
+        {
+            var angleH = 2.0 * Math.PI * hw.X;
+            var angleW = 2.0 * Math.PI * hw.Y;
+
+            var a = LargeRadius + SmallRadius * Math.Cos(angleW);
+            float x = (float)(a * Math.Cos(angleH));
+            float y = (float)(a * Math.Sin(angleH));
+            float z = (float)(SmallRadius * Math.Sin(angleW));
+
+            var localPos = new Vector4(x, y, z, 1);
+            var globalPos = GlobalMatrix.Multiply(localPos);
+
+            return globalPos.ToVector3();
+        }
+
+        public Vector3 EvaluateDU(Vector2 hw)
+        {
+            var angleH = 2.0 * Math.PI * hw.X;
+            var angleW = 2.0 * Math.PI * hw.Y;
+
+            var a = LargeRadius + SmallRadius * Math.Cos(angleW);
+            float x = (float)(a * -Math.Sin(angleH));
+            float y = (float)(a * Math.Cos(angleH));
+            float z = (float)(SmallRadius * Math.Sin(angleW));
+
+            var localDrv = new Vector4(x, y, z, 0);
+            var globalDrv = GlobalMatrix.Multiply(localDrv);
+
+            return globalDrv.ToVector3();
+        }
+
+        public Vector3 EvaluateDV(Vector2 hw)
+        {
+            var angleH = 2.0 * Math.PI * hw.X;
+            var angleW = 2.0 * Math.PI * hw.Y;
+
+            var aDrv = SmallRadius * -Math.Sin(angleW);
+            float x = (float)(aDrv * Math.Cos(angleH));
+            float y = (float)(aDrv * Math.Sin(angleH));
+            float z = (float)(SmallRadius * Math.Cos(angleW));
+
+            var localDrv = new Vector4(x, y, z, 0);
+            var globalDrv = GlobalMatrix.Multiply(localDrv);
+
+            return globalDrv.ToVector3();
         }
     }
 }
