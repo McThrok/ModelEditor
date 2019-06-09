@@ -67,13 +67,13 @@ namespace ModelEditor
             Name = nameof(TrimmingCurve) + " " + _count++.ToString();
         }
 
-        List<Vector3> _verts;
+        public List<Vector3> Verts { get; }
         List<Vector3> _uv0;
         List<Vector3> _uv1;
 
         public TrimmingCurve(List<Vector3> verts, List<Vector2> uv0, List<Vector2> uv1) : this()
         {
-            _verts = verts;
+            Verts = verts;
             _uv0 = uv0.Select(v => new Vector3( v, 0)).ToList();
             _uv1 = uv1.Select(v => new Vector3( v, 0)).ToList();
         }
@@ -81,7 +81,7 @@ namespace ModelEditor
         public ObjRenderData GetRenderData()
         {
             var obj = new ObjRenderData();
-            obj.AddLine(_verts);
+            obj.AddLine(Verts);
             return obj;
         }
 
@@ -294,7 +294,21 @@ namespace ModelEditor
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
                         pointsList.Add(obj0.Evaluate(uv0));
-                        backNewton(pointsList, ref uvStart0, ref uvStart1, ref uv0, ref uv1, ref uvPrev0, ref uvPrev1, ref _alpha);
+                        uvList0.Add(uv0);
+                        uvList1.Add(uv1);
+
+                        pointsList.Reverse();
+                        uvList0.Reverse();
+                        uvList1.Reverse();
+
+                        uv0 = uvStart0;
+                        uv1 = uvStart1;
+
+                        uvPrev0 = uvStart0;
+                        uvPrev1 = uvStart1;
+
+                        _alpha = -alpha;
+
                         notFinishYet = 5;
                         backed = true;
                         tempAlpha = _alpha;

@@ -238,7 +238,8 @@ namespace ModelEditor
             if (obj is TrimmingCurve cutCrv)
             {
                 var intCrv = (InterpolatingCurve)Engine.Scene.AddInterpolatingCurve(Engine.Scene);
-                intCrv.SetPoints(cutCrv.Verts);
+                int n = cutCrv.Verts.Count / 20;
+                intCrv.SetPoints(cutCrv.Verts.Where((v,i)=>i%n==0 || i==cutCrv.Verts.Count).ToList());
                 SelectItem(intCrv);
                 Engine.Scene.Delete(cutCrv);
             }
