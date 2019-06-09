@@ -80,7 +80,7 @@ namespace ModelEditor
             return obj;
         }
 
-        public static TrimmingCurve FindTrimmingCurve(List<TrimmingSurface> objs, Vector3 cursorPos)
+        public static TrimmingCurve FindTrimmingCurve(List<TrimmingSurface> objs, Vector3 cursorPos, float precision)
         {
             float bestLen = 1000;
             Vector2 p0 = Vector2.Zero;
@@ -111,10 +111,10 @@ namespace ModelEditor
                             }
                         }
 
-            return CountGradientMethod(objs[0], objs[1], p0, p1);
+            return CountGradientMethod(objs[0], objs[1], p0, p1,precision);
         }
 
-        private static TrimmingCurve CountGradientMethod(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 value0, Vector2 value1)
+        private static TrimmingCurve CountGradientMethod(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 value0, Vector2 value1, float precision)
         {
             var p0 = obj0.Evaluate(value0);
             var p1 = obj1.Evaluate(value1);
@@ -160,7 +160,7 @@ namespace ModelEditor
                 }
             }
 
-            return goGoNewton(obj0, obj1, value0, value1);
+            return goGoNewton(obj0, obj1, value0, value1, precision);
         }
         private static List<Vector2> GetGradient(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 point0, Vector2 point1)
         {
@@ -185,10 +185,10 @@ namespace ModelEditor
 
             return new List<Vector2>() { gradientStep * grad0.Normalized(), gradientStep * grad1.Normalized() };
         }
-        private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1)
+        private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, float precision)
         {
             //var { obj0, obj1, u, v} = best;
-            CurveData cuttingCurve = null;
+            //CurveData cuttingCurve = null;
             var _alpha = alpha;
             cuttingCurve = addCuttingCurve();
 
@@ -206,11 +206,13 @@ namespace ModelEditor
             int crossed1 = 0;
             int crossed2 = 0;
             var pointsList = new List<Vector3>();
+            var uvList0 = new List<Vector2>();
+            var uvList1 = new List<Vector2>();
 
             while (!finished)
             {
                 var tempAlpha = _alpha;
-                for (var i = 0; i < 100; i++)
+                while (true)
                 {
                     var betterPoint = findNewNewtonPoint(obj0, obj1, uvPrev0, uvPrev1, uv0, uv1, tempAlpha);
                     //if (!(obj0 is Torus) && obj1 is Torus)
@@ -280,6 +282,11 @@ namespace ModelEditor
                         break;
                     }
 
+                    if (precision > Vector3.Distance(obj0.Evaluate(uv0), obj1.Evaluate(uv1)))
+                    {
+                        break;
+                    }
+
                 }
 
                 uvPrev0 = uv0;
@@ -294,6 +301,8 @@ namespace ModelEditor
                 }
 
                 pointsList.Add(obj0.Evaluate(uv0));
+                uvList0.Add(uv0);
+                uvList1.Add(uv1);
 
                 //  updateIn1Visualisation(cuttingCurve.Id, u.X / obj0.HeightQwe, v.X / obj0.WidthQwe);
                 //  updateIn2Visualisation(cuttingCurve.Id, u.Y / obj1.HeightQwe, v.Y / obj1.WidthQwe);
@@ -310,6 +319,8 @@ namespace ModelEditor
             if (!backed)
             {
                 cuttingCurve.Points.Add(pStart);
+                uvList0.Add(uvStart0);
+                uvList1.Add(uvStart1);
             }
             for (var i = 0; i < pointsList.Count; i++)
             {

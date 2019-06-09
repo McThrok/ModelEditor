@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ModelEditor"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         Width="1400"
         Height="800"
         x:Name="mainWindow"
@@ -74,15 +75,20 @@
         <Grid Grid.Row="1" Background="#aaaaaa">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="240" />
                 <ColumnDefinition Width="180" />
             </Grid.ColumnDefinitions>
 
             <Grid Name="BitmapContainer">
-                <Image  Name="bitmapImage"></Image>
+                <!--<Image Name="bitmapImage"></Image>-->
             </Grid>
 
-            <Grid Grid.Column="1" Background="White" Margin="0,1,1,0">
+            <StackPanel Grid.Column="1" Background="White" Margin="0,1,1,0" Name="IntersectionBitmapContainer">
+                <Image Width="200" Height="200" Margin="5" Name="blankUnusedImage"></Image>
+            </StackPanel>
+            
+            <Grid Grid.Column="2" Background="White" Margin="0,1,1,0">
                 <StackPanel Name="objectMenu" Visibility="Collapsed">
                     <Grid Margin="5" Name="TorusMenu">
                         <Grid.ColumnDefinitions>
@@ -145,7 +151,7 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        
+
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Height:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedObject.Height, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Width:" VerticalAlignment="Center" TextAlignment="Center" />
@@ -187,11 +193,11 @@
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Control Grid:" VerticalAlignment="Center" TextAlignment="Center" />
                         <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding SelectedObject.ShowControlGrid, ElementName=mainWindow, Mode=TwoWay }" />
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Width count:" VerticalAlignment="Center" TextAlignment="Center" />
-                         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedObject.WidthPatchCount, ElementName=mainWindow}" />
-                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Height count:" VerticalAlignment="Center" TextAlignment="Center" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedObject.WidthPatchCount, ElementName=mainWindow}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Height count:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedObject.HeightPatchCount, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Draw height:" VerticalAlignment="Center" TextAlignment="Center" />
-                         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedObject.DrawHeightCount, ElementName=mainWindow}" />
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedObject.DrawHeightCount, ElementName=mainWindow}" />
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Draw width:" VerticalAlignment="Center" TextAlignment="Center" />
                         <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SelectedObject.DrawWidthCount, ElementName=mainWindow}" />
                     </Grid>
@@ -355,7 +361,7 @@
                 </StackPanel>
             </Grid>
 
-            <StackPanel Grid.Column="2" Background="White">
+            <StackPanel Grid.Column="3" Background="White">
                 <TreeView Name="objectList" SelectedItemChanged="SelectedObjectChange"  AllowDrop="True" >
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:SceneObject}" ItemsSource="{Binding Children}" >

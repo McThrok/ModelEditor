@@ -81,4 +81,10 @@ namespace ModelEditor
         public Vector3 Position { get; set; }
     }
 
+    public interface IIntersectionRenderableObj
+    {
+        ObjRenderData IntersectionGetRenderData0();
+        ObjRenderData IntersectionGetRenderData1();
+    }
+
 }

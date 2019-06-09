@@ -41,7 +41,7 @@ namespace ModelEditor
 
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
-            Engine = new Engine(BitmapContainer);
+            Engine = new Engine(BitmapContainer, IntersectionBitmapContainer);
             objectList.ItemsSource = new ObservableCollection<SceneObject>() { Engine.Scene };
             Engine.Run();
 
@@ -317,7 +317,7 @@ namespace ModelEditor
             if (objs.Count == 2)
             {
                 var cursorPos = Engine.Scene.Cursor.GlobalMatrix.Translation;
-                var tc = TrimmingCurve.FindTrimmingCurve(objs, cursorPos);
+                var tc = TrimmingCurve.FindTrimmingCurve(objs, cursorPos, Engine.Scene.TrimPrecision);
                 if (tc != null)
                 {
                     tc.Parent = Engine.Scene;
@@ -327,7 +327,7 @@ namespace ModelEditor
         }
         private void Trim_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Engine.Scene.TrimPrecision = (float)(0.0001 + 0.0019 * e.NewValue);
+            Engine.Scene.TrimPrecision = (float)(0.0001 + 0.0999 * e.NewValue);
             TrimText.Text = "Trim presicion: " + Engine.Scene.TrimPrecision.ToString("0.0000") + " ";
 
         }

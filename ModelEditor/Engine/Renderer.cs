@@ -46,6 +46,8 @@ namespace ModelEditor
         public float ViewportDistance { get; set; }
 
         private BitmapBuffer _bb;
+        private BitmapBuffer _ibb0;
+        private BitmapBuffer _ibb1;
         private Scene _scene;
 
         private Color _drawColor = Colors.White;
@@ -59,9 +61,12 @@ namespace ModelEditor
         private float _near = 0.1f;
         private float _far = 100f;
 
-        public Renderer(BitmapBuffer bb, Scene scene)
+        public Renderer(BitmapBuffer bb, BitmapBuffer ibb0, BitmapBuffer ibb1, Scene scene)
         {
             _bb = bb;
+            _ibb0 = ibb0;
+            _ibb1 = ibb1;
+
             _scene = scene;
             _aspect = 1f * _bb.Width / _bb.Height;
         }
@@ -107,6 +112,11 @@ namespace ModelEditor
                 Render(screenRenderable, model, frameData, color);
             }
 
+            if(obj is IIntersectionRenderableObj intersectionRenderableObj)
+            {
+                Render(intersectionRenderableObj);
+            }
+
             foreach (var child in obj.Children)
             {
                 RenderRec(child, model, frameData);
@@ -117,6 +127,12 @@ namespace ModelEditor
                 RenderRec(child, model, frameData);
             }
         }
+
+        private void Render(IIntersectionRenderableObj intersectionRenderableObj)
+        {
+            throw new NotImplementedException();
+        }
+
         private void Render(IRenderableObj obj, Matrix4x4 model, RenderFrameData frameData, Color color)
         {
             var data = obj.GetRenderData();

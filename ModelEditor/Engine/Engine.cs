@@ -17,9 +17,14 @@ namespace ModelEditor
 {
     public class Engine
     {
-        private Panel _bitmapConatiner;
+        private Panel _bitmapContainer;
+        private Panel _intersectionBitmapContainer;
         private BitmapBuffer _bitmapBuffer;
+        private BitmapBuffer _intersectionBitmapBuffer0;
+        private BitmapBuffer _intersectionBitmapBuffer1;
         private WriteableBitmap _writableBitmap;
+        private WriteableBitmap _intersectionWritableBitmap0;
+        private WriteableBitmap _intersectionWritableBitmap1;
         private readonly float _maxFPS = 30;
 
         public InputManager Input { get; private set; }
@@ -29,15 +34,17 @@ namespace ModelEditor
         private Stopwatch _frameStopWatch = new Stopwatch();
         private double _deltaTime;
 
-        public Engine(Panel bitmapConatiner)
+        public Engine(Panel bitmapContainer, Panel intersectionBitmapContainer)
         {
-            _bitmapConatiner = bitmapConatiner;
+            _bitmapContainer = bitmapContainer;
+            _intersectionBitmapContainer = intersectionBitmapContainer;
             InitBitmap();
+            InitBitmapIntersectionBitmap();
 
             Scene = new Scene();
-            Renderer = new Renderer(_bitmapBuffer, Scene);
+            Renderer = new Renderer(_bitmapBuffer, _intersectionBitmapBuffer0, _intersectionBitmapBuffer1, Scene);
             Scene.Init(new RayCaster(Renderer.GetRenderAccessor()));
-            Input = new InputManager(_bitmapConatiner, _bitmapBuffer, Scene, new RayCaster(Renderer.GetRenderAccessor()));
+            Input = new InputManager(_bitmapContainer, _bitmapBuffer, Scene, new RayCaster(Renderer.GetRenderAccessor()));
 
             var trans = Matrix4x4.CreateTranslation(1, 2, 3);
             var ly = Matrix4x4.CreateRotationY((float)-Math.PI / 4);
@@ -52,14 +59,30 @@ namespace ModelEditor
             var q4 = ry * q3;
         }
 
+        private void InitBitmapIntersectionBitmap()
+        {
+            _intersectionBitmapBuffer0 = new BitmapBuffer(200, 200);
+            _intersectionWritableBitmap0 = new WriteableBitmap(200,200, 96, 96, PixelFormats.Bgr32, null);
+            var img0 = new System.Windows.Controls.Image();
+            img0.Source = _intersectionWritableBitmap0;
+            _intersectionBitmapContainer.Children.Insert(0,(img0));
+
+
+            _intersectionBitmapBuffer1 = new BitmapBuffer(200, 200);
+            _intersectionWritableBitmap1 = new WriteableBitmap(200, 200, 96, 96, PixelFormats.Bgr32, null);
+            var img1 = new System.Windows.Controls.Image();
+            img1.Source = _intersectionWritableBitmap1;
+            _intersectionBitmapContainer.Children.Insert(1, (img1));
+        }
+
         private void InitBitmap()
         {
-            _bitmapBuffer = new BitmapBuffer((int)_bitmapConatiner.ActualWidth, (int)_bitmapConatiner.ActualHeight);
+            _bitmapBuffer = new BitmapBuffer((int)_bitmapContainer.ActualWidth, (int)_bitmapContainer.ActualHeight);
 
-            _writableBitmap = new WriteableBitmap((int)_bitmapConatiner.ActualWidth, (int)_bitmapConatiner.ActualHeight, 96, 96, PixelFormats.Bgr32, null);
+            _writableBitmap = new WriteableBitmap((int)_bitmapContainer.ActualWidth, (int)_bitmapContainer.ActualHeight, 96, 96, PixelFormats.Bgr32, null);
             var img = new System.Windows.Controls.Image();
             img.Source = _writableBitmap;
-            _bitmapConatiner.Children.Add(img);
+            _bitmapContainer.Children.Add(img);
         }
 
         public async void Run()
