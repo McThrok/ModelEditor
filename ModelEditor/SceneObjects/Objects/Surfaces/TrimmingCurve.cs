@@ -210,7 +210,7 @@ namespace ModelEditor
             while (!finished)
             {
                 var tempAlpha = _alpha;
-                for (var i = 0; i < 10; i++)
+                for (var i = 0; i < 100; i++)
                 {
                     var betterPoint = findNewNewtonPoint(obj0, obj1, uvPrev0, uvPrev1, uv0, uv1, tempAlpha);
                     if (!(obj0 is Torus) && obj1 is Torus)
@@ -359,8 +359,8 @@ namespace ModelEditor
             var dV2 = obj1.EvaluateDV(uv1);
 
             var t = getT(dU1, dU2, dV1, dV2);
-            dU1 = obj0.EvaluateDU(uvNew0);
-            dV1 = obj0.EvaluateDV(uvNew0);
+            dU1 = obj0.EvaluateDU(uvNew0) ;
+            dV1 = obj0.EvaluateDV(uvNew0) ;
             dU2 = -obj1.EvaluateDU(uvNew1);
             dV2 = -obj1.EvaluateDV(uvNew1);
 
@@ -387,7 +387,7 @@ namespace ModelEditor
             var dV2 = obj1.EvaluateDV(uv1);
             var t = getT(dU1, dU2, dV1, dV2);
 
-            return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - (alpha * 1000.0f));
+            return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) + (alpha * 1000.0f));
         }
         public static Vector3 getT(Vector3 du1, Vector3 du2, Vector3 dv1, Vector3 dv2)
         {

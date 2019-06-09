@@ -107,8 +107,8 @@ namespace ModelEditor
             var angleW = 2.0 * Math.PI * hw.Y;
 
             var a = LargeRadius + SmallRadius * Math.Cos(angleW);
-            float x = (float)(a * -Math.Sin(angleH));
-            float y = (float)(a * Math.Cos(angleH));
+            float x = (float)(a * -Math.Sin(angleH) * 2.0 * Math.PI);
+            float y = (float)(a * Math.Cos(angleH) * 2.0 * Math.PI);
             float z = (float)(SmallRadius * Math.Sin(angleW));
 
             var localDrv = new Vector4(x, y, z, 0);
@@ -122,10 +122,10 @@ namespace ModelEditor
             var angleH = 2.0 * Math.PI * hw.X;
             var angleW = 2.0 * Math.PI * hw.Y;
 
-            var aDrv = SmallRadius * -Math.Sin(angleW);
+            var aDrv = SmallRadius * -Math.Sin(angleW) * 2.0 * Math.PI;
             float x = (float)(aDrv * Math.Cos(angleH));
             float y = (float)(aDrv * Math.Sin(angleH));
-            float z = (float)(SmallRadius * Math.Cos(angleW));
+            float z = (float)(SmallRadius * Math.Cos(angleW) * 2.0 * Math.PI);
 
             var localDrv = new Vector4(x, y, z, 0);
             var globalDrv = GlobalMatrix.Multiply(localDrv);
