@@ -267,7 +267,8 @@ namespace ModelEditor
                 var x2 = Convert.ToInt32((B.X + 1) / 2 * width);
                 var y2 = Convert.ToInt32((1 - (B.Y + 1) / 2) * height);
 
-                _bb.MyDrawLine(x1, y1, x2, y2, col, addColors);
+                if (new Vector2(x1 - x2, y1 - y2).Length() < 50)
+                    _bb.MyDrawLine(x1, y1, x2, y2, col, addColors);
             }
             catch (Exception e)
             {

@@ -244,9 +244,9 @@ namespace ModelEditor
                    
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
-                        pointsList.Add(obj0.Evaluate(uv0));
-                        uvList0.Add(uv0);
-                        uvList1.Add(uv1);
+                        //pointsList.Add(obj0.Evaluate(uv0));
+                        //uvList0.Add(uv0);
+                        //uvList1.Add(uv1);
 
                         pointsList.Reverse();
                         uvList0.Reverse();
@@ -299,15 +299,11 @@ namespace ModelEditor
 
             if (!backed)
             {
-                pointsList.Add(pStart);
-                uvList0.Add(uvStart0);
-                uvList1.Add(uvStart1);
+                //pointsList.Add(pStart);
+                //uvList0.Add(uvStart0);
+                //uvList1.Add(uvStart1);
             }
 
-            if (!backed)
-            {
-              
-            }
 
             return new TrimmingCurve(pointsList, uvList0, uvList1);
         }

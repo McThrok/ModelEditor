@@ -227,7 +227,7 @@ namespace ModelEditor
                 }
             }
 
-            var result = 3 * (verts[s] - verts[s - 1]);
+            var result = 3 * (verts[s] - verts[s-1]);
 
             return result;
         }

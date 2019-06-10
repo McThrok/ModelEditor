@@ -172,7 +172,7 @@ namespace ModelEditor
                 verts.Add(new List<Vector3>());
                 for (int j = 0; j < 4; j++)
                 {
-                    if (w + j < RangeVertexCount)
+                    if (3*w + j < RangeVertexCount)
                         verts[i].Add(_controlVertices[3 * h + i][3 * w + j].GlobalMatrix.Translation);
                     else
                         verts[i].Add(_controlVertices[3 * h + i][0].GlobalMatrix.Translation);
