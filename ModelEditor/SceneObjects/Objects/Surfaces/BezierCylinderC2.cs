@@ -70,7 +70,7 @@ namespace ModelEditor
                 if (result.Count > 0)
                 {
                     for (int i = 0; i < degree + 1; i++)
-                        result.Add(result[i % result.Count]);
+                        result.Add(result[i]);
                 }
                 return result;
             }).ToList();
@@ -200,7 +200,7 @@ namespace ModelEditor
                 if (result.Count > 0)
                 {
                     for (int i = 0; i < degree + 1; i++)
-                        result.Add(result[i % result.Count]);
+                        result.Add(result[i]);
                 }
                 return result;
             }).ToList();

@@ -50,7 +50,7 @@ namespace ModelEditor
     {
         private static int _count = 0;
 
-        private static float gradientEpsilon = 0.001f;
+        private static float gradientEpsilon = 0.0001f;
 
         public static float alpha = 0.002f;
         public static float finalEpsilon = 0.01f;
@@ -160,6 +160,7 @@ namespace ModelEditor
                     if (newDist > dist)
                     {
                         alpha /= 2;
+                        alpha = Math.Max(alpha, 0.0001f);
                     }
                     else
                     {
@@ -184,11 +185,11 @@ namespace ModelEditor
 
             var diff = eval0 - eval1;
 
-            var eval0u = obj0.EvaluateDU(point0);
-            var eval0v = obj0.EvaluateDV(point0);
+            var eval0u = obj0.EvaluateDU(point0).Normalized();
+            var eval0v = obj0.EvaluateDV(point0).Normalized();
 
-            var eval1u = obj1.EvaluateDU(point1);
-            var eval1v = obj1.EvaluateDV(point1);
+            var eval1u = obj1.EvaluateDU(point1).Normalized();
+            var eval1v = obj1.EvaluateDV(point1).Normalized();
 
             var grad0 = new Vector2(
              Vector3.Dot(diff, eval0u),
@@ -360,7 +361,7 @@ namespace ModelEditor
             var dV2 = obj1.EvaluateDV(uv1);
             var t = getT(dU1, dU2, dV1, dV2);
 
-            var d = alpha * 10;
+            var d = alpha * 1;
 
             return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - d);
         }

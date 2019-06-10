@@ -48,7 +48,7 @@ namespace ModelEditor
             //init sliders
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
-            TrimSlider.Value = 0.45;
+            TrimSlider.Value = 0.1;
 
             //expand scene list
             var sceneNode = objectList.ItemContainerGenerator.ContainerFromItem(objectList.Items[0]) as TreeViewItem;
