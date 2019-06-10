@@ -64,6 +64,7 @@ namespace ModelEditor
             _intersectionBitmapBuffer0 = new BitmapBuffer(200, 200);
             _intersectionWritableBitmap0 = new WriteableBitmap(200,200, 96, 96, PixelFormats.Bgr32, null);
             var img0 = new System.Windows.Controls.Image();
+            img0.Margin = new Thickness(5);
             img0.Source = _intersectionWritableBitmap0;
             _intersectionBitmapContainer.Children.Insert(0,(img0));
 
@@ -71,6 +72,7 @@ namespace ModelEditor
             _intersectionBitmapBuffer1 = new BitmapBuffer(200, 200);
             _intersectionWritableBitmap1 = new WriteableBitmap(200, 200, 96, 96, PixelFormats.Bgr32, null);
             var img1 = new System.Windows.Controls.Image();
+            img1.Margin = new Thickness(5);
             img1.Source = _intersectionWritableBitmap1;
             _intersectionBitmapContainer.Children.Insert(1, (img1));
         }

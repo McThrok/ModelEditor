@@ -381,6 +381,7 @@ namespace ModelEditor
         private void ResetCamera(object sender, RoutedEventArgs e)
         {
             Engine.Scene.ResetCamera();
+            Engine.Input.CameraRotation = Vector3.Zero;
         }
         private void Clear_Click(object sender, RoutedEventArgs e)
         {

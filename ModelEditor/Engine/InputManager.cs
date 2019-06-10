@@ -31,7 +31,7 @@ namespace ModelEditor
         private readonly RayCaster _rayCaster;
 
         private Dictionary<Move, bool> _moveActions;
-        private Vector3 _cameraRotation = Vector3.Zero;
+        public Vector3 CameraRotation = Vector3.Zero;
         private Point? _lastMousePosition;
         private bool _ctrlPressed = false;
 
@@ -113,12 +113,12 @@ namespace ModelEditor
 
             var rotationSpeed = 0.002f;
 
-            _cameraRotation.X += (float)(rotationSpeed * diff.Y);
-            _cameraRotation.X = (float)Math.Max(-Math.PI * 0.4, Math.Min(Math.PI * 0.4, _cameraRotation.X));
-            _cameraRotation.Y += (float)(rotationSpeed * diff.X);
+            CameraRotation.X += (float)(rotationSpeed * diff.Y);
+            CameraRotation.X = (float)Math.Max(-Math.PI * 0.4, Math.Min(Math.PI * 0.4, CameraRotation.X));
+            CameraRotation.Y += (float)(rotationSpeed * diff.X);
 
-            var rotationX = Matrix4x4.CreateRotationX(_cameraRotation.X);
-            var rotationY = Matrix4x4.CreateRotationY(_cameraRotation.Y);
+            var rotationX = Matrix4x4.CreateRotationX(CameraRotation.X);
+            var rotationY = Matrix4x4.CreateRotationY(CameraRotation.Y);
             var move = Matrix4x4.CreateTranslation(translation);
 
             _scene.Camera.Matrix = rotationX * rotationY * move;
