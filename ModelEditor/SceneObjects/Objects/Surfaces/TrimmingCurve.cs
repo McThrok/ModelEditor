@@ -361,7 +361,7 @@ namespace ModelEditor
             var dV2 = obj1.EvaluateDV(uv1);
             var t = getT(dU1, dU2, dV1, dV2);
 
-            var d = alpha * 1;
+            var d = alpha * 10;
 
             return new Vector4(P1 - Q, Vector3.Dot(P1 - P0, t) - d);
         }
@@ -385,15 +385,6 @@ namespace ModelEditor
             var crossed = 0;
             var end = false;
 
-            //var epsWrap = 0.00001f;
-
-            //var eps = 0.0009f;
-            //eps = 1f;
-
-            //float _uNew = uv.X - (uvNew.X * eps);
-            //float _vNew = uv.Y - (uvNew.Y * eps);
-            //float _uLast = uv.X - (uvNew.X * eps);
-            //float _vLast = uv.Y - (uvNew.Y * eps);
             float _uNew = uv.X - uvNew.X;
             float _vNew = uv.Y - uvNew.Y;
 
