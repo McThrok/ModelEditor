@@ -70,8 +70,8 @@ namespace ModelEditor
         public TrimmingCurve(List<Vector3> verts, List<Vector2> uv0, List<Vector2> uv1) : this()
         {
             Verts = verts;
-            _uv0 = uv0.Select(v => new Vector3( v, 0)).ToList();
-            _uv1 = uv1.Select(v => new Vector3( v, 0)).ToList();
+            _uv0 = uv0.Select(v => new Vector3(v, 0)).ToList();
+            _uv1 = uv1.Select(v => new Vector3(v, 0)).ToList();
         }
 
         public ObjRenderData GetRenderData()
@@ -219,13 +219,18 @@ namespace ModelEditor
             var uvList0 = new List<Vector2>();
             var uvList1 = new List<Vector2>();
 
+            pointsList.Add(obj0.Evaluate(uv0));
+            uvList0.Add(uv0);
+            uvList1.Add(uv1);
+
             while (!finished)
             {
                 var tempAlpha = _alpha;
+                int innerLoops = 0;
                 while (true)
                 {
                     var betterPoint = findNewNewtonPoint(obj0, obj1, uvPrev0, uvPrev1, uv0, uv1, tempAlpha);
-                  
+
 
                     var uvNew0 = new Vector2(betterPoint.X, betterPoint.Y);
                     var uvNew1 = new Vector2(betterPoint.Z, betterPoint.W);
@@ -238,15 +243,14 @@ namespace ModelEditor
                     if (upd0.end || upd1.end)
                     {
                         finished = true;
-                       
                         break;
                     }
-                   
+
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
-                        //pointsList.Add(obj0.Evaluate(uv0));
-                        //uvList0.Add(uv0);
-                        //uvList1.Add(uv1);
+                        pointsList.Add(obj0.Evaluate(uv0));
+                        uvList0.Add(uv0);
+                        uvList1.Add(uv1);
 
                         pointsList.Reverse();
                         uvList0.Reverse();
@@ -266,10 +270,14 @@ namespace ModelEditor
                         break;
                     }
 
-                    if (precision > Vector3.Distance(obj0.Evaluate(uv0), obj1.Evaluate(uv1)))
-                    {
+                    var ev0 = obj0.Evaluate(uv0);
+                    var ev1 = obj1.Evaluate(uv1);
+                    var dst = Vector3.Distance(ev0, ev1);
+                    if (precision > dst)
                         break;
-                    }
+
+                    if (++innerLoops > 10)
+                        return null;
 
                 }
 
@@ -308,7 +316,7 @@ namespace ModelEditor
             return new TrimmingCurve(pointsList, uvList0, uvList1);
         }
 
-    
+
 
         private static Vector4 findNewNewtonPoint(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, Vector2 uvNew0, Vector2 uvNew1, float alpha)
         {
@@ -376,7 +384,7 @@ namespace ModelEditor
             var crossed = 0;
             var end = false;
 
-            var epsWrap = 0.00001f;
+            //var epsWrap = 0.00001f;
 
             //var eps = 0.0009f;
             //eps = 1f;
@@ -408,7 +416,7 @@ namespace ModelEditor
                 }
                 crossed = -1;
             }
-            if (_uNew >= 1)
+            else if (_uNew >= 1)
             {
                 if (obj.WrappedU)
                 {
@@ -428,6 +436,7 @@ namespace ModelEditor
                 }
                 crossed = 1;
             }
+
             if (_vNew >= 1)
             {
                 if (obj.WrappedV)
@@ -448,7 +457,7 @@ namespace ModelEditor
                 }
                 crossed = 2;
             }
-            if (_vNew < 0)
+            else if (_vNew < 0)
             {
                 if (obj.WrappedV)
                 {
