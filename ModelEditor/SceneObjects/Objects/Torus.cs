@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class Torus : SceneObject, IRenderableObj, TrimmingSurface
+    public class Torus : SceneObject, IRenderableObj, IIntersect
     {
         private static int _count = 0;
         private double _largeRadius = 5;

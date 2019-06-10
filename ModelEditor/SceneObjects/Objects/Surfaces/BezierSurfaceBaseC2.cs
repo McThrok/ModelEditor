@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public abstract class BezierSurfaceBaseC2 : SceneObject, TrimmingSurface
+    public abstract class BezierSurfaceBaseC2 : SceneObject, IIntersect
     {
         protected List<List<Vertex>> _controlVertices = new List<List<Vertex>>();
         protected readonly RayCaster _rayCaster;

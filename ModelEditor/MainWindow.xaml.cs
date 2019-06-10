@@ -235,7 +235,7 @@ namespace ModelEditor
         private void InterpolatingCurve(object sender, RoutedEventArgs e)
         {
             var obj = Engine.Scene.SelectedObject;
-            if (obj is TrimmingCurve cutCrv)
+            if (obj is IntersectionCurve cutCrv)
             {
                 var intCrv = (InterpolatingCurve)Engine.Scene.AddInterpolatingCurve(Engine.Scene);
                 int n = cutCrv.Verts.Count / 15;
@@ -301,18 +301,18 @@ namespace ModelEditor
         }
         private void Trim_click(object sender, RoutedEventArgs e)
         {
-            var objSet = new HashSet<TrimmingSurface>();
+            var objSet = new HashSet<IIntersect>();
 
             foreach (var obj in Engine.Scene.Cursor.HeldObjects)
             {
 
-                if (obj is TrimmingSurface objSurf)
+                if (obj is IIntersect objSurf)
                     objSet.Add(objSurf);
                 else
 
                 if (obj is Vertex vert)
                 {
-                    if (vert.Parent is TrimmingSurface surf)
+                    if (vert.Parent is IIntersect surf)
                         objSet.Add(surf);
                 }
             }
@@ -331,7 +331,7 @@ namespace ModelEditor
                 var cursorPos = Engine.Scene.Cursor.GlobalMatrix.Translation;
                 //try
                 //{
-                var tc = TrimmingCurve.FindTrimmingCurve(objs, cursorPos, Engine.Scene.TrimPrecision);
+                var tc = IntersectionCurve.FindIntersectionCurve(objs, cursorPos, Engine.Scene.TrimPrecision);
                     if (tc != null)
                     {
                         tc.Parent = Engine.Scene;

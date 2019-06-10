@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace ModelEditor
 {
-    public class BezierSurfaceC0 : BezierSurfaceBaseC0, IRenderableObj, TrimmingSurface
+    public class BezierSurfaceC0 : BezierSurfaceBaseC0, IRenderableObj, IIntersect
     {
         private static int _count = 0;
         public Dictionary<Vertex, Vertex> LinkedVertices { get; private set; } = new Dictionary<Vertex, Vertex>();

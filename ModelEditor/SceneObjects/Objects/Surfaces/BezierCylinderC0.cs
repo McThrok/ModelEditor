@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace ModelEditor
 {
-    public class BezierCylinderC0 : BezierSurfaceBaseC0, IRenderableObj, TrimmingSurface
+    public class BezierCylinderC0 : BezierSurfaceBaseC0, IRenderableObj, IIntersect
     {
         private static int _count = 0;
 
