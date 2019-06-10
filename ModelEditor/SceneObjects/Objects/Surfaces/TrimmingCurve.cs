@@ -51,7 +51,6 @@ namespace ModelEditor
         private static int _count = 0;
 
         private static float gradientEpsilon = 0.001f;
-        private static float gradientStep = 0.1f;
 
         public static float alpha = 0.002f;
         public static float finalEpsilon = 0.01f;
@@ -198,7 +197,7 @@ namespace ModelEditor
              Vector3.Dot(-diff, eval1u),
              Vector3.Dot(-diff, eval1v));
 
-            return new List<Vector2>() { gradientStep * grad0.Normalized(), gradientStep * grad1.Normalized() };
+            return new List<Vector2>() { grad0, grad1 };
         }
         private static TrimmingCurve goGoNewton(TrimmingSurface obj0, TrimmingSurface obj1, Vector2 uv0, Vector2 uv1, float precision)
         {

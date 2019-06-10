@@ -217,7 +217,7 @@ namespace ModelEditor
             }
 
             var verts = points.ToList();
-            for (int l = 1; l <= degree; l++)
+            for (int l = 1; l <= degree-1; l++)
             {
                 for (int i = s; i > s - degree - 1 + l; i--)
                 {
