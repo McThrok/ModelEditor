@@ -134,7 +134,7 @@ namespace ModelEditor
             var p1 = obj1.Evaluate(value1);
 
             var i = 0;
-            var alpha = 1f;
+            var alpha = 0.01f;
             var dist = Vector3.Distance(p1, p0);
             while (dist > gradientEpsilon)
             {
@@ -163,6 +163,7 @@ namespace ModelEditor
                     }
                     else
                     {
+                        alpha *= 2;
                         dist = newDist;
                         p0 = pNew0;
                         p1 = pNew1;
@@ -247,9 +248,9 @@ namespace ModelEditor
 
                     if (upd0.backThisTime || upd1.backThisTime)
                     {
-                        pointsList.Add(obj0.Evaluate(uv0));
-                        uvList0.Add(uv0);
-                        uvList1.Add(uv1);
+                        //pointsList.Add(obj0.Evaluate(uv0));
+                        //uvList0.Add(uv0);
+                        //uvList1.Add(uv1);
 
                         pointsList.Reverse();
                         uvList0.Reverse();
