@@ -48,7 +48,7 @@ namespace ModelEditor
             //init sliders
             ViewportSlider.Value = 1;
             EyeSlider.Value = 0.1;
-            TrimSlider.Value = 0.1;
+            TrimSlider.Value = 0.3;
 
             //expand scene list
             var sceneNode = objectList.ItemContainerGenerator.ContainerFromItem(objectList.Items[0]) as TreeViewItem;
@@ -239,7 +239,7 @@ namespace ModelEditor
             {
                 var intCrv = (InterpolatingCurve)Engine.Scene.AddInterpolatingCurve(Engine.Scene);
                 int n = cutCrv.Verts.Count / 15;
-                intCrv.SetPoints(cutCrv.Verts.Where((v,i)=>i%n==0 || i==cutCrv.Verts.Count).ToList());
+                intCrv.SetPoints(cutCrv.Verts.Where((v,i)=>i%n==0 || i==cutCrv.Verts.Count-1).ToList());
                 SelectItem(intCrv);
                 Engine.Scene.Delete(cutCrv);
             }

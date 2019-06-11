@@ -87,7 +87,7 @@ namespace ModelEditor
             Vector2 p0 = Vector2.Zero;
             Vector2 p1 = Vector2.Zero;
 
-            int divCount = 11;
+            int divCount = 13;
             bool oneObject = objs[0].Id == objs[1].Id;
             float eps = 0.5f;
 
@@ -125,7 +125,7 @@ namespace ModelEditor
             var dist = Vector3.Distance(p1, p0);
             while (dist > _gradientEps)
             {
-                if (++i > 5000)
+                if (++i > 10000)
                     return null;
 
                 try
