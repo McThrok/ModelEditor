@@ -61,7 +61,7 @@
                 <Button  Margin="5" Height="20" Click="Release_click">Release</Button>
                 <Button  Margin="5" Height="20" Click="Link_click">Link</Button>
                 <Button  Margin="5" Height="20" Click="Gregory_click">Create Gregory patch</Button>
-                <Button  Margin="5" Height="20" Click="Trim_click">Trim</Button>
+                <Button  Margin="5" Height="20" Click="Trim_click">Intersect</Button>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Margin="5,5,30,5">
                     <TextBlock Name="TrimText"/>
                     <Slider Name="TrimSlider" Maximum="1" Width="100" VerticalAlignment="Center" ValueChanged="Trim_Changed" LargeChange="0.05" SmallChange="0.01"/>

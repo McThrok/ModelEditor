@@ -217,7 +217,7 @@ namespace ModelEditor
             }
 
             var verts = points.ToList();
-            for (int l = 1; l <= degree-1; l++)
+            for (int l = 1; l <= degree - 1; l++)
             {
                 for (int i = s; i > s - degree - 1 + l; i--)
                 {
@@ -227,11 +227,11 @@ namespace ModelEditor
                 }
             }
 
-            var result = 3 * (verts[s] - verts[s-1]);
+            var result = 3 * (verts[s] - verts[s - 1]);
 
             return result;
         }
-        public Vector3 GetSplineDrvValue( List<Vector3> points, float t, int[] knots)
+        public Vector3 GetSplineDrvValue(List<Vector3> points, float t, int[] knots)
         {
             int degree = 3;
             var left = knots[degree];
@@ -261,7 +261,7 @@ namespace ModelEditor
 
             return result;
         }
-        
+
         //public Vector3 GetSplineValue(float t, Vector3[] points, int[] knots)
         ////public Vector3 GetSplineValue(Vector3[] points, float t)
         //{
@@ -483,6 +483,18 @@ namespace ModelEditor
             return result;
         }
 
+        //public Vector3 EvaluateDV(Vector2 hw)
+        //{
+        //    float h = hw.X;
+        //    float w = hw.Y;
+
+        //    var a = Evaluate(hw);
+        //    var d = 0.0001f;
+        //    var b = Evaluate(new Vector2(h, w + d));
+
+        //    return (b - a) / d;
+        //}
+
         public Vector3 EvaluateDV(Vector2 hw)
         {
             float h = hw.X;
@@ -496,7 +508,11 @@ namespace ModelEditor
                 tmpW.Add(GetSplineValue(h, nodes, _knotsH));
             }
 
-            var result = GetSplineDrvValue(tmpW, w, _knotsW) * WidthPatchCount;
+            //Vector3 result;
+            //if (this is BezierCylinderC2)
+            //    result = GetSplineDrvValue(tmpW, w) * (1 + WidthPatchCount);
+            //else
+            var result = GetSplineDrvValue(tmpW, w) * WidthPatchCount;
 
             return result;
         }
