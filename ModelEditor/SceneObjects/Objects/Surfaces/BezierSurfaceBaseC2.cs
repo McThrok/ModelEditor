@@ -85,7 +85,7 @@ namespace ModelEditor
             for (int i = 0; i < n; i++)
             {
                 var nodes = verts.Select(v => v[i]).ToList();
-                _tmpW[i] = GetSplineValue(tu, nodes, _knotsH);
+                _tmpW[i] = GetSplineValue(nodes, tu);
             }
         }
         protected void FillTmpH(List<List<Vector3>> verts, float tv)
@@ -94,7 +94,7 @@ namespace ModelEditor
             for (int i = 0; i < n; i++)
             {
                 var nodes = verts[i];
-                _tmpH[i] = GetSplineValue(tv, nodes, _knotsW);
+                _tmpH[i] = GetSplineValue(nodes, tv);
             }
         }
 
@@ -104,23 +104,85 @@ namespace ModelEditor
             int n = DrawPoints;
             for (int i = 0; i < n + 1; i++)
             {
-                curve.Add(GetSplineValue(1f * i / n, points, knots));
+                curve.Add(GetSplineValue(1f * i / n, points));
             }
 
             return curve;
 
         }
-        public Vector3 GetSplineValue(float t, Vector3[] points, int[] knots)
+        //public Vector3 GetSplineValue(float t, Vector3[] points, int[] knots)
+        //{
+        //    int degree = 3;
+        //    var left = knots[degree];
+        //    var right = knots[knots.Length - 1 - degree];
+        //    t = t * (right - left) + left;
+
+        //    int s;
+        //    for (s = degree; s < knots.Length - 1 - degree; s++)
+        //    {
+        //        if (t >= knots[s] && t <= knots[s + 1])
+        //        {
+        //            break;
+        //        }
+        //    }
+
+        //    var verts = points.ToList();
+        //    for (int l = 1; l <= degree + 1; l++)
+        //    {
+        //        for (int i = s; i > s - degree - 1 + l; i--)
+        //        {
+        //            float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+        //            verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
+        //        }
+        //    }
+
+        //    return verts[s];
+        //}
+        //public Vector3 GetSplineValue(float t, List<Vector3> points, int[] knots)
+        //{
+        //    int degree = 3;
+        //    var left = knots[degree];
+        //    var right = knots[knots.Length - 1 - degree];
+        //    t = t * (right - left) + left;
+
+        //    int s;
+        //    for (s = degree; s < knots.Length - 1 - degree; s++)
+        //    {
+        //        if (t >= knots[s] && t <= knots[s + 1])
+        //        {
+        //            break;
+        //        }
+        //    }
+
+        //    var verts = points.ToList();
+        //    for (int l = 1; l <= degree + 1; l++)
+        //    {
+        //        for (int i = s; i > s - degree - 1 + l; i--)
+        //        {
+        //            float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+        //            verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
+        //        }
+        //    }
+
+        //    return verts[s];
+        //}
+
+        public Vector3 GetSplineValue(Vector3[] points, float t)
+        {
+            return GetSplineValue(t, points);
+        }
+        public Vector3 GetSplineValue(float t, Vector3[] points)
         {
             int degree = 3;
-            var left = knots[degree];
-            var right = knots[knots.Length - 1 - degree];
+
+            var left = degree;
+            var right = points.Length;
             t = t * (right - left) + left;
 
             int s;
-            for (s = degree; s < knots.Length - 1 - degree; s++)
+            for (s = left; s < right; s++)
             {
-                if (t >= knots[s] && t <= knots[s + 1])
+                if (t >= s && t <= s + 1)
                 {
                     break;
                 }
@@ -131,42 +193,16 @@ namespace ModelEditor
             {
                 for (int i = s; i > s - degree - 1 + l; i--)
                 {
-                    float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+                    float alpha = (t - i) / (degree + 1 - l);
+
                     verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
                 }
             }
 
-            return verts[s];
+            var result = verts[s];
+
+            return result;
         }
-        public Vector3 GetSplineValue(float t, List<Vector3> points, int[] knots)
-        {
-            int degree = 3;
-            var left = knots[degree];
-            var right = knots[knots.Length - 1 - degree];
-            t = t * (right - left) + left;
-
-            int s;
-            for (s = degree; s < knots.Length - 1 - degree; s++)
-            {
-                if (t >= knots[s] && t <= knots[s + 1])
-                {
-                    break;
-                }
-            }
-
-            var verts = points.ToList();
-            for (int l = 1; l <= degree + 1; l++)
-            {
-                for (int i = s; i > s - degree - 1 + l; i--)
-                {
-                    float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
-                    verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
-                }
-            }
-
-            return verts[s];
-        }
-
         public Vector3 GetSplineValue(List<Vector3> points, float t)
         {
             int degree = 3;
@@ -231,36 +267,36 @@ namespace ModelEditor
 
             return result;
         }
-        public Vector3 GetSplineDrvValue(List<Vector3> points, float t, int[] knots)
-        {
-            int degree = 3;
-            var left = knots[degree];
-            var right = knots[knots.Length - 1 - degree];
-            t = t * (right - left) + left;
+        //public Vector3 GetSplineDrvValue(List<Vector3> points, float t, int[] knots)
+        //{
+        //    int degree = 3;
+        //    var left = knots[degree];
+        //    var right = knots[knots.Length - 1 - degree];
+        //    t = t * (right - left) + left;
 
-            int s;
-            for (s = degree; s < knots.Length - 1 - degree; s++)
-            {
-                if (t >= knots[s] && t <= knots[s + 1])
-                {
-                    break;
-                }
-            }
+        //    int s;
+        //    for (s = degree; s < knots.Length - 1 - degree; s++)
+        //    {
+        //        if (t >= knots[s] && t <= knots[s + 1])
+        //        {
+        //            break;
+        //        }
+        //    }
 
-            var verts = points.ToList();
-            for (int l = 1; l <= degree - 1; l++)
-            {
-                for (int i = s; i > s - degree - 1 + l; i--)
-                {
-                    float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
-                    verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
-                }
-            }
+        //    var verts = points.ToList();
+        //    for (int l = 1; l <= degree - 1; l++)
+        //    {
+        //        for (int i = s; i > s - degree - 1 + l; i--)
+        //        {
+        //            float alpha = (t - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+        //            verts[i] = (1 - alpha) * verts[i - 1] + alpha * verts[i];
+        //        }
+        //    }
 
-            var result = 3 * (verts[s] - verts[s - 1]);
+        //    var result = 3 * (verts[s] - verts[s - 1]);
 
-            return result;
-        }
+        //    return result;
+        //}
 
         //public Vector3 GetSplineValue(float t, Vector3[] points, int[] knots)
         ////public Vector3 GetSplineValue(Vector3[] points, float t)
@@ -457,7 +493,7 @@ namespace ModelEditor
             for (int i = 0; i < _tmpW.Length; i++)
             {
                 var nodes = verts.Select(v => v[i]).ToList();
-                tmpW.Add(GetSplineValue(h, nodes, _knotsH));
+                tmpW.Add(GetSplineValue(nodes, h));
             }
 
             var result = GetSplineValue(tmpW, w);
@@ -470,29 +506,39 @@ namespace ModelEditor
             float h = hw.X;
             float w = hw.Y;
 
-            var tmpH = new List<Vector3>(_tmpH.Length);
-            var verts = GetGlobalVerts();
-            for (int i = 0; i < _tmpH.Length; i++)
+            var d = 0.00001f;
+            if (h + d <= 1)
             {
-                var nodes = verts[i];
-                tmpH.Add(GetSplineValue(w, nodes, _knotsW));
+                var a = Evaluate(hw);
+                var b = Evaluate(new Vector2(h+d, w));
+
+                return (b - a) / d;
             }
+            else
+            {
+                var a = Evaluate(hw);
+                var b = Evaluate(new Vector2(h-d, w ));
 
-            var result = GetSplineDrvValue(tmpH, h, _knotsH) * HeightPatchCount;
-
-            return result;
+                return (a - b) / d;
+            }
         }
 
-        //public Vector3 EvaluateDV(Vector2 hw)
+        //public Vector3 EvaluateDU(Vector2 hw)
         //{
         //    float h = hw.X;
         //    float w = hw.Y;
 
-        //    var a = Evaluate(hw);
-        //    var d = 0.0001f;
-        //    var b = Evaluate(new Vector2(h, w + d));
+        //    var tmpH = new List<Vector3>(_tmpH.Length);
+        //    var verts = GetGlobalVerts();
+        //    for (int i = 0; i < _tmpH.Length; i++)
+        //    {
+        //        var nodes = verts[i];
+        //        tmpH.Add(GetSplineValue(nodes, w));
+        //    }
 
-        //    return (b - a) / d;
+        //    var result = GetSplineDrvValue(tmpH, h);
+
+        //    return result;
         //}
 
         public Vector3 EvaluateDV(Vector2 hw)
@@ -500,21 +546,41 @@ namespace ModelEditor
             float h = hw.X;
             float w = hw.Y;
 
-            var tmpW = new List<Vector3>(_tmpW.Length);
-            var verts = GetGlobalVerts();
-            for (int i = 0; i < _tmpW.Length; i++)
+            var d = 0.00001f;
+            if (w + d <= 1)
             {
-                var nodes = verts.Select(v => v[i]).ToList();
-                tmpW.Add(GetSplineValue(h, nodes, _knotsH));
+                var a = Evaluate(hw);
+                var b = Evaluate(new Vector2(h, w + d));
+
+                return (b - a) / d;
             }
+            else
+            {
+                var a = Evaluate(hw);
+                var b = Evaluate(new Vector2(h, w - d));
 
-            //Vector3 result;
-            //if (this is BezierCylinderC2)
-            //    result = GetSplineDrvValue(tmpW, w) * (1 + WidthPatchCount);
-            //else
-            var result = GetSplineDrvValue(tmpW, w) * WidthPatchCount;
-
-            return result;
+                return (a-b) / d;
+            }
         }
+
+        //public Vector3 EvaluateDV(Vector2 hw)
+        //{
+        //    float h = hw.X;
+        //    float w = hw.Y;
+
+        //    int n = _tmpW.Length;
+
+        //    var tmpW = new List<Vector3>(n);
+        //    var verts = GetGlobalVerts();
+        //    for (int i = 0; i < n; i++)
+        //    {
+        //        var nodes = verts.Select(v => v[i]).ToList();
+        //        tmpW.Add(GetSplineValue(nodes, h));
+        //    }
+
+        //    var result = GetSplineDrvValue(tmpW, w);
+
+        //    return result;
+        //}
     }
 }

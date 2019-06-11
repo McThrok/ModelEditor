@@ -43,6 +43,9 @@ namespace ModelEditor
             {
                 for (int j = 0; j < w; j++)
                 {
+                    if (parts[i * w + j + 3] == string.Empty)
+                        continue;
+
                     var vert = _controlVertices[i][j];
                     vert.StringToPosition(parts[i * w + j + 3]);
                 }

@@ -125,7 +125,7 @@ namespace ModelEditor
             var dist = Vector3.Distance(p1, p0);
             while (dist > _gradientEps)
             {
-                if (++i > 1000)
+                if (++i > 5000)
                     return null;
 
                 try
@@ -254,7 +254,7 @@ namespace ModelEditor
                     if (precision > dst)
                         break;
 
-                    if (++innerLoops > 10)
+                    if (++innerLoops > 30)
                         return null;
                 }
 

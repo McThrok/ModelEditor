@@ -43,6 +43,8 @@ namespace ModelEditor
             {
                 for (int j = 0; j < w; j++)
                 {
+                    if (parts[i * w + j + 3] == string.Empty)
+                        continue;
                     var vert = _controlVertices[i][j];
                     vert.StringToPosition(parts[i * w + j + 3]);
                 }
@@ -69,7 +71,7 @@ namespace ModelEditor
                 var result = row.Select(v => v.Matrix.Translation).ToList();
                 if (result.Count > 0)
                 {
-                    for (int i = 0; i < degree + 1; i++)
+                    for (int i = 0; i < degree ; i++)
                         result.Add(result[i]);
                 }
                 return result;
@@ -152,7 +154,7 @@ namespace ModelEditor
         protected void InitKnots()
         {
             int degree = 3;
-            _tmpW = new Vector3[WidthVertexCount + degree];
+            _tmpW = new Vector3[WidthVertexCount + degree-1];
             _tmpH = new Vector3[HeightVertexCount];
 
 
@@ -199,7 +201,7 @@ namespace ModelEditor
                 var result = row.Select(v => v.GlobalMatrix.Translation).ToList();
                 if (result.Count > 0)
                 {
-                    for (int i = 0; i < degree + 1; i++)
+                    for (int i = 0; i < degree ; i++)
                         result.Add(result[i]);
                 }
                 return result;
